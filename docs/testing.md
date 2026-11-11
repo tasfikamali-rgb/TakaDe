@@ -3,7 +3,17 @@
 You don't need a simulator on your Mac to see the app working. Every pull request runs
 the checks below on GitHub's Mac machines, in parallel, and posts screenshots.
 
-## What runs on every pull request
+## When things run
+
+GitHub's free plan for private repos gives 2,000 minutes a month and counts macOS
+minutes 10×, so only the cheap checks run on every push:
+
+- **Every push to a PR:** ledger/storage tests, store-readiness and adaptive-layout
+  checks, app build.
+- **On merge to `main`, by hand, or when a PR gets the `ui-tests` label:**
+  accessibility audit, Maestro flows and screenshots, iPhone Duo.
+
+## What runs
 
 | Check | Workflow / job | What it catches |
 |---|---|---|

@@ -48,7 +48,7 @@ jobs:
         run: python3 scripts/ci/adaptive_check.py
 
   app:
-    name: Build app, store check, accessibility audit
+    name: Build app and store check
     runs-on: macos-15
     timeout-minutes: 40
     steps:
@@ -62,38 +62,15 @@ jobs:
           key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
       - name: Install XcodeGen and generate project
         run: brew install xcodegen && xcodegen generate --quiet
-      - name: Boot simulator
-        id: sim
-        run: echo "udid=$(scripts/ci/boot-simulator.sh 'iPhone 16')" >> "$GITHUB_OUTPUT"
-      - name: Build app and UI tests
+      - name: Build app
         run: |
-          xcodebuild build-for-testing \
+          xcodebuild build \
             -project TakaDe.xcodeproj -scheme TakaDe \
-            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/DerivedData \
             -clonedSourcePackagesDirPath build/SourcePackages \
-            -quiet
+            -quiet CODE_SIGNING_ALLOWED=NO
       - name: App Store readiness (built app)
         run: |
           app=$(find build/DerivedData/Build/Products -maxdepth 2 -name TakaDe.app -path '*iphonesimulator*' | head -1)
           python3 scripts/ci/store_check.py --app "$app"
-      - name: Accessibility audit and launch tests
-        run: |
-          xcodebuild test-without-building \
-            -project TakaDe.xcodeproj -scheme TakaDe \
-            -destination "id=${{ steps.sim.outputs.udid }}" \
-            -derivedDataPath build/DerivedData \
-            -resultBundlePath build/UITests.xcresult \
-            -quiet
-      - name: Show UI test failures
-        if: failure()
-        run: |
-          xcrun xcresulttool get test-results summary --path build/UITests.xcresult --compact \
-            | python3 scripts/ci/xcresult_failures.py
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-test-results
-          path: build/UITests.xcresult
-          retention-days: 7

@@ -4,8 +4,13 @@ name: UI flows and screenshots
 # and dark mode, and uploads the screenshots. Download them from the run page
 # (Artifacts) instead of installing a simulator locally. See docs/testing.md.
 
+# These use macOS runners, which count 10x against the private-repo free
+# minutes, so they don't run on every push: they run on merge to main, by hand
+# (Actions → UI flows and screenshots → Run workflow), or on a pull request when
+# it gets the `ui-tests` label.
 on:
   pull_request:
+    types: [labeled, synchronize]
   push:
     branches: [main]
   workflow_dispatch:
@@ -21,6 +26,7 @@ env:
 jobs:
   build:
     name: Build simulator app
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'ui-tests')
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -39,6 +45,54 @@ jobs:
         with:
           name: TakaDe-simulator-app
           path: build/TakaDe.app.tgz
+          retention-days: 7
+
+  accessibility:
+    name: Accessibility audit and launch tests
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'ui-tests')
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
+      - name: Install XcodeGen and generate project
+        run: brew install xcodegen && xcodegen generate --quiet
+      - name: Boot simulator
+        id: sim
+        run: echo "udid=$(scripts/ci/boot-simulator.sh 'iPhone 16')" >> "$GITHUB_OUTPUT"
+      - name: Build app and UI tests
+        run: |
+          xcodebuild build-for-testing \
+            -project TakaDe.xcodeproj -scheme TakaDe \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            -clonedSourcePackagesDirPath build/SourcePackages \
+            -quiet
+      - name: Accessibility audit and launch tests
+        run: |
+          xcodebuild test-without-building \
+            -project TakaDe.xcodeproj -scheme TakaDe \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            -resultBundlePath build/UITests.xcresult \
+            -quiet
+      - name: Show UI test failures
+        if: failure()
+        run: |
+          xcrun xcresulttool get test-results summary --path build/UITests.xcresult --compact \
+            | python3 scripts/ci/xcresult_failures.py
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: build/UITests.xcresult
           retention-days: 7
 
   flows:
