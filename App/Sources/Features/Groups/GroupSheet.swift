@@ -22,6 +22,9 @@ struct GroupSheet: View {
             if let balances = model.balances {
                 MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember, onOpenMember: onOpenMember)
             }
+            if group.isMess {
+                MealsCard(group: group)
+            }
             ExpensesCard(group: group, expenses: model.expenses, onOpen: onOpen, onDelete: onDelete)
             if !model.settlements.isEmpty {
                 PaymentsCard(group: group, settlements: model.settlements)

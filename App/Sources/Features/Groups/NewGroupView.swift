@@ -8,6 +8,7 @@ struct NewGroupView: View {
 
     @AppStorage(AccountModel.nameKey) private var myName = ""
     @State private var name = ""
+    @State private var kind: GroupKind = .standard
     @State private var others: [DraftName] = [DraftName()]
     @State private var error: String?
     @FocusState private var focus: Field?
@@ -18,13 +19,30 @@ struct NewGroupView: View {
         NavigationStack {
             Form {
                 Section {
+                    Picker("Kind of group", selection: $kind) {
+                        Text("Trip or flat").tag(GroupKind.standard)
+                        Text("Mess").tag(GroupKind.mess)
+                    }
+                    .pickerStyle(.segmented)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
+                } footer: {
+                    if kind == .mess {
+                        Text("Count everyone's meals each day. At the end of the month, bazar is shared by meals eaten. You keep the books.")
+                    }
+                }
+                Section {
                     // Vertical so long names wrap at large text sizes; Return still moves on.
                     TextField("Group name", text: $name, axis: .vertical)
                         .focused($focus, equals: .group)
                         .submitLabel(.next)
                         .returnMovesOn($name) { focus = .me }
                 } footer: {
-                    Text("For a trip, a flat or a dinner, like Cox's Bazar trip")
+                    if kind == .mess {
+                        Text("Like Mirpur mess or Hall room 212")
+                    } else {
+                        Text("For a trip, a flat or a dinner, like Cox's Bazar trip")
+                    }
                 }
                 Section {
                     TextField("Your name", text: $myName, axis: .vertical)
@@ -113,7 +131,8 @@ struct NewGroupView: View {
                 let group = try await model.createGroup(
                     name: name.trimmingCharacters(in: .whitespacesAndNewlines),
                     myName: myName.trimmingCharacters(in: .whitespacesAndNewlines),
-                    otherNames: cleanedOthers)
+                    otherNames: cleanedOthers,
+                    kind: kind)
                 dismiss()
                 onCreated(group.id)
             } catch {

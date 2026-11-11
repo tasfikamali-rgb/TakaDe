@@ -4795,6 +4795,584 @@
           }
         }
       }
+    },
+    "Meals": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিল"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meals"
+          }
+        }
+      }
+    },
+    "Meal rate and month": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিল রেট ও মাস"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meal rate and month"
+          }
+        }
+      }
+    },
+    "That meal count wasn't saved. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিলের হিসাব সেভ হয়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That meal count wasn't saved. Try again."
+          }
+        }
+      }
+    },
+    "Previous day": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আগের দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous day"
+          }
+        }
+      }
+    },
+    "Next day": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরের দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next day"
+          }
+        }
+      }
+    },
+    "Meals for %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-এর মিল"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meals for %@"
+          }
+        }
+      }
+    },
+    "%@ meals": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ মিল"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ meals"
+          }
+        }
+      }
+    },
+    "Mess month": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মেসের মাস"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mess month"
+          }
+        }
+      }
+    },
+    "Share the month": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মাসের হিসাব শেয়ার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share the month"
+          }
+        }
+      }
+    },
+    "Split this month's bazar by meals?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই মাসের বাজার কি মিল অনুযায়ী ভাগ করবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split this month's bazar by meals?"
+          }
+        }
+      }
+    },
+    "Split by meals": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিল অনুযায়ী ভাগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split by meals"
+          }
+        }
+      }
+    },
+    "Each bazar expense this month is shared by how many meals each person ate. The change shows in History, and you can edit any expense afterwards.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই মাসের প্রতিটি বাজার খরচ কে কত মিল খেয়েছেন সেই অনুযায়ী ভাগ হবে। পরিবর্তনটি ইতিহাসে দেখা যাবে, আর পরে যেকোনো খরচ বদলাতে পারবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each bazar expense this month is shared by how many meals each person ate. The change shows in History, and you can edit any expense afterwards."
+          }
+        }
+      }
+    },
+    "Previous month": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আগের মাস"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous month"
+          }
+        }
+      }
+    },
+    "Next month": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরের মাস"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next month"
+          }
+        }
+      }
+    },
+    "Meal rate": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিল রেট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meal rate"
+          }
+        }
+      }
+    },
+    "No meals counted yet": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখনো কোনো মিল গোনা হয়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No meals counted yet"
+          }
+        }
+      }
+    },
+    "Each person": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রত্যেকে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each person"
+          }
+        }
+      }
+    },
+    "Add bazar as an expense in the Bazar category. It shows here and can be split by meals.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাজারকে বাজার ধরনের খরচ হিসেবে যোগ করুন। এটি এখানে দেখাবে এবং মিল অনুযায়ী ভাগ করা যাবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add bazar as an expense in the Bazar category. It shows here and can be split by meals."
+          }
+        }
+      }
+    },
+    "Split bazar by meals": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাজার মিল অনুযায়ী ভাগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split bazar by meals"
+          }
+        }
+      }
+    },
+    "This month's bazar is already shared by meals.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই মাসের বাজার ইতিমধ্যে মিল অনুযায়ী ভাগ করা হয়েছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This month's bazar is already shared by meals."
+          }
+        }
+      }
+    },
+    "Rent and bills stay as you added them. Only bazar is shared by meals.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভাড়া ও বিল যেমন যোগ করেছেন তেমনই থাকবে। শুধু বাজার মিল অনুযায়ী ভাগ হবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rent and bills stay as you added them. Only bazar is shared by meals."
+          }
+        }
+      }
+    },
+    "This month couldn't be worked out. Check the bazar expenses.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই মাসের হিসাব করা গেল না। বাজার খরচগুলো দেখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This month couldn't be worked out. Check the bazar expenses."
+          }
+        }
+      }
+    },
+    "The bazar wasn't re-split. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাজার আবার ভাগ হয়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The bazar wasn't re-split. Try again."
+          }
+        }
+      }
+    },
+    "meals": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিল"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "meals"
+          }
+        }
+      }
+    },
+    "%@: %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@: %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@"
+          }
+        }
+      }
+    },
+    "Bazar: %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাজার: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bazar: %@"
+          }
+        }
+      }
+    },
+    "Meals: %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিল: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meals: %@"
+          }
+        }
+      }
+    },
+    "Meal rate: %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মিল রেট: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meal rate: %@"
+          }
+        }
+      }
+    },
+    "%@: %@ meals, %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@: %2$@ মিল, %3$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@ meals, %@"
+          }
+        }
+      }
+    },
+    "Kind of group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপের ধরন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kind of group"
+          }
+        }
+      }
+    },
+    "Trip or flat": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ট্রিপ বা ফ্ল্যাট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trip or flat"
+          }
+        }
+      }
+    },
+    "Mess": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মেস"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mess"
+          }
+        }
+      }
+    },
+    "Count everyone's meals each day. At the end of the month, bazar is shared by meals eaten. You keep the books.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রতিদিন সবার মিল গুনুন। মাস শেষে বাজার খাওয়া মিল অনুযায়ী ভাগ হবে। হিসাব রাখবেন আপনি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count everyone's meals each day. At the end of the month, bazar is shared by meals eaten. You keep the books."
+          }
+        }
+      }
+    },
+    "Like Mirpur mess or Hall room 212": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যেমন মিরপুর মেস বা হল রুম ২১২"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Like Mirpur mess or Hall room 212"
+          }
+        }
+      }
     }
   }
 }
