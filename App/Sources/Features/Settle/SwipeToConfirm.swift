@@ -12,6 +12,7 @@ struct SwipeToConfirm: View {
     @State private var offset: CGFloat = 0
     @State private var trackWidth: CGFloat = 0
     @State private var confirmed = false
+    @State private var outcome: Bool?
 
     private let height: CGFloat = 64
     private let inset: CGFloat = 6
@@ -20,10 +21,10 @@ struct SwipeToConfirm: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
-            Capsule().fill(Color.ink)
+            Capsule().fill(Color.header)
             Text(verbatim: title)
                 .font(AppFont.bodyEmphasis)
-                .foregroundStyle(Color.canvas.opacity(1 - Double(min(offset / maxOffset, 1)) * 0.8))
+                .foregroundStyle(Color.onHeader.opacity(1 - Double(min(offset / maxOffset, 1)) * 0.8))
                 .lineLimit(2)
                 .minimumScaleFactor(0.7)
                 .multilineTextAlignment(.center)
@@ -40,7 +41,10 @@ struct SwipeToConfirm: View {
         }
         .frame(minHeight: height)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { trackWidth = $0 }
-        .sensoryFeedback(.success, trigger: confirmed)
+        .sensoryFeedback(trigger: outcome) { _, new in
+            guard let new else { return nil }
+            return new ? .success : .error
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: title))
         .accessibilityAddTraits(.isButton)
@@ -71,8 +75,11 @@ struct SwipeToConfirm: View {
             offset = maxOffset
             confirmed = true
         }
+        outcome = nil
         Task {
-            if await !onConfirm() {
+            let succeeded = await onConfirm()
+            outcome = succeeded
+            if !succeeded {
                 withAnimation(Motion.momentum(reduceMotion: reduceMotion)) {
                     offset = 0
                     confirmed = false

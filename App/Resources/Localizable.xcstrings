@@ -10,6 +10,12 @@
             "state": "needs_review",
             "value": "%@ একটি খরচ যোগ করেছেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ added an expense"
+          }
         }
       }
     },
@@ -20,6 +26,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@ গ্রুপে পরিবর্তন করেছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ changed the group"
           }
         }
       }
@@ -32,6 +44,12 @@
             "state": "needs_review",
             "value": "%@ গ্রুপটি খুলেছেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ created the group"
+          }
         }
       }
     },
@@ -42,6 +60,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@ একটি খরচ মুছেছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ deleted an expense"
           }
         }
       }
@@ -54,6 +78,12 @@
             "state": "needs_review",
             "value": "%@ একটি খরচ বদলেছেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ edited an expense"
+          }
         }
       }
     },
@@ -64,6 +94,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@ একটি পরিবর্তন করেছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ made a change"
           }
         }
       }
@@ -76,6 +112,12 @@
             "state": "needs_review",
             "value": "%1$@ দিয়েছেন %2$@-কে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ paid %@"
+          }
         }
       }
     },
@@ -86,6 +128,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$@ দেবেন %2$@-কে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ pays %@"
           }
         }
       }
@@ -98,6 +146,12 @@
             "state": "needs_review",
             "value": "%1$@ দেবেন %2$@-কে %3$@"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ pays %@ %@"
+          }
         }
       }
     },
@@ -108,6 +162,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@ আপনাকে দেবেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ pays you"
           }
         }
       }
@@ -120,6 +180,12 @@
             "state": "needs_review",
             "value": "%@ একটি পেমেন্ট লিখেছেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ recorded a payment"
+          }
         }
       }
     },
@@ -130,6 +196,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@ এখনো কারো ভাগে পড়েনি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ still needs someone to pay it"
           }
         }
       }
@@ -142,6 +214,12 @@
             "state": "needs_review",
             "value": "%@ টাকা"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ taka"
+          }
         }
       }
     },
@@ -152,6 +230,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$@ টাকা %2$lld পয়সা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ taka %lld poisha"
           }
         }
       }
@@ -164,6 +248,12 @@
             "state": "needs_review",
             "value": "%1$@ · %2$@"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
         }
       }
     },
@@ -174,6 +264,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%lld জন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld people"
           }
         }
       }
@@ -186,6 +282,12 @@
             "state": "needs_review",
             "value": "সাম্প্রতিক"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activity"
+          }
         }
       }
     },
@@ -196,6 +298,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
           }
         }
       }
@@ -208,6 +316,12 @@
             "state": "needs_review",
             "value": "একজন যোগ করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a person"
+          }
         }
       }
     },
@@ -218,6 +332,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আরেকজন যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add another person"
           }
         }
       }
@@ -230,6 +350,12 @@
             "state": "needs_review",
             "value": "খরচ যোগ করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add expense"
+          }
         }
       }
     },
@@ -240,6 +366,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "পরিমাণ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amount"
           }
         }
       }
@@ -252,6 +384,12 @@
             "state": "needs_review",
             "value": "%@-এর পরিমাণ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amount for %@"
+          }
         }
       }
     },
@@ -262,6 +400,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "পরিমাণ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amounts"
           }
         }
       }
@@ -274,6 +418,12 @@
             "state": "needs_review",
             "value": "স্বয়ংক্রিয়"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic"
+          }
         }
       }
     },
@@ -284,6 +434,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ব্যালান্স"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balances"
           }
         }
       }
@@ -296,6 +452,12 @@
             "state": "needs_review",
             "value": "ব্যাংক ট্রান্সফার"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bank transfer"
+          }
         }
       }
     },
@@ -306,6 +468,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "বাতিল"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
           }
         }
       }
@@ -318,6 +486,12 @@
             "state": "needs_review",
             "value": "নগদ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cash"
+          }
         }
       }
     },
@@ -328,6 +502,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "পরিমাণগুলো দেখে নিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the amounts"
           }
         }
       }
@@ -340,6 +520,12 @@
             "state": "needs_review",
             "value": "ব্যবহারের আগে এগুলো দেখে নিন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check these before using them"
+          }
         }
       }
     },
@@ -350,6 +536,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "মুছে ফেলুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear"
           }
         }
       }
@@ -362,6 +554,12 @@
             "state": "needs_review",
             "value": "প্রোভাইডার নিশ্চিত করেছে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirmed by the provider"
+          }
         }
       }
     },
@@ -372,6 +570,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "খুলুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create"
           }
         }
       }
@@ -384,6 +588,12 @@
             "state": "needs_review",
             "value": "গ্রুপ খুলুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create a group"
+          }
         }
       }
     },
@@ -394,6 +604,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "তারিখ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date"
           }
         }
       }
@@ -406,6 +622,12 @@
             "state": "needs_review",
             "value": "দশমিক"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decimal point"
+          }
         }
       }
     },
@@ -416,6 +638,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "মুছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
           }
         }
       }
@@ -428,6 +656,12 @@
             "state": "needs_review",
             "value": "ভাগ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Divided by"
+          }
         }
       }
     },
@@ -438,6 +672,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "হয়ে গেছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
           }
         }
       }
@@ -450,6 +690,12 @@
             "state": "needs_review",
             "value": "নিশ্চিত করতে দুবার ট্যাপ করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double-tap to confirm"
+          }
         }
       }
     },
@@ -460,6 +706,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "শূন্যের বেশি পরিমাণ লিখুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter an amount above zero"
           }
         }
       }
@@ -472,6 +724,12 @@
             "state": "needs_review",
             "value": "সমান"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equally"
+          }
         }
       }
     },
@@ -482,6 +740,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "সবার হিসাব মিটে গেছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everyone is settled up"
           }
         }
       }
@@ -494,6 +758,12 @@
             "state": "needs_review",
             "value": "সবকিছু এই ফোনেই থাকে। কিছুই আপলোড হয় না, কোনো অ্যাকাউন্টও নেই।"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything stays on this phone. Nothing is uploaded and there's no account."
+          }
         }
       }
     },
@@ -504,6 +774,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "খরচ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expenses"
           }
         }
       }
@@ -516,6 +792,12 @@
             "state": "needs_review",
             "value": "যেকোনো গ্রুপে যোগ করা খরচ এখানে দেখাবে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expenses you add in any group show up here"
+          }
         }
       }
     },
@@ -526,6 +808,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ব্যর্থ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed"
           }
         }
       }
@@ -538,6 +826,12 @@
             "state": "needs_review",
             "value": "ছবি থেকে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From photos"
+          }
         }
       }
     },
@@ -548,6 +842,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "গ্রুপের নাম, যেমন কক্সবাজার ট্রিপ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Group name, like Cox's Bazar trip"
           }
         }
       }
@@ -560,6 +860,12 @@
             "state": "needs_review",
             "value": "গ্রুপ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Groups"
+          }
         }
       }
     },
@@ -570,6 +876,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ইতিহাস"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History"
           }
         }
       }
@@ -582,6 +894,12 @@
             "state": "needs_review",
             "value": "আপনার লেখা এমন পেমেন্টসহ, যা কোনো প্রোভাইডার যাচাই করেনি:"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Includes payments you recorded that no provider has verified:"
+          }
         }
       }
     },
@@ -592,6 +910,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ভাষা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
           }
         }
       }
@@ -604,6 +928,12 @@
             "state": "needs_review",
             "value": "বাড়তি পয়সা তালিকার প্রথম দিকের জনদের ভাগে যায়, তাই মোট সবসময় মেলে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leftover poisha go to the first people listed, so the total always matches"
+          }
         }
       }
     },
@@ -614,6 +944,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ভ্রমণ, বাসা বা খাওয়াদাওয়ার জন্য একটি গ্রুপ খুলুন, তারপর কে কত দিয়েছে লিখুন। সবকিছু এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make one for a trip, a flat or a dinner, then add what each person paid. Everything stays on this phone."
           }
         }
       }
@@ -626,6 +962,12 @@
             "state": "needs_review",
             "value": "যিনি পেয়েছেন তিনি পাওয়া হিসেবে চিহ্নিত করেছেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marked received by the person paid"
+          }
         }
       }
     },
@@ -636,6 +978,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@-এর কাছ থেকে পাওয়া লেখা হলো"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marked received from %@"
           }
         }
       }
@@ -648,6 +996,12 @@
             "state": "needs_review",
             "value": "বিয়োগ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minus"
+          }
         }
       }
     },
@@ -658,6 +1012,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "নাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
           }
         }
       }
@@ -670,6 +1030,12 @@
             "state": "needs_review",
             "value": "নাম ঠিক যেভাবে লিখবেন সেভাবেই থাকবে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Names are kept exactly as you type them"
+          }
         }
       }
     },
@@ -680,6 +1046,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "নতুন গ্রুপ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New group"
           }
         }
       }
@@ -692,6 +1064,12 @@
             "state": "needs_review",
             "value": "এখনো কিছু নেই"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No activity yet"
+          }
         }
       }
     },
@@ -702,6 +1080,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "কোনো পরিমাণ পাওয়া যায়নি। আরো পরিষ্কার ও সোজা ছবি তুলুন, অথবা নিজে লিখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No amount found. Try a sharper, flatter photo, or type it in."
           }
         }
       }
@@ -714,6 +1098,12 @@
             "state": "needs_review",
             "value": "এখনো কোনো পরিবর্তন নেই"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No changes yet"
+          }
         }
       }
     },
@@ -724,6 +1114,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "এখনো কোনো গ্রুপ নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No groups yet"
           }
         }
       }
@@ -736,6 +1132,12 @@
             "state": "needs_review",
             "value": "শুরু হয়নি"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not started"
+          }
         }
       }
     },
@@ -746,6 +1148,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "এখনো কিছু যোগ করা হয়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing added yet"
           }
         }
       }
@@ -758,6 +1166,12 @@
             "state": "needs_review",
             "value": "সংখ্যা"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Numbers"
+          }
         }
       }
     },
@@ -768,6 +1182,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "টাকা হাতে আসার পরই পাওয়া হিসেবে চিহ্নিত করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only mark it received once the money has reached you"
           }
         }
       }
@@ -780,6 +1200,12 @@
             "state": "needs_review",
             "value": "কিপ্যাড খোলে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens the keypad"
+          }
         }
       }
     },
@@ -790,6 +1216,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "চিহ্ন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Operator"
           }
         }
       }
@@ -802,6 +1234,12 @@
             "state": "needs_review",
             "value": "অথবা ভ্রমণ, বাসা বা খাওয়ার জন্য নতুন একটি খুলুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Or create one for a trip, a flat or a dinner"
+          }
         }
       }
     },
@@ -812,6 +1250,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "অন্যান্য"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other"
           }
         }
       }
@@ -824,6 +1268,12 @@
             "state": "needs_review",
             "value": "কে দিয়েছেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paid by"
+          }
         }
       }
     },
@@ -834,6 +1284,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "দিয়েছেন %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paid by %@"
           }
         }
       }
@@ -846,6 +1302,12 @@
             "state": "needs_review",
             "value": "যেভাবে দিয়েছেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paid with"
+          }
         }
       }
     },
@@ -856,6 +1318,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "পেমেন্ট অ্যাপ খোলা হয়েছে, নিশ্চিত হয়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payment app opened, not confirmed"
           }
         }
       }
@@ -868,6 +1336,12 @@
             "state": "needs_review",
             "value": "পেমেন্ট"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payments"
+          }
         }
       }
     },
@@ -878,6 +1352,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "শতাংশ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Percent"
           }
         }
       }
@@ -890,6 +1370,12 @@
             "state": "needs_review",
             "value": "%@-এর শতাংশ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Percent for %@"
+          }
         }
       }
     },
@@ -900,6 +1386,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "শতাংশের যোগফল ১০০ হতে হবে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Percentages need to add up to 100"
           }
         }
       }
@@ -912,6 +1404,12 @@
             "state": "needs_review",
             "value": "একটি গ্রুপ বেছে নিন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a group"
+          }
         }
       }
     },
@@ -922,6 +1420,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "অন্তত একজন বেছে নিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick at least one person"
           }
         }
       }
@@ -934,6 +1438,12 @@
             "state": "needs_review",
             "value": "যোগ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus"
+          }
         }
       }
     },
@@ -944,6 +1454,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "প্রোফাইল"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
           }
         }
       }
@@ -956,6 +1472,12 @@
             "state": "needs_review",
             "value": "এই ফোনেই পড়া হয়েছে। ছবিটি সংরক্ষণ বা আপলোড হয় না।"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read on this phone. The photo isn't saved or uploaded."
+          }
         }
       }
     },
@@ -966,6 +1488,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "রসিদ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receipt"
           }
         }
       }
@@ -978,6 +1506,12 @@
             "state": "needs_review",
             "value": "%@-কে দেওয়া হয়েছে লেখা হলো"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded as paid to %@"
+          }
         }
       }
     },
@@ -988,6 +1522,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনি লিখেছেন, যাচাই হয়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded by you, not verified"
           }
         }
       }
@@ -1000,6 +1540,12 @@
             "state": "needs_review",
             "value": "ফেরত হয়েছে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reversed"
+          }
         }
       }
     },
@@ -1010,6 +1556,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ফোনের মতো"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Same as phone"
           }
         }
       }
@@ -1022,6 +1574,12 @@
             "state": "needs_review",
             "value": "সংরক্ষণ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
         }
       }
     },
@@ -1032,6 +1590,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনার লেখা হিসেবে সংরক্ষিত হবে। বিকাশ, উপায় বা কোনো ব্যাংকের সাথে যাচাই হয় না, আর টাকাদে কখনো আপনার পিন চায় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved as recorded by you. It isn't checked with bKash, upay or any bank, and TakaDe never asks for your PIN."
           }
         }
       }
@@ -1044,6 +1608,12 @@
             "state": "needs_review",
             "value": "রসিদ স্ক্যান করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan receipt"
+          }
         }
       }
     },
@@ -1054,6 +1624,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ছবি থেকে রসিদ স্ক্যান করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan receipt from photos"
           }
         }
       }
@@ -1066,6 +1642,12 @@
             "state": "needs_review",
             "value": "হিসাব মেটান"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settle up"
+          }
         }
       }
     },
@@ -1076,6 +1658,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "হিসাব মিটেছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settled up"
           }
         }
       }
@@ -1088,6 +1676,12 @@
             "state": "needs_review",
             "value": "ব্যালান্স শেয়ার করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share balances"
+          }
         }
       }
     },
@@ -1098,6 +1692,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "অংশ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shares"
           }
         }
       }
@@ -1110,6 +1710,12 @@
             "state": "needs_review",
             "value": "দোকান"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shop"
+          }
         }
       }
     },
@@ -1120,6 +1726,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "দোকানের নাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shop name"
           }
         }
       }
@@ -1132,6 +1744,12 @@
             "state": "needs_review",
             "value": "কেউ একজন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone"
+          }
         }
       }
     },
@@ -1142,6 +1760,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ভাগ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split"
           }
         }
       }
@@ -1154,6 +1778,12 @@
             "state": "needs_review",
             "value": "প্রস্তাবিত পেমেন্ট"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suggested payments"
+          }
         }
       }
     },
@@ -1164,6 +1794,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@ পাওয়া হয়েছে লিখতে সোয়াইপ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swipe to mark %@ received"
           }
         }
       }
@@ -1176,6 +1812,12 @@
             "state": "needs_review",
             "value": "%@ দেওয়া হয়েছে লিখতে সোয়াইপ করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swipe to record %@ paid"
+          }
         }
       }
     },
@@ -1186,6 +1828,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "টাকাদে টাকা পাঠায় না। নগদ, বিকাশ বা ব্যাংকে যেভাবে দেন সেভাবে দিন, তারপর এখানে লিখে রাখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here."
           }
         }
       }
@@ -1198,6 +1846,12 @@
             "state": "needs_review",
             "value": "বন্ধ করতে যেকোনো জায়গায় ট্যাপ করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap anywhere to close"
+          }
         }
       }
     },
@@ -1208,6 +1862,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ছবিটি খোলা যায়নি। অন্য একটি চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That photo couldn't be opened. Try another one."
           }
         }
       }
@@ -1220,6 +1880,12 @@
             "state": "needs_review",
             "value": "পরিমাণগুলোর যোগফল মোটের চেয়ে %@ বেশি"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The amounts add up to %@ more than the total"
+          }
         }
       }
     },
@@ -1230,6 +1896,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "খরচটি সংরক্ষণ হয়নি। পরিমাণ দেখে আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The expense wasn't saved. Check the amounts and try again."
           }
         }
       }
@@ -1242,6 +1914,12 @@
             "state": "needs_review",
             "value": "গ্রুপটি সংরক্ষণ হয়নি। আবার চেষ্টা করুন।"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The group wasn't saved. Try again."
+          }
         }
       }
     },
@@ -1252,6 +1930,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "পেমেন্টটি লেখা হয়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The payment wasn't recorded. Try again."
           }
         }
       }
@@ -1264,6 +1948,12 @@
             "state": "needs_review",
             "value": "রসিদটি পড়া যায়নি। পরিমাণটি নিজে লিখুন।"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The receipt couldn't be read. Type the amount instead."
+          }
         }
       }
     },
@@ -1274,6 +1964,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "এই গ্রুপটি আর নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This group is gone"
           }
         }
       }
@@ -1286,6 +1982,12 @@
             "state": "needs_review",
             "value": "গুণ"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Times"
+          }
         }
       }
     },
@@ -1296,6 +1998,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "মোট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total"
           }
         }
       }
@@ -1308,6 +2016,12 @@
             "state": "needs_review",
             "value": "ট্রানজ্যাকশন আইডি (ঐচ্ছিক)"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transaction ID (optional)"
+          }
         }
       }
     },
@@ -1318,6 +2032,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "রসিদের তারিখ ব্যবহার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use the receipt's date"
           }
         }
       }
@@ -1330,6 +2050,12 @@
             "state": "needs_review",
             "value": "এগুলো ব্যবহার করুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use these"
+          }
         }
       }
     },
@@ -1340,6 +2066,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "নিশ্চিতকরণের অপেক্ষায়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for confirmation"
           }
         }
       }
@@ -1352,6 +2084,12 @@
             "state": "needs_review",
             "value": "মোট নিয়ে নিশ্চিত হওয়া যায়নি। সঠিকটি বেছে নিন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We weren't sure about the total. Pick the right one"
+          }
         }
       }
     },
@@ -1362,6 +2100,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "কিসের জন্য?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What was it for?"
           }
         }
       }
@@ -1374,6 +2118,12 @@
             "state": "needs_review",
             "value": "আর কে কে আছে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who else is in it"
+          }
         }
       }
     },
@@ -1384,6 +2134,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "টাকাদে দিয়ে হিসাব করা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Worked out with TakaDe"
           }
         }
       }
@@ -1396,6 +2152,12 @@
             "state": "needs_review",
             "value": "আপনি"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You"
+          }
         }
       }
     },
@@ -1406,6 +2168,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনি পাবেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You are owed"
           }
         }
       }
@@ -1418,6 +2186,12 @@
             "state": "needs_review",
             "value": "সব মিলিয়ে আপনি পাবেন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You are owed in total"
+          }
         }
       }
     },
@@ -1428,6 +2202,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনার দেনা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You owe"
           }
         }
       }
@@ -1440,6 +2220,12 @@
             "state": "needs_review",
             "value": "সব মিলিয়ে আপনার দেনা"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You owe in total"
+          }
         }
       }
     },
@@ -1450,6 +2236,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনি দেবেন %@-কে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You pay %@"
           }
         }
       }
@@ -1462,6 +2254,12 @@
             "state": "needs_review",
             "value": "এই গ্রুপে আপনার হিসাব মিটে গেছে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're settled up in this group"
+          }
         }
       }
     },
@@ -1472,6 +2270,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনার তথ্য"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your data"
           }
         }
       }
@@ -1484,6 +2288,12 @@
             "state": "needs_review",
             "value": "আপনার গ্রুপগুলো লোড হয়নি। অ্যাপটি বন্ধ করে আবার খুলুন।"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your groups couldn't be loaded. Restart the app to try again."
+          }
         }
       }
     },
@@ -1494,6 +2304,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনার নাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your name"
           }
         }
       }
@@ -1506,6 +2322,12 @@
             "state": "needs_review",
             "value": "আপনার সংরক্ষিত তথ্য খোলা যায়নি, তাই এখনকার পরিবর্তন থাকবে না। আবার চেষ্টা করতে অ্যাপটি বন্ধ করে খুলুন।"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your saved data couldn't be opened, so changes made now won't be kept. Restart the app to try again."
+          }
         }
       }
     },
@@ -1516,6 +2338,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ঋণাত্মক"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "minus"
           }
         }
       }
@@ -1528,6 +2356,12 @@
             "state": "needs_review",
             "value": "আপনার সব হিসাব মিটে গেছে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're all settled up"
+          }
         }
       }
     },
@@ -1539,16 +2373,11 @@
             "state": "needs_review",
             "value": "একসাথে খরচ"
           }
-        }
-      }
-    },
-    "%lld people · %lld expenses": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
+        },
+        "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%1$lld জন · %2$lld খরচ"
+            "state": "translated",
+            "value": "Spent together"
           }
         }
       }
@@ -1561,6 +2390,12 @@
             "state": "needs_review",
             "value": "কোন গ্রুপ?"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which group?"
+          }
         }
       }
     },
@@ -1571,6 +2406,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ফেরত পাবেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gets back"
           }
         }
       }
@@ -1583,6 +2424,12 @@
             "state": "needs_review",
             "value": "দেনা"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Owes"
+          }
         }
       }
     },
@@ -1593,6 +2440,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ফিরিয়ে আনুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
           }
         }
       }
@@ -1605,6 +2458,12 @@
             "state": "needs_review",
             "value": "%@ মুছে ফেলা হয়েছে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted %@"
+          }
         }
       }
     },
@@ -1615,6 +2474,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%@ যোগ হয়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wasn't added. Try again."
           }
         }
       }
@@ -1627,6 +2492,12 @@
             "state": "needs_review",
             "value": "খরচটি মোছা হয়নি। আবার চেষ্টা করুন।"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The expense wasn't deleted. Try again."
+          }
         }
       }
     },
@@ -1637,6 +2508,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "খরচটি ফিরিয়ে আনা যায়নি। আবার যোগ করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The expense couldn't be brought back. Add it again."
           }
         }
       }
@@ -1649,6 +2526,12 @@
             "state": "needs_review",
             "value": "বন্ধুদের সাথে খরচ ভাগ করুন, দেখুন কে কাকে দেবে"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split costs with friends and see who pays whom"
+          }
         }
       }
     },
@@ -1659,6 +2542,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আরো %@ ভাগ করা বাকি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ left to assign"
           }
         }
       }
@@ -1671,6 +2560,12 @@
             "state": "needs_review",
             "value": "পুরোটা মুছতে চেপে ধরুন"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold to clear"
+          }
         }
       }
     },
@@ -1681,6 +2576,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "আপনার ভাগ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "your share"
           }
         }
       }
@@ -1693,6 +2594,12 @@
             "state": "needs_review",
             "value": "গ্রুপ খোলার সময় ব্যবহার হয়"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Used when you create a group"
+          }
         }
       }
     },
@@ -1704,6 +2611,12 @@
             "state": "needs_review",
             "value": "রসিদের ছবি"
           }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receipt photo"
+          }
         }
       }
     },
@@ -1714,6 +2627,63 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$@ · %2$lld অংশ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · ^[%lld share](inflect: true)"
+          }
+        }
+      }
+    },
+    "%lld people · ^[%lld expense](inflect: true)": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld জন · %2$lld খরচ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld people · ^[%lld expense](inflect: true)"
+          }
+        }
+      }
+    },
+    "total": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মোট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "total"
+          }
+        }
+      }
+    },
+    "Expense deleted. Undo is available.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খরচ মুছে ফেলা হয়েছে। ফিরিয়ে আনা যাবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expense deleted. Undo is available."
           }
         }
       }

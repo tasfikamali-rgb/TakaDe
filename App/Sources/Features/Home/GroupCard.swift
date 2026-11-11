@@ -41,7 +41,7 @@ struct GroupCard: View {
             }
             .padding(Spacing.m)
             .background(RoundedRectangle(cornerRadius: Radius.card - Spacing.xs, style: .continuous).fill(Color.canvas))
-            Text("\(group.members.count) people · \(stats.expenseCount) expenses")
+            Text("\(group.members.count) people · ^[\(stats.expenseCount) expense](inflect: true)")
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
         }

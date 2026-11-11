@@ -13,6 +13,7 @@ struct GroupDetailContent: View {
     @State private var newMemberName = ""
     @State private var recentlyDeleted: Expense?
     @State private var errorMessage: String?
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverOn
 
     var body: some View {
         List {
@@ -61,7 +62,9 @@ struct GroupDetailContent: View {
                     .padding(.bottom, Spacing.huge + Spacing.xl)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .task(id: recentlyDeleted.id) {
-                        try? await Task.sleep(for: .seconds(5))
+                        // With VoiceOver on, keep Undo until the next action instead of timing out.
+                        guard !voiceOverOn else { return }
+                        try? await Task.sleep(for: .seconds(8))
                         withAnimation(Motion.standard) { self.recentlyDeleted = nil }
                     }
             }
@@ -82,7 +85,10 @@ struct GroupDetailContent: View {
         .task(id: app.revision) { await model.load(group, from: app) }
     }
 
-    private func addExpense() { showingAddExpense = true }
+    private func addExpense() {
+        recentlyDeleted = nil
+        showingAddExpense = true
+    }
     private func settle() { showingSettle = true }
     private func askForMember() { showingAddMember = true }
 
@@ -106,6 +112,7 @@ struct GroupDetailContent: View {
                 try await app.delete(expense, in: group)
                 errorMessage = nil
                 withAnimation(Motion.standard) { recentlyDeleted = expense }
+                AccessibilityNotification.Announcement(String(localized: "Expense deleted. Undo is available.", bundle: .appLanguage)).post()
             } catch {
                 errorMessage = String(localized: "The expense wasn't deleted. Try again.", bundle: .appLanguage)
             }
