@@ -14,11 +14,10 @@ struct MealNumberText: View {
     let halfMeals: Int
     var font: Font = AppFont.bodyEmphasis
 
-    @AppStorage(DigitPreference.storageKey) private var digitPreference: DigitPreference = .automatic
     @Environment(\.locale) private var locale
 
     var body: some View {
-        Text(verbatim: MealNumber.text(halfMeals, digits: digitPreference.resolved(for: locale)))
+        Text(verbatim: MealNumber.text(halfMeals, digits: DigitPreference.style(for: locale)))
             .font(font)
             .monospacedDigit()
             .contentTransition(.numericText(value: Double(halfMeals)))

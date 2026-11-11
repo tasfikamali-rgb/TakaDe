@@ -221,7 +221,6 @@ final class AccountModel {
         let profile = LocalProfile(
             displayName: name,
             languageCode: defaults.string(forKey: AppLanguage.storageKey).flatMap { $0 == AppLanguage.system.rawValue ? nil : $0 },
-            digitStyle: defaults.string(forKey: DigitPreference.storageKey).flatMap { $0 == DigitPreference.automatic.rawValue ? nil : $0 },
             account: pendingLinked,
             accountID: pendingUser?.id,
             accountEmail: pendingUser?.email)
