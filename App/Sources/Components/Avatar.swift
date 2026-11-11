@@ -19,6 +19,6 @@ struct Avatar: View {
     }
 
     private var initial: String {
-        name.trimmingCharacters(in: .whitespaces).first.map(String.init) ?? "?"
+        name.trimmingCharacters(in: .whitespacesAndNewlines).first.map(String.init) ?? "?"
     }
 }

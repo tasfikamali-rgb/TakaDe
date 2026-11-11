@@ -157,5 +157,5 @@ final class ExpenseDraft {
         if let date { occurredAt = date }
     }
 
-    private var trimmedTitle: String { title.trimmingCharacters(in: .whitespaces) }
+    private var trimmedTitle: String { title.trimmingCharacters(in: .whitespacesAndNewlines) }
 }

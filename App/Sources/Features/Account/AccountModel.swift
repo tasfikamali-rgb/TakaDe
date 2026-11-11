@@ -37,7 +37,7 @@ final class AccountModel {
         guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return nil }
         let name = credential.fullName.map { PersonNameComponentsFormatter.localizedString(from: $0, style: .default, options: []) }
         return (LinkedAccount(provider: .apple, providerUserID: credential.user, email: credential.email),
-                name?.trimmingCharacters(in: .whitespaces).isEmpty == false ? name : nil)
+                name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? name : nil)
     }
 
     func signInWithGoogle() async throws -> (account: LinkedAccount, name: String?) {

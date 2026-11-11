@@ -3656,6 +3656,91 @@
           }
         }
       }
+    },
+    "Someone here is already called %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখানে আগে থেকেই %@ নামে একজন আছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone here is already called %@"
+          }
+        }
+      }
+    },
+    "Add anyway": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তবুও যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add anyway"
+          }
+        }
+      }
+    },
+    "Change the name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম বদলান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change the name"
+          }
+        }
+      }
+    },
+    "Add something to tell them apart, like an initial.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আলাদা করে চেনার জন্য কিছু যোগ করুন, যেমন নামের আদ্যক্ষর।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add something to tell them apart, like an initial."
+          }
+        }
+      }
+    },
+    "^[%lld item](inflect: true)": {
+      "comment": "Bengali drafted by Claude; needs native review before release. Receipt item count.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lldটি আইটেম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "^[%lld item](inflect: true)"
+          }
+        }
+      }
     }
   }
 }

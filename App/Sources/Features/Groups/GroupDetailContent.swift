@@ -13,6 +13,7 @@ struct GroupDetailContent: View {
     @State private var showingSettle = false
     @State private var showingAddMember = false
     @State private var newMemberName = ""
+    @State private var duplicateMember: String?
     @State private var recentlyDeleted: Expense?
     @State private var editing: Expense?
     @State private var errorMessage: String?
@@ -89,8 +90,25 @@ struct GroupDetailContent: View {
         }
         .alert("Add a person", isPresented: $showingAddMember) {
             TextField("Name", text: $newMemberName)
-            Button("Add", action: addMember)
+            Button("Add", action: checkNewMember)
             Button("Cancel", role: .cancel) { newMemberName = "" }
+        }
+        .confirmationDialog(
+            Text("Someone here is already called \(duplicateMember ?? "")"),
+            isPresented: Binding(get: { duplicateMember != nil }, set: { if !$0 { duplicateMember = nil } }),
+            titleVisibility: .visible
+        ) {
+            Button("Add anyway", action: addMember)
+            Button("Change the name") {
+                duplicateMember = nil
+                showingAddMember = true
+            }
+            Button("Cancel", role: .cancel) {
+                duplicateMember = nil
+                newMemberName = ""
+            }
+        } message: {
+            Text("Add something to tell them apart, like an initial.")
         }
         .task(id: app.revision) { await model.load(group, from: app) }
     }
@@ -112,9 +130,21 @@ struct GroupDetailContent: View {
 
     private func askForMember() { showingAddMember = true }
 
+    /// Same check as a new group: a name already in the group, ignoring case and spaces,
+    /// gets a warning. Both are allowed, and the name is never changed.
+    private func checkNewMember() {
+        let name = newMemberName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { newMemberName = ""; return }
+        let taken = group.members.contains {
+            $0.displayName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name.lowercased()
+        }
+        if taken { duplicateMember = name } else { addMember() }
+    }
+
     private func addMember() {
-        let name = newMemberName.trimmingCharacters(in: .whitespaces)
+        let name = newMemberName.trimmingCharacters(in: .whitespacesAndNewlines)
         newMemberName = ""
+        duplicateMember = nil
         guard !name.isEmpty else { return }
         Task {
             do {
