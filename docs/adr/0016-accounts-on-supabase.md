@@ -12,6 +12,7 @@ Sabit wants a separate Account section, Create an account and Sign in as separat
   - Email: a 6-digit code sent with `POST /otp`, then checked with `POST /verify`. There are no passwords.
   - Apple: native Sign in with Apple. The ID token goes to `POST /token?grant_type=id_token`, with a SHA-256 nonce: Apple gets the hash and Supabase the raw value.
   - Google and Microsoft (Azure): Supabase OAuth in `ASWebAuthenticationSession` with PKCE (S256). The callback is `takade://auth-callback`, and the code is exchanged with `grant_type=pkce`.
+  - Launch switches (2026-11-11): Microsoft waits for the Azure app registration (Sabit is signing up for Azure for Students), and email codes wait for a custom email sender on the takadeapp.com domain and the code template. Each sits behind an xcconfig flag (`TAKADE_MICROSOFT_SIGN_IN`, `TAKADE_EMAIL_SIGN_IN`), off by default, so the code path stays and the button is hidden.
 - **Create an account vs Sign in:**
   - First launch offers Create an account, Sign in, and Continue without account. Create asks for a name, then a method. Sign in goes straight to the methods.
   - The wrong door is handled gently:

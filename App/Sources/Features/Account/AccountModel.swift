@@ -47,7 +47,12 @@ final class AccountModel {
 
     /// The sign-in methods to offer. Apple always comes first (App Review guideline 4.8).
     var availableMethods: [SignInProvider] {
-        if supabase != nil { return [.apple, .google, .microsoft, .email] }
+        if let config = supabase?.config {
+            var methods: [SignInProvider] = [.apple, .google]
+            if config.microsoftEnabled { methods.append(.microsoft) }
+            if config.emailEnabled { methods.append(.email) }
+            return methods
+        }
         return google == nil ? [.apple] : [.apple, .google]
     }
 

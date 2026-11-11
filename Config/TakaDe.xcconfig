@@ -15,6 +15,13 @@ TAKADE_GOOGLE_CLIENT_ID =
 TAKADE_SUPABASE_HOST = yxsfbakrtmpsuuuuogbl.supabase.co
 TAKADE_SUPABASE_ANON_KEY =
 
+// Sign-in methods that need more Supabase setup before they work. Turn each on (YES)
+// only once its setup is done; see supabase/README.md.
+// Microsoft: the Azure provider (needs an Azure app registration).
+// Email codes: a custom email sender (SMTP) and the 6-digit code email template.
+TAKADE_MICROSOFT_SIGN_IN = NO
+TAKADE_EMAIL_SIGN_IN = NO
+
 #include? "Supabase.local.xcconfig"
 
 // Signing for installs on your own phone. Put these in Config/Signing.local.xcconfig
