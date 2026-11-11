@@ -80,8 +80,15 @@ final class AppModel {
     }
 
     func addMember(named name: String, to group: ExpenseGroup) async throws {
-        var updated = group
-        updated.members.append(Member(displayName: name))
+        try await addMembers(named: [name], to: group)
+    }
+
+    /// Adds several people in one save, starting from the latest copy of the group so an
+    /// earlier add isn't overwritten.
+    func addMembers(named names: [String], to group: ExpenseGroup) async throws {
+        guard !names.isEmpty else { return }
+        var updated = self.group(group.id) ?? group
+        updated.members.append(contentsOf: names.map { Member(displayName: $0) })
         try await repository.save(updated, actor: group.me?.id)
         await reload()
     }

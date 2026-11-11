@@ -9,6 +9,7 @@ struct GroupSheet: View {
     let onOpen: (Expense) -> Void
     let onDelete: (Expense) -> Void
     let onAddMember: () -> Void
+    let onAddFromContacts: () -> Void
     let onOpenMember: (Member) -> Void
 
     var body: some View {
@@ -20,7 +21,7 @@ struct GroupSheet: View {
                     .foregroundStyle(Color.owe)
             }
             if let balances = model.balances {
-                MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember, onOpenMember: onOpenMember)
+                MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember, onAddFromContacts: onAddFromContacts, onOpenMember: onOpenMember)
             }
             if group.isMess {
                 MealsCard(group: group)
