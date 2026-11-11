@@ -10,7 +10,7 @@ struct GroupHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
-            AvatarStack(names: group.members.map(\.displayName), size: 32, ring: .lilac)
+            AvatarStack(names: group.members.map(\.displayName), size: 32, ring: .lilac, fill: .surface)
             Text(verbatim: group.name)
                 .font(AppFont.title)
                 .tracking(-0.02 * 28)

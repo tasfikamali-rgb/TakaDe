@@ -35,6 +35,8 @@ struct GroupDetailContent: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color.lilac, for: .navigationBar)
         .toolbar {
+            // The header already shows the name large; keep the title for Back and VoiceOver only.
+            ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1).accessibilityHidden(true) }
             ToolbarItem(placement: .primaryAction) {
                 if let balances = model.balances {
                     GroupShareButton(group: group, balances: balances)
