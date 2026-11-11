@@ -93,6 +93,13 @@ enum Schema {
                 t.column("created_at", .datetime).notNull()
             }
         }
+
+        // Per-group settings. Existing groups keep simplified debts on.
+        migrator.registerMigration("v3_group_settings") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "simplify_debts", .boolean).notNull().defaults(to: true)
+            }
+        }
         return migrator
     }
 }

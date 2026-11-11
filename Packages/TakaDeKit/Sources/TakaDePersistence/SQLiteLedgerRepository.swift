@@ -57,10 +57,12 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
         try await db.write { db in
             let exists = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM expense_group WHERE id = ?)", arguments: [group.id.description]) ?? false
             try db.execute(sql: """
-                INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET name = excluded.name, archived_at = excluded.archived_at
-                """, arguments: [group.id.description, group.name, group.currency.code, group.currency.minorUnitDigits, group.createdAt, group.archivedAt])
+                INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET name = excluded.name, archived_at = excluded.archived_at,
+                    simplify_debts = excluded.simplify_debts
+                """, arguments: [group.id.description, group.name, group.currency.code, group.currency.minorUnitDigits, group.createdAt, group.archivedAt,
+                                 group.simplifiesDebts])
             // Members: upsert listed members. Removing a member who has entries is not allowed
             // in v1, so members are never deleted here.
             let profileID = try String.fetchOne(db, sql: "SELECT id FROM local_profile LIMIT 1")
@@ -197,7 +199,8 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
             currency: Currency(code: row["currency_code"], minorUnitDigits: row["currency_digits"]),
             members: members,
             createdAt: row["created_at"],
-            archivedAt: row["archived_at"]
+            archivedAt: row["archived_at"],
+            simplifiesDebts: row["simplify_debts"]
         )
     }
 }

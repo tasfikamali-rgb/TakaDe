@@ -22,14 +22,34 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
     public var members: [Member]
     public let createdAt: Date
     public var archivedAt: Date?
+    /// On: suggest the fewest payments, combining debts across people. Off: each person
+    /// pays the people they actually owe. On by default.
+    public var simplifiesDebts: Bool
 
-    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil) {
+    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true) {
         self.id = id
         self.name = name
         self.currency = currency
         self.members = members
         self.createdAt = createdAt
         self.archivedAt = archivedAt
+        self.simplifiesDebts = simplifiesDebts
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts
+    }
+
+    /// Older snapshots have no `simplifiesDebts`; they decode with it on.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(GroupID.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        currency = try c.decode(Currency.self, forKey: .currency)
+        members = try c.decode([Member].self, forKey: .members)
+        createdAt = try c.decode(Date.self, forKey: .createdAt)
+        archivedAt = try c.decodeIfPresent(Date.self, forKey: .archivedAt)
+        simplifiesDebts = try c.decodeIfPresent(Bool.self, forKey: .simplifiesDebts) ?? true
     }
 }
 

@@ -19,6 +19,7 @@ struct SettleUpView: View {
     @State private var recorded: SuggestedTransfer?
     @State private var payeeHandles: [PaymentHandle] = []
     @State private var myHandles: [PaymentHandle] = []
+    @State private var simplifies: Bool?
 
     var body: some View {
         NavigationStack {
@@ -26,6 +27,13 @@ struct SettleUpView: View {
                 SettleUpHeader(group: group, transfer: selected, isSettled: myTransfers.isEmpty)
             } content: {
                 TransferPickerSection(group: group, transfers: myTransfers, selected: $selected)
+                Section {
+                    Toggle("Fewest payments", isOn: Binding(get: { isSimplified }, set: setSimplified))
+                } footer: {
+                    Text(isSimplified
+                         ? LocalizedStringKey("Debts are combined across the group, so fewer payments settle everyone. You may pay someone you didn't borrow from.")
+                         : LocalizedStringKey("Each person pays the people they actually owe. This can mean more payments."))
+                }
                 if let selected, selected.from == group.me?.id, !payeeHandles.isEmpty {
                     Section {
                         ForEach(payeeHandles) { PaymentHandleRow(handle: $0) }
@@ -80,7 +88,16 @@ struct SettleUpView: View {
 
     private var myTransfers: [SuggestedTransfer] {
         guard let me = group.me else { return [] }
-        return BalanceCalculator.suggestedTransfers(balances).filter { $0.from == me.id || $0.to == me.id }
+        return BalanceCalculator.transfers(balances, simplify: isSimplified).filter { $0.from == me.id || $0.to == me.id }
+    }
+
+    private var isSimplified: Bool { simplifies ?? group.simplifiesDebts }
+
+    private func setSimplified(_ on: Bool) {
+        simplifies = on
+        selected = nil
+        preselect()
+        Task { try? await app.setSimplifiesDebts(on, for: group) }
     }
 
     private func preselect() {

@@ -82,6 +82,13 @@ final class AppModel {
         await reload()
     }
 
+    func setSimplifiesDebts(_ on: Bool, for group: ExpenseGroup) async throws {
+        var updated = group
+        updated.simplifiesDebts = on
+        try await repository.save(updated, actor: group.me?.id)
+        await reload()
+    }
+
     func save(_ expense: Expense, in group: ExpenseGroup) async throws {
         try await repository.save(expense, actor: group.me?.id)
         await reload()

@@ -16,6 +16,18 @@ final class SQLiteLedgerRepositoryTests: XCTestCase {
         XCTAssertEqual(loaded?.name, "Cox's Bazar trip")
     }
 
+    func testSimplifyDebtsSettingRoundTrips() async throws {
+        let repo = try SQLiteLedgerRepository()
+        var group = makeGroup()
+        try await repo.save(group, actor: group.members[0].id)
+        let fresh = try await repo.group(group.id)
+        XCTAssertEqual(fresh?.simplifiesDebts, true)
+        group.simplifiesDebts = false
+        try await repo.save(group, actor: group.members[0].id)
+        let loaded = try await repo.group(group.id)
+        XCTAssertEqual(loaded?.simplifiesDebts, false)
+    }
+
     func testExpenseSaveDeleteAndHistory() async throws {
         let repo = try SQLiteLedgerRepository()
         let group = makeGroup()

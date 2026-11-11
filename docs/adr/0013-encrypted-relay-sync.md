@@ -15,7 +15,7 @@ When sync is built, it uses a small relay that stores encrypted change logs and 
 - **Recovery.** Keys are backed up through iCloud Keychain (Google Block Store on Android), plus an optional recovery code the person writes down. Losing every device and the code means losing the shared data, and the app has to say so plainly before sync is turned on.
 - **What the relay sees.** Ciphertext, group ids, device ids, sizes and timestamps. Never names, amounts, notes or receipt data. That metadata is listed in the privacy disclosure.
 
-Planned schema (migration v3, written only when sync is built): `account`, `device`, `member.account_id`, `group_sync (group_id, key_epoch, server_cursor)`, and `change_outbox (change_id, group_id, entity, entity_id, hlc, device_id, payload, uploaded_at)`.
+Planned schema (a later migration, written only when sync is built): `account`, `device`, `member.account_id`, `group_sync (group_id, key_epoch, server_cursor)`, and `change_outbox (change_id, group_id, entity, entity_id, hlc, device_id, payload, uploaded_at)`.
 
 **Phone OTP** is planned for when invites by phone number arrive. It needs an SMS provider, sender registration in Bangladesh, abuse limits and a decision on storing numbers, so it isn't built now.
 

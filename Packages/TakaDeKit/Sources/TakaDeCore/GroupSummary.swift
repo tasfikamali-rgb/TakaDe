@@ -17,7 +17,7 @@ public struct GroupSummary: Equatable, Sendable {
         groupName = group.name
         currency = group.currency
         let names = Dictionary(uniqueKeysWithValues: group.members.map { ($0.id, $0.displayName) })
-        lines = BalanceCalculator.suggestedTransfers(balances).map {
+        lines = BalanceCalculator.transfers(balances, simplify: group.simplifiesDebts).map {
             Line(from: names[$0.from] ?? "?", to: names[$0.to] ?? "?", amount: $0.amount)
         }
     }

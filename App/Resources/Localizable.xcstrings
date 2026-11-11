@@ -4557,6 +4557,57 @@
           }
         }
       }
+    },
+    "Fewest payments": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সবচেয়ে কম পেমেন্ট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fewest payments"
+          }
+        }
+      }
+    },
+    "Debts are combined across the group, so fewer payments settle everyone. You may pay someone you didn't borrow from.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পুরো গ্রুপের দেনা একসাথে মিলিয়ে দেখা হয়, তাই কম পেমেন্টে সবার হিসাব মেটে। এতে এমন কাউকে দিতে হতে পারে যাঁর কাছ থেকে আপনি ধার নেননি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Debts are combined across the group, so fewer payments settle everyone. You may pay someone you didn't borrow from."
+          }
+        }
+      }
+    },
+    "Each person pays the people they actually owe. This can mean more payments.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রত্যেকে যাঁর কাছে আসলে দেনা, তাঁকেই দেন। এতে পেমেন্ট বেশি হতে পারে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each person pays the people they actually owe. This can mean more payments."
+          }
+        }
+      }
     }
   }
 }
