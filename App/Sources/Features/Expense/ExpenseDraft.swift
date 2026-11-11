@@ -15,6 +15,9 @@ final class ExpenseDraft {
     var amountExpression = ""
     var occurredAt = Date()
     var payer: MemberID
+    /// When on, each person types what they paid instead of one payer paying it all.
+    var severalPayers = false
+    private var paidText: [MemberID: String] = [:]
     var method: SplitMethod = .equal
     var included: Set<MemberID>
     private var exactText: [MemberID: String] = [:]
@@ -37,6 +40,10 @@ final class ExpenseDraft {
         amountExpression = KeypadText.plain(expense.total)
         occurredAt = expense.occurredAt
         payer = expense.paidBy.keys.sorted().first ?? group.me?.id ?? group.members[0].id
+        if expense.paidBy.count > 1 {
+            severalPayers = true
+            paidText = expense.paidBy.mapValues(KeypadText.plain)
+        }
         included = Set(group.members.map(\.id))
         switch expense.splitRule {
         case .equal(let members):
@@ -74,6 +81,35 @@ final class ExpenseDraft {
     subscript(sharesFor id: MemberID) -> Int {
         get { shareCounts[id, default: 1] }
         set { shareCounts[id] = newValue }
+    }
+
+    subscript(paidFor id: MemberID) -> String {
+        get { paidText[id, default: ""] }
+        set { paidText[id] = newValue }
+    }
+
+    /// Who paid and how much. Nil while an amount can't be read.
+    var paidBy: [MemberID: Money]? {
+        guard let total else { return nil }
+        guard severalPayers else { return [payer: total] }
+        var result: [MemberID: Money] = [:]
+        for member in group.members {
+            let text = paidText[member.id, default: ""].trimmingCharacters(in: .whitespaces)
+            guard !text.isEmpty else { continue }
+            guard let value = try? Money.parse(text, currency: group.currency), !value.isNegative else { return nil }
+            if !value.isZero { result[member.id] = value }
+        }
+        return result.isEmpty ? nil : result
+    }
+
+    /// With several payers: how much of the total nobody has paid yet (negative when
+    /// they've typed more than the total). Nil when it adds up or can't be read.
+    var unpaid: Money? {
+        guard severalPayers, let total else { return nil }
+        guard let paidBy else { return paidText.values.allSatisfy({ $0.trimmingCharacters(in: .whitespaces).isEmpty }) ? total : nil }
+        let paid = paidBy.values.reduce(Int64(0)) { $0 + $1.minorUnits }
+        let left = total.minorUnits - paid
+        return left == 0 ? nil : Money(minorUnits: left, currency: total.currency)
     }
 
     /// "+150" or "-60": the extra (or less) this person pays on top of an equal part.
@@ -164,18 +200,19 @@ final class ExpenseDraft {
     }
 
     var canSave: Bool {
-        guard !trimmedTitle.isEmpty, case .success = preview else { return false }
+        guard !trimmedTitle.isEmpty, case .success = preview, paidBy != nil, unpaid == nil else { return false }
         return true
     }
 
     func makeExpense() throws -> Expense {
         guard let total, let rule else { throw SplitError.noParticipants }
+        guard let paidBy else { throw LedgerError.noPayer }
         if let original {
             // Same id and a new version, so history shows an edit rather than a new expense.
-            return try Expense(id: original.id, groupID: group.id, title: trimmedTitle, total: total, paidBy: [payer: total],
+            return try Expense(id: original.id, groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy,
                                splitRule: rule, occurredAt: occurredAt, note: original.note, version: original.version + 1)
         }
-        return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: [payer: total], splitRule: rule, occurredAt: occurredAt)
+        return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy, splitRule: rule, occurredAt: occurredAt)
     }
 
     /// Fills in fields from a reviewed receipt suggestion.

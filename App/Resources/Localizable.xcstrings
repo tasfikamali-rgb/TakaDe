@@ -4081,6 +4081,57 @@
           }
         }
       }
+    },
+    "Several people paid": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কয়েকজন মিলে দিয়েছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Several people paid"
+          }
+        }
+      }
+    },
+    "That's %@ more than the total": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটা মোটের চেয়ে %@ বেশি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's %@ more than the total"
+          }
+        }
+      }
+    },
+    "%@ still to fill in": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আরও %@ বসানো বাকি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ still to fill in"
+          }
+        }
+      }
     }
   }
 }

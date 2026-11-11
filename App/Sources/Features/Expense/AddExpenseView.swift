@@ -38,13 +38,7 @@ struct AddExpenseView: View {
                     ReceiptScanButton(onReviewed: draft.apply)
                 }
 
-                Section {
-                    Picker("Paid by", selection: $draft.payer) {
-                        ForEach(draft.group.members) { member in
-                            Text(verbatim: draft.group.displayName(of: member.id)).tag(member.id)
-                        }
-                    }
-                }
+                PaidBySection(draft: draft)
 
                 SplitSection(draft: draft)
 
