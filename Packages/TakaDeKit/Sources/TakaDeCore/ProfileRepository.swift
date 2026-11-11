@@ -26,6 +26,14 @@ public struct LedgerExport: Codable, Sendable {
         public let settlements: [Settlement]
         public let history: [AuditEvent]
         public let paymentHandles: [PaymentHandle]
+
+        public init(group: ExpenseGroup, expenses: [Expense], settlements: [Settlement], history: [AuditEvent], paymentHandles: [PaymentHandle]) {
+            self.group = group
+            self.expenses = expenses
+            self.settlements = settlements
+            self.history = history
+            self.paymentHandles = paymentHandles
+        }
     }
 
     public let formatVersion: Int
