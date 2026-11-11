@@ -1,9 +1,11 @@
 import SwiftUI
 import TakaDeCore
 
+/// One group: a lilac header with where you stand, and a sheet with balances, expenses
+/// and payments sliding over it, the same two-layer structure as Home.
 struct GroupDetailContent: View {
     @Environment(AppModel.self) private var app
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverOn
     let group: ExpenseGroup
 
     @State private var model = GroupDetailModel()
@@ -13,35 +15,28 @@ struct GroupDetailContent: View {
     @State private var newMemberName = ""
     @State private var recentlyDeleted: Expense?
     @State private var errorMessage: String?
-    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverOn
 
     var body: some View {
-        List {
-            if let errorMessage {
-                Section { Text(verbatim: errorMessage).foregroundStyle(Color.owe) }
+        ScrollView {
+            VStack(spacing: 0) {
+                GroupHeader(group: group, myNet: model.myNet(in: group), onAddExpense: addExpense)
+                GroupSheet(
+                    group: group,
+                    model: model,
+                    errorMessage: errorMessage,
+                    onDelete: delete,
+                    onAddMember: askForMember)
             }
-            if let balances = model.balances {
-                MemberBalancesSection(group: group, balances: balances)
-            }
-            ExpensesSection(group: group, expenses: model.expenses, onDelete: delete)
-            if !model.settlements.isEmpty {
-                PaymentsSection(group: group, settlements: model.settlements)
-            }
-            Section {
-                NavigationLink("History") { HistoryView(group: group) }
-                Button("Add a person", systemImage: "person.badge.plus", action: askForMember)
-            }
+            .frame(maxWidth: .infinity)
         }
-        .scrollContentBackground(.hidden)
+        .background(alignment: .top) { Color.lilac.frame(height: 480).ignoresSafeArea() }
         .background(Color.canvas)
-        .readableWidth()
         .navigationTitle(Text(verbatim: group.name))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.lilac, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button("Add expense", systemImage: "plus", action: addExpense)
-            }
-            if let balances = model.balances {
-                ToolbarItem(placement: .secondaryAction) {
+                if let balances = model.balances {
                     GroupShareButton(group: group, balances: balances)
                 }
             }
@@ -89,7 +84,12 @@ struct GroupDetailContent: View {
         recentlyDeleted = nil
         showingAddExpense = true
     }
-    private func settle() { showingSettle = true }
+
+    private func settle() {
+        recentlyDeleted = nil
+        showingSettle = true
+    }
+
     private func askForMember() { showingAddMember = true }
 
     private func addMember() {

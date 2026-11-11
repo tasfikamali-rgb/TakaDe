@@ -29,16 +29,19 @@ enum AmountSize {
         }
     }
 
-    var main: Font {
-        isDisplay ? AppFont.ranade(points, relativeTo: style)
-            : AppFont.author(points, self == .body ? .regular : .medium, relativeTo: style)
+    /// The figure. Bengali digits use Hind Siliguri, since Ranade and Author have no Bengali glyphs.
+    func main(bengaliDigits: Bool) -> Font {
+        isDisplay ? AppFont.ranade(points, relativeTo: style, bengali: bengaliDigits)
+            : AppFont.author(points, self == .body ? .regular : .medium, relativeTo: style, bengali: bengaliDigits)
     }
 
-    var minor: Font {
+    /// The ৳ and the decimals. ৳ is a Bengali character, so it always comes from a face that has it.
+    func minor(bengaliDigits: Bool) -> Font {
         // Below 16pt the minor part stays full size so it never drops under ~12pt.
         let ratio: CGFloat = isDisplay ? 0.45 : (points >= 16 ? 0.75 : 1)
         let size = (points * ratio).rounded()
-        return isDisplay ? AppFont.ranade(size, relativeTo: style) : AppFont.author(size, .medium, relativeTo: style)
+        return isDisplay ? AppFont.ranade(size, relativeTo: style, bengali: bengaliDigits)
+            : AppFont.author(size, .medium, relativeTo: style, bengali: bengaliDigits)
     }
 
     /// Tight negative tracking only on large display numbers, never on small text.

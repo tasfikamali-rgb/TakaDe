@@ -36,7 +36,7 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: TakaDe uses the camera to read receipts on this phone. Photos are not saved or uploaded.
-        UIAppFonts: [Ranade-Medium.otf, Author-Regular.otf, Author-Medium.otf, Author-Semibold.otf]
+        UIAppFonts: [Ranade-Medium.otf, Author-Regular.otf, Author-Medium.otf, Author-Semibold.otf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.takade.ios

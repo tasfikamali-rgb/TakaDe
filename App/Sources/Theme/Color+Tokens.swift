@@ -18,4 +18,5 @@ extension Color {
     static let oweTint = Color("oweTint")
     static let bkash = Color("bkash")
     static let sheet = Color("sheet")
+    static let lilac = Color("lilac")
 }

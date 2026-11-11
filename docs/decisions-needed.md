@@ -25,6 +25,7 @@ needs disclosure and a processor review). **Decided 2026-11-11:** on-device (ADR
 ## 4. Localization details
 - A native Bengali reviewer for the string catalog (all strings are marked `needs_review`).
 - **Decided 2026-11-11:** lakh grouping, and Bengali digits by default in the Bengali UI (ADR 6).
+- **Decided 2026-11-11:** Hind Siliguri for Bengali text and digits (ADR 9).
 
 ## 5. Platforms
 **Decided 2026-11-11:** iPhone with layouts that adapt to any width (iPad, split view, foldables), then Android, then home-screen widgets.

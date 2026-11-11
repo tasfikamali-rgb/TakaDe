@@ -1,19 +1,29 @@
 import SwiftUI
 import TakaDeCore
 
-struct MemberBalancesSection: View {
+struct MemberBalancesCard: View {
     let group: ExpenseGroup
     let balances: GroupBalances
+    let onAddMember: () -> Void
 
     var body: some View {
-        Section("Balances") {
+        SectionCard(title: "Balances") {
+            Button("Add a person", systemImage: "person.badge.plus", action: onAddMember)
+                .labelStyle(.iconOnly)
+                .font(.body.weight(.medium))
+                .foregroundStyle(Color.ink)
+                .frame(minWidth: 44, minHeight: 44)
+        } content: {
             ForEach(group.members) { member in
-                HStack {
+                HStack(spacing: Spacing.s) {
+                    Avatar(name: member.displayName, size: 36)
                     Text(verbatim: group.displayName(of: member.id))
                         .font(AppFont.body)
+                        .foregroundStyle(Color.ink)
                     Spacer()
                     BalancePill(net: balances.net(for: member.id), isMe: member.isMe)
                 }
+                .padding(.vertical, Spacing.xs)
             }
             if let me = group.me, let unverified = balances.unverifiedSettled[me.id], !unverified.isZero {
                 HStack(spacing: Spacing.xxs) {
@@ -22,6 +32,8 @@ struct MemberBalancesSection: View {
                 }
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
+                .padding(.vertical, Spacing.xs)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }

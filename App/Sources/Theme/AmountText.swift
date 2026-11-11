@@ -14,10 +14,12 @@ struct AmountText: View {
     @Environment(\.locale) private var locale
 
     var body: some View {
-        let f = MoneyFormatter.format(money, digits: digitPreference.resolved(for: locale), showsZeroFraction: showsZeroFraction)
-        let symbol = Text(verbatim: f.sign + f.symbol + "\u{2009}").font(size.minor).foregroundStyle(minorColor)
-        let whole = Text(verbatim: f.whole).font(size.main).tracking(size.tracking).foregroundStyle(color)
-        let fraction = Text(verbatim: f.fraction).font(size.minor).foregroundStyle(minorColor)
+        let digits = digitPreference.resolved(for: locale)
+        let bengali = digits == .bengali
+        let f = MoneyFormatter.format(money, digits: digits, showsZeroFraction: showsZeroFraction)
+        let symbol = Text(verbatim: f.sign + f.symbol + "\u{2009}").font(size.minor(bengaliDigits: true)).foregroundStyle(minorColor)
+        let whole = Text(verbatim: f.whole).font(size.main(bengaliDigits: bengali)).tracking(size.tracking).foregroundStyle(color)
+        let fraction = Text(verbatim: f.fraction).font(size.minor(bengaliDigits: bengali)).foregroundStyle(minorColor)
         Text("\(symbol)\(whole)\(fraction)")
             .monospacedDigit()
             .contentTransition(.numericText(value: Double(money.minorUnits)))

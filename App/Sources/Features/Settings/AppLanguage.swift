@@ -17,6 +17,16 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
+    /// Whether TakaDe is showing Bengali, chosen in the app or inherited from the phone.
+    static var usesBengaliScript: Bool {
+        let raw = UserDefaults.standard.string(forKey: storageKey) ?? AppLanguage.system.rawValue
+        switch AppLanguage(rawValue: raw) ?? .system {
+        case .bengali: return true
+        case .english: return false
+        case .system: return Bundle.main.preferredLocalizations.first == "bn"
+        }
+    }
+
     /// Each language is shown in its own script so anyone can find theirs.
     var nativeName: String {
         switch self {
