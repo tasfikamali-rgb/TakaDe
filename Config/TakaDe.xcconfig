@@ -7,6 +7,16 @@ TAKADE_GOOGLE_CLIENT_ID =
 
 #include? "Google.local.xcconfig"
 
+// TakaDe accounts (docs/adr/0016-accounts-on-supabase.md). The Supabase project host,
+// e.g. abcdefghijkl.supabase.co (no https://, since // starts a comment here), and its
+// public anon key. Set them in Config/Supabase.local.xcconfig (not committed); see
+// Supabase.local.xcconfig.example. Left empty, sign-in stays on this phone only (Apple,
+// Google) and email and Microsoft are hidden. Never put the service-role key here.
+TAKADE_SUPABASE_HOST = yxsfbakrtmpsuuuuogbl.supabase.co
+TAKADE_SUPABASE_ANON_KEY =
+
+#include? "Supabase.local.xcconfig"
+
 // Signing for installs on your own phone. Put these in Config/Signing.local.xcconfig
 // (not committed) so they survive `xcodegen generate`:
 //   DEVELOPMENT_TEAM = ABCDE12345

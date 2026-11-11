@@ -22,3 +22,6 @@ Sabit wants login and sign-up in release 1 while each person's data stays with t
 - Google: create an iOS OAuth client (bundle id app.takade.ios) in Google Cloud and put its id in `Config/Google.local.xcconfig`. Until then the Google button is hidden.
 - Apple: Sign in with Apple needs the paid Apple Developer Program and the capability on the App ID.
 - Google's branding rules ask for the official "G" logo on the button; add the asset from Google's branding page before release.
+
+## Update 2026-11-11
+When a Supabase project is configured, ADR 16 replaces this: accounts live on Supabase Auth. Without one, the on-device link here still applies. Account and Your data moved to their own Account tab, and the rest of Profile is now the Settings tab.

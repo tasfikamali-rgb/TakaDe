@@ -16,7 +16,8 @@ struct TabContent: View {
         switch tab {
         case .home: HomeView()
         case .activity: NavigationStack { ActivityView() }
-        case .profile: NavigationStack { SettingsView() }
+        case .account: NavigationStack { AccountView() }
+        case .settings: NavigationStack { SettingsView() }
         }
     }
 }

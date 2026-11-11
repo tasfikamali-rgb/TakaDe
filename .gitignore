@@ -14,3 +14,5 @@ build/
 screenshots-local/
 maestro-results/
 Config/Signing.local.xcconfig
+Config/Supabase.local.xcconfig
+supabase/.temp/

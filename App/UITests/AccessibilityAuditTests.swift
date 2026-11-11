@@ -36,11 +36,20 @@ final class AccessibilityAuditTests: XCTestCase {
     }
 
     @MainActor
-    func testProfileScreen() throws {
+    func testSettingsScreen() throws {
         let app = launch()
         completeOnboardingIfNeeded(app)
-        app.buttons["Profile"].firstMatch.tap()
-        XCTAssertTrue(app.staticTexts["Profile"].firstMatch.waitForExistence(timeout: 5))
+        app.buttons["Settings"].firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
+        try audit(app)
+    }
+
+    @MainActor
+    func testAccountScreen() throws {
+        let app = launch()
+        completeOnboardingIfNeeded(app)
+        app.buttons["Account"].firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["Account"].waitForExistence(timeout: 5))
         try audit(app)
     }
 

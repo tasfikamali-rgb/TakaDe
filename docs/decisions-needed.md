@@ -14,6 +14,9 @@ Pick one, per CLAUDE.md:
 **Decided 2026-11-11:** when sync comes, it uses an end-to-end encrypted relay (ADR 13). Design only for now.
 **Open, owner:** hosting and cost for the relay. Nothing is created until Sabit chooses.
 **Planned:** phone OTP sign-in arrives with phone-number invites (ADR 13). Not built.
+**Decided 2026-11-11:** accounts on Supabase Auth: email code, Apple, Google and Microsoft, with a separate Account tab (ADR 16). Supabase holds only the account; groups stay on the phone. The relay will use the same Supabase Postgres, ciphertext only.
+**Open, owner:** fill in the anon key in `Config/Supabase.local.xcconfig`, set up the providers and email templates, deploy `delete-account` (supabase/README.md). Until then builds use the on-device sign-in from ADR 11.
+**Open, owner:** a sender domain and SMTP provider for the sign-in codes before launch (Owner materials 5).
 
 ## 2. bKash, upay and bank settlement (blocks: any payment button)
 No public peer-to-peer API is assumed. Needed per provider: official docs, merchant or

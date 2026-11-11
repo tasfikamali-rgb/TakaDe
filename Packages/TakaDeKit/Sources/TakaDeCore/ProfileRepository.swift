@@ -7,6 +7,11 @@ public protocol ProfileRepository: Sendable {
     /// Saves the profile and links every "me" member to it.
     func save(_ profile: LocalProfile) async throws
 
+    /// The sign-in methods linked to the TakaDe account, as last read from the service.
+    func accountIdentities() async throws -> [AccountIdentity]
+    /// Replaces the stored list, after signing in, linking or unlinking.
+    func replaceAccountIdentities(_ identities: [AccountIdentity]) async throws
+
     func paymentHandles(for member: MemberID) async throws -> [PaymentHandle]
     func save(_ handle: PaymentHandle) async throws
     func deletePaymentHandle(_ id: UUID) async throws
@@ -39,12 +44,15 @@ public struct LedgerExport: Codable, Sendable {
     public let formatVersion: Int
     public let exportedAt: Date
     public let profile: LocalProfile?
+    /// Sign-in methods linked to the account. Never tokens.
+    public let accountIdentities: [AccountIdentity]?
     public let groups: [GroupData]
 
-    public init(exportedAt: Date = Date(), profile: LocalProfile?, groups: [GroupData]) {
+    public init(exportedAt: Date = Date(), profile: LocalProfile?, accountIdentities: [AccountIdentity]? = nil, groups: [GroupData]) {
         formatVersion = 1
         self.exportedAt = exportedAt
         self.profile = profile
+        self.accountIdentities = accountIdentities
         self.groups = groups
     }
 }
