@@ -35,4 +35,22 @@ final class SettlementTests: XCTestCase {
         XCTAssertEqual(s.status, .acknowledgedByRecipient)
         XCTAssertTrue(s.status.countsTowardBalance)
     }
+
+    func testDuplicateReferenceIgnoresCaseSpacesAndDashes() throws {
+        let group = GroupID(), a = MemberID(), b = MemberID()
+        var first = try Settlement(groupID: group, from: a, to: b, amount: Money(minorUnits: 500_00), method: .bkash, userReference: "8N7A6B5C4D")
+        try first.transition(to: .reportedUnverified)
+        XCTAssertEqual(Settlement.duplicate(ofReference: "8n7a 6b5c-4d", in: [first])?.id, first.id)
+        XCTAssertNil(Settlement.duplicate(ofReference: "9ZZZ", in: [first]))
+        XCTAssertNil(Settlement.duplicate(ofReference: "  ", in: [first]))
+        XCTAssertNil(Settlement.duplicate(ofReference: nil, in: [first]))
+    }
+
+    func testReversedSettlementDoesNotBlockItsReference() throws {
+        let group = GroupID(), a = MemberID(), b = MemberID()
+        var reversed = try Settlement(groupID: group, from: a, to: b, amount: Money(minorUnits: 500_00), method: .bkash, userReference: "ABC123")
+        try reversed.transition(to: .reportedUnverified)
+        try reversed.transition(to: .reversed)
+        XCTAssertNil(Settlement.duplicate(ofReference: "ABC123", in: [reversed]))
+    }
 }

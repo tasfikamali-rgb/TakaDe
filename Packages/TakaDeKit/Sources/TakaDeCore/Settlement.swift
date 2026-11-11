@@ -104,3 +104,25 @@ public struct Settlement: Hashable, Codable, Sendable, Identifiable {
         updatedAt = date
     }
 }
+
+public extension Settlement {
+    /// A transaction id compared without case, spaces or dashes, so "8N7A 6b5c-4D" and
+    /// "8N7A6B5C4D" match. Nil when empty.
+    static func normalizedReference(_ text: String?) -> String? {
+        guard let text else { return nil }
+        let cleaned = text.uppercased().filter { $0.isLetter || $0.isNumber }
+        return cleaned.isEmpty ? nil : cleaned
+    }
+
+    /// An earlier settlement in the list with the same transaction id, ignoring ones that
+    /// failed or were reversed. One bKash TrxID can only pay one debt, so a match usually
+    /// means the same payment is being recorded twice. This only catches typing the same
+    /// id twice; it doesn't verify anything with the provider.
+    static func duplicate(ofReference reference: String?, in settlements: [Settlement]) -> Settlement? {
+        guard let wanted = normalizedReference(reference) else { return nil }
+        return settlements.first { other in
+            other.status != .failed && other.status != .reversed
+                && normalizedReference(other.userReference) == wanted
+        }
+    }
+}

@@ -4,7 +4,10 @@ import SwiftUI
 struct TakaDeApp: App {
     @State private var model: AppModel
     @State private var account: AccountModel
+    @State private var lock = AppLock()
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
+    @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
 
     init() {
         let model = AppModel.live()
@@ -19,10 +22,19 @@ struct TakaDeApp: App {
                 .id(language)
                 .environment(model)
                 .environment(account)
+                .environment(lock)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
                     await account.load()
                     await model.reload()
+                }
+                .onChange(of: scenePhase, initial: true) { _, phase in
+                    lock.scenePhaseChanged(to: phase)
+                    // Windows can appear after launch (a new scene, the lock cover).
+                    if phase == .active { appearance.apply(animated: false) }
+                }
+                .onChange(of: appearance, initial: true) { old, new in
+                    new.apply(animated: old != new)
                 }
         }
     }

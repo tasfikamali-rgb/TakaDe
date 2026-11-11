@@ -72,6 +72,7 @@ extension SQLiteLedgerRepository: ProfileRepository {
                 DROP TRIGGER IF EXISTS audit_event_no_delete;
                 DELETE FROM audit_event;
                 DELETE FROM payment_handle;
+                DELETE FROM meal_count;
                 DELETE FROM settlement;
                 DELETE FROM expense;
                 DELETE FROM member;

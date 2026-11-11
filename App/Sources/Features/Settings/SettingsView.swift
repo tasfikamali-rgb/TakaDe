@@ -4,10 +4,29 @@ struct SettingsView: View {
     @Environment(AccountModel.self) private var account
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(DigitPreference.storageKey) private var digits: DigitPreference = .automatic
+    @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
     @AppStorage(AccountModel.nameKey) private var myName = ""
 
     var body: some View {
         Form {
+            Section("Language") {
+                Picker("Language", selection: $language) {
+                    ForEach([AppLanguage.bengali, .english, .system]) { option in
+                        Text(verbatim: option.nativeName).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
+            Section("Appearance") {
+                Picker("Appearance", selection: $appearance) {
+                    ForEach(AppAppearance.allCases) { option in
+                        Text(option.label).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
             Section {
                 TextField("Your name", text: $myName)
                     .textContentType(.name)
@@ -16,15 +35,6 @@ struct SettingsView: View {
                 Text("Your name")
             } footer: {
                 Text("Used when you create a group")
-            }
-            Section("Language") {
-                Picker("Language", selection: $language) {
-                    ForEach(AppLanguage.allCases) { option in
-                        Text(verbatim: option.nativeName).tag(option)
-                    }
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
             }
             Section("Numbers") {
                 Picker("Numbers", selection: $digits) {
@@ -35,6 +45,7 @@ struct SettingsView: View {
                 .pickerStyle(.segmented)
             }
             AccountSection()
+            AppLockSection()
             YourDataSection()
         }
         .onDisappear(perform: saveName)
@@ -53,4 +64,5 @@ struct SettingsView: View {
     return NavigationStack { SettingsView() }
         .environment(app)
         .environment(AccountModel(store: app.profiles, google: nil))
+        .environment(AppLock())
 }

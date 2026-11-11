@@ -38,6 +38,43 @@ enum AppFont {
     private static let bundled: Set<String> = Set(UIFont.familyNames.flatMap(UIFont.fontNames(forFamilyName:)))
 
     private static func custom(_ name: String, _ size: CGFloat, _ style: Font.TextStyle) -> Font? {
-        bundled.contains(name) ? .custom(name, size: size, relativeTo: style) : nil
+        guard bundled.contains(name) else { return nil }
+        if let cascaded = withBengaliFallback(name, size, style) { return cascaded }
+        return .custom(name, size: size, relativeTo: style)
+    }
+
+    /// Inter with Hind Siliguri as its fallback, so a Bengali name inside English text uses
+    /// Hind instead of the system Bengali face. Scaled for the current Dynamic Type size;
+    /// RootView rebuilds when that size changes, so the scale stays current.
+    private static func withBengaliFallback(_ name: String, _ size: CGFloat, _ style: Font.TextStyle) -> Font? {
+        guard name.hasPrefix("Inter"), let base = UIFont(name: name, size: size) else { return nil }
+        let hind: String
+        switch name {
+        case "Inter-Regular": hind = "HindSiliguri-Regular"
+        case "Inter-Medium": hind = "HindSiliguri-Medium"
+        default: hind = "HindSiliguri-SemiBold"
+        }
+        guard bundled.contains(hind) else { return nil }
+        let descriptor = base.fontDescriptor.addingAttributes([.cascadeList: [UIFontDescriptor(name: hind, size: size)]])
+        let font = UIFont(descriptor: descriptor, size: size)
+        return Font(UIFontMetrics(forTextStyle: style.uiKitStyle).scaledFont(for: font))
+    }
+}
+
+private extension Font.TextStyle {
+    var uiKitStyle: UIFont.TextStyle {
+        switch self {
+        case .largeTitle: .largeTitle
+        case .title: .title1
+        case .title2: .title2
+        case .title3: .title3
+        case .headline: .headline
+        case .subheadline: .subheadline
+        case .callout: .callout
+        case .footnote: .footnote
+        case .caption: .caption1
+        case .caption2: .caption2
+        default: .body
+        }
     }
 }

@@ -1,0 +1,60 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "comment": "App name under the icon; kept in Latin. Bengali drafted by Claude; needs native review before release.",
+      "extractionState": "manual",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription": {
+      "comment": "Camera permission prompt. Bengali drafted by Claude; needs native review before release.",
+      "extractionState": "manual",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদ পড়তে TakaDe এই ফোনেই ক্যামেরা ব্যবহার করে। ছবি সেভ বা আপলোড হয় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe uses the camera to read receipts on this phone. Photos are not saved or uploaded."
+          }
+        }
+      }
+    },
+    "NSFaceIDUsageDescription": {
+      "comment": "Face ID permission prompt. Bengali drafted by Claude; needs native review before release.",
+      "extractionState": "manual",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রোফাইলে লক চালু করলে অ্যাপ খুলতে TakaDe Face ID ব্যবহার করে। আপনার মুখের তথ্য iOS-এর কাছেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe uses Face ID to unlock the app when you turn on the lock in Profile. Your face data stays with iOS."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

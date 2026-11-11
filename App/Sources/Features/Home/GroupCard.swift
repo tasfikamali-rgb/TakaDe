@@ -1,9 +1,10 @@
 import SwiftUI
 import TakaDeCore
 
-/// Modelled on the savings-goal cards in DESIGN.md 1b: title and chevron, then a nested
+/// Modelled on the savings-goal cards in DESIGN.md 1b: avatars and title, then a nested
 /// inner card with where you stand on the left and what the group spent on the right.
-/// Layering comes from two grays, not shadows.
+/// Layering comes from two grays, not shadows. The arrow sits in a bite out of the top-right
+/// corner (DESIGN.md 1b).
 struct GroupCard: View {
     @Environment(AppModel.self) private var model
     let group: ExpenseGroup
@@ -19,11 +20,10 @@ struct GroupCard: View {
                     .foregroundStyle(Color.ink)
                     .lineLimit(1)
                 Spacer(minLength: Spacing.xs)
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Color.inkMuted)
-                    .accessibilityHidden(true)
             }
+            // Keep the title clear of the corner icon.
+            .padding(.trailing, CornerCutoutShape.biteSize - Spacing.s)
+            .frame(minHeight: CornerCutoutShape.biteSize - Spacing.s)
             HStack(alignment: .lastTextBaseline) {
                 VStack(alignment: .leading, spacing: Spacing.xxs) {
                     Text(BalanceState(stats.myNet).label)
@@ -46,17 +46,17 @@ struct GroupCard: View {
                 .foregroundStyle(Color.inkMuted)
         }
         .padding(Spacing.s)
-        .background(
-            RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
-                .fill(isSelected ? Color.surfaceRaised : Color.surface)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
-                .stroke(Color.ink, lineWidth: isSelected ? 2 : 0)
-        )
-        .contentShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .background(CornerCutoutShape().fill(cardFill))
+        .overlay(CornerCutoutShape().stroke(Color.ink, lineWidth: isSelected ? 2 : 0))
+        .overlay(alignment: .topTrailing) {
+            CornerCutoutIcon(systemImage: "arrow.up.right", fill: cardFill)
+                .overlay(Circle().stroke(Color.ink, lineWidth: isSelected ? 2 : 0))
+        }
+        .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .task(id: model.revision) { stats = await GroupStats.load(group, from: model) }
     }
+
+    private var cardFill: Color { isSelected ? .surfaceRaised : .surface }
 }

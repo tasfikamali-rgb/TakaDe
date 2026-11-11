@@ -43,7 +43,17 @@ struct OnboardingView: View {
         }
         .background(Color.header.ignoresSafeArea())
         .animation(Motion.standard, value: stepRaw)
-        .onAppear { if name.isEmpty { name = savedName } }
+        .onAppear {
+            if name.isEmpty { name = savedName }
+            preselectPhoneLanguage()
+        }
+    }
+
+    /// Starts on the phone's own language, so most people just tap Continue.
+    private func preselectPhoneLanguage() {
+        guard language == .system, step == .language else { return }
+        let phoneUsesBengali = Locale.preferredLanguages.first?.hasPrefix("bn") == true
+        language = phoneUsesBengali ? .bengali : .english
     }
 
     // MARK: Steps
@@ -85,7 +95,7 @@ struct OnboardingView: View {
                 .foregroundStyle(Color.inkMuted)
             SignInOptions { account, providedName in
                 linked = account
-                if name.trimmingCharacters(in: .whitespaces).isEmpty, let providedName { name = providedName }
+                if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let providedName { name = providedName }
                 go(to: .name)
             }
             Button("Continue without account") { go(to: .name) }

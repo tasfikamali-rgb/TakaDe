@@ -93,6 +93,29 @@ enum Schema {
                 t.column("created_at", .datetime).notNull()
             }
         }
+
+        // Per-group settings. Existing groups keep simplified debts on.
+        migrator.registerMigration("v3_group_settings") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "simplify_debts", .boolean).notNull().defaults(to: true)
+            }
+        }
+
+        // Mess groups: a manager and daily meal counts (docs/adr/0015-mess-mode.md).
+        migrator.registerMigration("v4_mess") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "kind", .text).notNull().defaults(to: "standard")
+                t.add(column: "manager_id", .text)
+            }
+            try db.create(table: "meal_count") { t in
+                t.column("group_id", .text).notNull().references("expense_group", onDelete: .cascade)
+                t.column("member_id", .text).notNull().references("member", onDelete: .cascade)
+                t.column("day", .text).notNull()            // "2026-11-05", no time zone
+                t.column("half_meals", .integer).notNull().check { $0 >= 0 && $0 <= 40 }
+                t.column("updated_at", .datetime).notNull()
+                t.primaryKey(["group_id", "member_id", "day"])
+            }
+        }
         return migrator
     }
 }

@@ -12,6 +12,7 @@ struct ReceiptReviewView: View {
     @State private var total: Money?
     @State private var date: Date
     @State private var includesDate: Bool
+    @State private var showsItems: Bool
 
     init(suggestion: ReceiptSuggestion, image: CGImage?, onUse: @escaping (String?, Money?, Date?) -> Void) {
         self.suggestion = suggestion
@@ -21,6 +22,8 @@ struct ReceiptReviewView: View {
         _total = State(initialValue: suggestion.total)
         _date = State(initialValue: suggestion.date ?? Date())
         _includesDate = State(initialValue: suggestion.date != nil)
+        // Open the items when they don't add up, so the misread line is easy to spot.
+        _showsItems = State(initialValue: suggestion.computedTotal.map { $0 != suggestion.total } ?? false)
     }
 
     var body: some View {
@@ -56,6 +59,33 @@ struct ReceiptReviewView: View {
                     .pickerStyle(.inline)
                     .labelsHidden()
                 }
+                if !suggestion.items.isEmpty {
+                    Section {
+                        DisclosureGroup(isExpanded: $showsItems) {
+                            ForEach(suggestion.items.prefix(40)) { line in
+                                ReceiptLineRow(line: line)
+                            }
+                        } label: {
+                            Text("^[\(suggestion.items.count) item](inflect: true)")
+                                .font(AppFont.bodyEmphasis)
+                                .foregroundStyle(Color.ink)
+                        }
+                    } header: {
+                        Text("Items")
+                    } footer: {
+                        Text("For checking only. The expense saves the total.")
+                    }
+                }
+                if !suggestion.charges.isEmpty || suggestion.computedTotal != nil {
+                    Section("Tax and charges") {
+                        ForEach(suggestion.charges) { line in
+                            ReceiptLineRow(line: line)
+                        }
+                        if let total, let computed = suggestion.computedTotal {
+                            ReceiptCheckRow(computed: computed, total: total)
+                        }
+                    }
+                }
                 Section {
                     Toggle("Use the receipt's date", isOn: $includesDate)
                     if includesDate {
@@ -80,7 +110,7 @@ struct ReceiptReviewView: View {
     private func cancel() { dismiss() }
 
     private func use() {
-        let name = merchant.trimmingCharacters(in: .whitespaces)
+        let name = merchant.trimmingCharacters(in: .whitespacesAndNewlines)
         onUse(name.isEmpty ? nil : name, total, includesDate ? date : nil)
         dismiss()
     }

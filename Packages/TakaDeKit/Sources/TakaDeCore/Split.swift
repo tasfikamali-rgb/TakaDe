@@ -10,6 +10,10 @@ public enum SplitRule: Hashable, Codable, Sendable {
     case percentage([MemberID: Int])
     /// Weighted shares, e.g. 2 shares for a couple, 1 for a single person.
     case shares([MemberID: Int])
+    /// Equal, plus or minus a fixed amount per person: "+150 for the extra drink".
+    /// Every key takes part; a zero means no adjustment. What's left after the
+    /// adjustments is split equally, then each adjustment is added.
+    case adjusted([MemberID: Money])
 }
 
 public enum SplitError: Error, Equatable, Sendable {
@@ -19,6 +23,8 @@ public enum SplitError: Error, Equatable, Sendable {
     case percentagesDoNotSumTo100(basisPoints: Int)
     case negativeOrZeroWeight(MemberID)
     case negativeAmount(MemberID)
+    /// The extras add up to more than the total, so nothing is left to split.
+    case adjustmentsExceedTotal(total: Money, adjustments: Money)
     case currencyMismatch
     case overflow
 }
@@ -68,6 +74,26 @@ public enum SplitCalculator {
             guard !weights.isEmpty else { throw SplitError.noParticipants }
             for (member, w) in weights where w <= 0 { throw SplitError.negativeOrZeroWeight(member) }
             return try weighted(total, weights: weights.sorted { $0.key < $1.key }.map { ($0.key, $0.value) })
+
+        case .adjusted(let adjustments):
+            guard !adjustments.isEmpty else { throw SplitError.noParticipants }
+            guard adjustments.values.allSatisfy({ $0.currency == total.currency }) else { throw SplitError.currencyMismatch }
+            let extra: Money
+            do { extra = try adjustments.values.sum(in: total.currency) } catch { throw SplitError.overflow }
+            let (rest, restOverflow) = total.minorUnits.subtractingReportingOverflow(extra.minorUnits)
+            guard !restOverflow else { throw SplitError.overflow }
+            guard rest >= 0 else { throw SplitError.adjustmentsExceedTotal(total: total, adjustments: extra) }
+            let members = adjustments.keys.sorted()
+            let base = try weighted(Money(minorUnits: rest, currency: total.currency), weights: members.map { ($0, 1) })
+            var shares: [MemberID: Money] = [:]
+            for member in members {
+                let (amount, overflow) = base.shares[member, default: .zero(total.currency)].minorUnits
+                    .addingReportingOverflow(adjustments[member, default: .zero(total.currency)].minorUnits)
+                guard !overflow else { throw SplitError.overflow }
+                guard amount >= 0 else { throw SplitError.negativeAmount(member) }
+                shares[member] = Money(minorUnits: amount, currency: total.currency)
+            }
+            return Allocation(shares: shares)
         }
     }
 
