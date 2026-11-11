@@ -14,6 +14,7 @@ the checks below on GitHub's Mac machines, in parallel, and posts screenshots.
 | Adaptive layout (static) | `CI` / App Store readiness | Patterns Apple's iPhone Duo HIG warns about: reading screen size, device-type branches, fixed widths, hidden bars (`scripts/ci/adaptive_check.py`) |
 | Rotation keeps state | `UI flows…` / `03_resize_keeps_state` | The open group survives a width change (rotation stands in for folding) |
 | iPhone Duo | `UI flows…` / iPhone Duo | Runs the flows on the iPhone Duo simulator on the newest runner Xcode. If the runner has no such simulator, the job says **NOT TESTED** in its summary instead of passing silently. Folded/unfolded poses are switched in Xcode's Device Hub, so the second pose is a manual check for now |
+| Onboarding and delete-all-data | `UI flows…` / `subflows/onboarding`, `04_delete_all_data` | Every flow starts with first-launch onboarding; deleting all data returns to onboarding with no groups left. Delete account (signed in) needs a test Apple/Google account and is checked by hand |
 | UI flows + screenshots | `UI flows and screenshots` | Creates a group, adds an expense with the keypad, opens settle up, switches language; on iPhone 16 and iPad Pro 13-inch, light and dark |
 
 ### Getting the screenshots

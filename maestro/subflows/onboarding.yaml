@@ -1,0 +1,16 @@
+# First launch: language, account choice, name. Run after launchApp with clearState.
+appId: app.takade.ios
+---
+- extendedWaitUntil:
+    visible: "English"
+    timeout: 20000
+- tapOn: "English"
+- tapOn: "Continue"
+- tapOn: "Continue without account"
+- tapOn: "Your name"
+- inputText: "Sabit"
+- hideKeyboard
+- tapOn: "Start splitting"
+- extendedWaitUntil:
+    visible: "No groups yet"
+    timeout: 10000

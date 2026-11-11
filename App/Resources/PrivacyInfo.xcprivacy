@@ -7,6 +7,10 @@
 
   Current behaviour (local-only MVP): no tracking, no data collected by the
   developer, nothing leaves the device. Receipt text is read on the device.
+  Sign in with Apple / Google (ADR 0011) runs on the device: the provider user id,
+  name and optional email are stored in the local profile and refresh tokens in the
+  Keychain. TakaDe has no server, so the developer never receives them; that is not
+  "collection" in Apple's sense, and NSPrivacyCollectedDataTypes stays empty.
   If a sync service, analytics or crash reporting is added, update
   NSPrivacyCollectedDataTypes and the App Store privacy label together.
 -->

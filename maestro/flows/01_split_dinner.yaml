@@ -8,15 +8,12 @@ tags:
 ---
 - launchApp:
     clearState: true
-- extendedWaitUntil:
-    visible: "No groups yet"
-    timeout: 20000
+- runFlow: ../subflows/onboarding.yaml
 - takeScreenshot: ${OUT}/01-groups-empty
 - tapOn: "Create a group"
-- tapOn: "Group name, like Cox's Bazar trip"
+- tapOn: "Group name"
 - inputText: "Sajek trip"
-- tapOn: "Your name"
-- inputText: "Sabit"
+# "Your name" is prefilled from onboarding.
 - tapOn: "Name"
 - inputText: "Rishan"
 - hideKeyboard

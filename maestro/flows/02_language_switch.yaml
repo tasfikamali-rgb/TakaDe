@@ -7,9 +7,7 @@ tags:
 ---
 - launchApp:
     clearState: true
-- extendedWaitUntil:
-    visible: "No groups yet"
-    timeout: 20000
+- runFlow: ../subflows/onboarding.yaml
 - tapOn: "Profile"
 - takeScreenshot: ${OUT}/08-profile-en
 - tapOn: "বাংলা"

@@ -161,6 +161,21 @@ def info_from_project_yml() -> dict:
     return props
 
 
+def check_account_rules(src: str, r: Report) -> None:
+    """App Review 4.8 and 5.1.1(v): third-party login needs Sign in with Apple
+    (or an equivalent), and account creation needs in-app account deletion."""
+    google = re.search(r"accounts\.google\.com|GoogleSignIn|GIDSignIn", src)
+    apple = re.search(r"ASAuthorizationAppleIDProvider|SignInWithAppleButton", src)
+    if google and not apple:
+        r.error("Google sign-in is offered without Sign in with Apple (App Review 4.8).")
+    if google or apple:
+        strings = (RESOURCES / "Localizable.xcstrings").read_text(encoding="utf-8")
+        if not re.search(r"Delete (your |my )?account", strings + src):
+            r.error("Sign-in exists but there's no in-app 'Delete account' (App Review 5.1.1(v)).")
+        else:
+            r.ok("Sign-in has an in-app account deletion path.")
+
+
 def check_info(info: dict, r: Report) -> None:
     for key in ("CFBundleDisplayName", "CFBundleShortVersionString", "CFBundleVersion"):
         if key in info and not str(info[key]).strip():
@@ -276,6 +291,7 @@ def main() -> int:
     check_manifest(src, r)
     check_app_icon(r)
     check_strings(r)
+    check_account_rules(src, r)
     if args.app:
         check_built_app(args.app, src, r)
     else:
