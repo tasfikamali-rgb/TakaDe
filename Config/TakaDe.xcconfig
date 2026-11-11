@@ -1,9 +1,11 @@
 // Shared build settings for the TakaDe app target.
 
-// The iOS OAuth client id from the owner's Google Cloud project, e.g.
-// 1234-abcd.apps.googleusercontent.com. Leave empty to hide "Continue with Google".
-// Set it in Config/Google.local.xcconfig (not committed); see Google.local.xcconfig.example.
-TAKADE_GOOGLE_CLIENT_ID =
+// The iOS OAuth client id ("TakaDe iOS", Google Cloud project takade-514422, bundle id
+// app.takade.ios). Client ids are public, like the Supabase host; there's no secret for an
+// iOS client. Override it in Config/Google.local.xcconfig (not committed) for another
+// project. Empty hides "Continue with Google" without accounts, and with accounts falls
+// back to Supabase's web sign-in.
+TAKADE_GOOGLE_CLIENT_ID = 568357196017-b4hhjo4s9u2upd3odn7cj57dr65lv0v9.apps.googleusercontent.com
 
 #include? "Google.local.xcconfig"
 
