@@ -27,7 +27,10 @@ tags:
     timeout: 10000
 - takeScreenshot: ${OUT}/03-group
 - tapOn: "Add expense"
-- tapOn: "Amount"
+# The keypad opens by itself when the amount is empty.
+- extendedWaitUntil:
+    visible: "Done"
+    timeout: 5000
 - tapOn: "1"
 - tapOn: "2"
 - tapOn: "0"
