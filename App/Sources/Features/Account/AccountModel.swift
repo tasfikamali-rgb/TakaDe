@@ -93,8 +93,14 @@ final class AccountModel {
         return try await adopt(user)
     }
 
-    /// Google or Microsoft through the browser sheet.
+    /// Google or Microsoft through the browser sheet. Google uses the app's own client and
+    /// hands its ID token to the service, so Google's screen says TakaDe.
     func signIn(with provider: SignInProvider) async throws -> SignInOutcome {
+        if let supabase, provider == .google, let google {
+            let nonce = SupabaseAuth.makeNonce()
+            let identity = try await google.signIn(nonce: nonce.hashed)
+            return try await adopt(supabase.signInWithGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
+        }
         if let supabase, let oauth = SupabaseAuth.Provider(provider) {
             return try await adopt(supabase.signIn(with: oauth))
         }
@@ -116,6 +122,12 @@ final class AccountModel {
 
     /// Links another sign-in to the account that's signed in.
     func link(_ provider: SignInProvider) async throws {
+        if let supabase, provider == .google, let google {
+            let nonce = SupabaseAuth.makeNonce()
+            let identity = try await google.signIn(nonce: nonce.hashed)
+            _ = try await adopt(supabase.linkGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
+            return
+        }
         guard let supabase, let oauth = SupabaseAuth.Provider(provider) else { throw SupabaseAuth.Failure.couldNotStart }
         _ = try await adopt(supabase.link(oauth))
     }

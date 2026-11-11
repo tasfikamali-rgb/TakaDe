@@ -93,7 +93,24 @@ final class SupabaseAuth {
         return try adopt(json)
     }
 
-    // MARK: Google and Microsoft
+    /// Google, with the ID token from the app's own iOS client (GoogleSignInService), so
+    /// Google's screen shows TakaDe instead of this service's address. The iOS client id
+    /// must be in the Google provider's Client IDs in Supabase.
+    func signInWithGoogle(idToken: String, rawNonce: String) async throws -> AuthUser {
+        let json = try await post("token?grant_type=id_token", body: ["provider": "google", "id_token": idToken, "nonce": rawNonce])
+        return try adopt(json)
+    }
+
+    /// Links a Google sign-in (an ID token, as above) to the account that's signed in now.
+    func linkGoogle(idToken: String, rawNonce: String) async throws -> AuthUser {
+        guard session != nil else { throw Failure.notSignedIn }
+        let json = try await post("token?grant_type=id_token",
+                                  body: ["provider": "google", "id_token": idToken, "nonce": rawNonce, "link_identity": true],
+                                  authorized: true)
+        return try adopt(json)
+    }
+
+    // MARK: Google and Microsoft in the browser
 
     func signIn(with provider: Provider) async throws -> AuthUser {
         let pkce = Self.makePKCE()
