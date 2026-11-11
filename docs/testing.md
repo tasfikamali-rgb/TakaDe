@@ -42,6 +42,20 @@ Open the pull request → **Checks** → *UI flows and screenshots* → **Summar
 GitHub bills macOS minutes at 10× Linux minutes on private repositories. If the free
 allowance runs low, the UI-flows workflow can be limited to `workflow_dispatch` (run by hand).
 
+## Codemagic (free alternative when GitHub minutes run out)
+
+`codemagic.yaml` runs the same checks on Codemagic's Mac minis. A **personal**
+Codemagic account gets 500 free macOS M2 minutes a month, reset on the 1st (teams get
+none). GitHub's free plan gives a private repo the equivalent of 200 macOS minutes.
+
+- `checks` (every PR update and push): ledger tests, store and layout checks, app build.
+- `ui-tests` (push to `main`, or **Start new build** in Codemagic): accessibility audit,
+  Maestro flows on iPhone and iPad in light and dark. Screenshots are under the build's
+  **Artifacts**.
+
+To turn it on: sign in at codemagic.io with GitHub on a personal account, add the
+TakaDe repo, and pick "codemagic.yaml" as the configuration. No secrets are needed.
+
 ## Trying it on your own iPhone, today, with no download
 
 Xcode can install straight onto an iPhone over a cable using a free Apple ID; no
