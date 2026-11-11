@@ -4,8 +4,18 @@ import SwiftUI
 /// slides the dip between tabs.
 struct NotchBarShape: Shape {
     var notchX: CGFloat
-    var notchRadius: CGFloat = 30
+    var notchRadius: CGFloat = Self.defaultRadius
     var notchDepth: CGFloat = 22
+
+    static let defaultRadius: CGFloat = 28
+
+    /// The dip spans 1.6 radii either side of its center. Keeping the whole dip on the flat
+    /// top edge stops it from running into the rounded ends (which drew a stray mark).
+    static func clampedNotchX(_ x: CGFloat, width: CGFloat, height: CGFloat, radius: CGFloat = defaultRadius) -> CGFloat {
+        let margin = height / 2 + radius * 1.6
+        guard width > margin * 2 else { return width / 2 }
+        return min(max(x, margin), width - margin)
+    }
 
     var animatableData: CGFloat {
         get { notchX }
@@ -14,7 +24,7 @@ struct NotchBarShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         let r = rect.height / 2
-        let x = min(max(notchX, rect.minX + r + notchRadius), rect.maxX - r - notchRadius)
+        let x = rect.minX + Self.clampedNotchX(notchX - rect.minX, width: rect.width, height: rect.height, radius: notchRadius)
         let left = x - notchRadius * 1.6
         let right = x + notchRadius * 1.6
 

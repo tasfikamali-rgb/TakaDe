@@ -6,7 +6,9 @@ import SwiftUI
 struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var tab: AppTab = .home
+    @State private var chrome = AppChrome()
 
     private var usesNotchBar: Bool { horizontalSizeClass != .regular }
 
@@ -20,13 +22,26 @@ struct RootView: View {
             }
         }
         .tint(.ink)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            if usesNotchBar {
+        // A TabView doesn't pass a safe area inset down to its pages, so the bar floats in an
+        // overlay and each page reserves room for it (TabContent).
+        .overlay(alignment: .bottom) {
+            if usesNotchBar && !chrome.hidesTabBar {
                 NotchTabBar(selection: $tab)
                     .padding(.horizontal, Spacing.screenMargin)
                     .padding(.bottom, Spacing.xs)
+                    .background(alignment: .bottom) {
+                        // Content scrolls under the bar and fades out instead of being cut off.
+                        LinearGradient(colors: [Color.canvas.opacity(0), Color.canvas], startPoint: .top, endPoint: .bottom)
+                            .frame(height: NotchTabBar.reservedHeight + Spacing.xl)
+                            .ignoresSafeArea()
+                            .allowsHitTesting(false)
+                    }
+                    .ignoresSafeArea(.keyboard)
+                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .animation(Motion.standard, value: chrome.hidesTabBar)
+        .environment(chrome)
         .overlay(alignment: .top) {
             if let error = model.loadError {
                 ErrorBanner(message: error)
