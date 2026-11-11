@@ -50,8 +50,16 @@ struct GroupDetailContent: View {
                 Button("Settle up", action: settle)
                     .buttonStyle(PillButtonStyle())
                     .padding(.horizontal, Spacing.screenMargin)
+                    .padding(.top, Spacing.l)
                     .padding(.bottom, Spacing.xs)
                     .readableWidth()
+                    .background {
+                        // Rows pass under the pinned button; fade them out so the button reads cleanly.
+                        LinearGradient(stops: [.init(color: Color.canvas.opacity(0), location: 0), .init(color: Color.canvas, location: 0.45)],
+                                       startPoint: .top, endPoint: .bottom)
+                            .ignoresSafeArea()
+                            .allowsHitTesting(false)
+                    }
             }
         }
         .overlay(alignment: .bottom) {
