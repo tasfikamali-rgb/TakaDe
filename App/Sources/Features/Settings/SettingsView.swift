@@ -7,7 +7,7 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("Language") {
+            Section {
                 Picker("Language", selection: $language) {
                     ForEach([AppLanguage.bengali, .english, .system]) { option in
                         Text(verbatim: option.nativeName).tag(option)
@@ -15,8 +15,11 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+            } header: {
+                Text("Language")
+                    .foregroundStyle(Color.inkMuted)
             }
-            Section("Appearance") {
+            Section {
                 Picker("Appearance", selection: $appearance) {
                     ForEach(AppAppearance.allCases) { option in
                         Text(option.label).tag(option)
@@ -24,14 +27,20 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+            } header: {
+                Text("Appearance")
+                    .foregroundStyle(Color.inkMuted)
             }
-            Section("Numbers") {
+            Section {
                 Picker("Numbers", selection: $digits) {
                     Text("Automatic").tag(DigitPreference.automatic)
                     Text(verbatim: "123").tag(DigitPreference.latin)
                     Text(verbatim: "১২৩").tag(DigitPreference.bengali)
                 }
                 .pickerStyle(.segmented)
+            } header: {
+                Text("Numbers")
+                    .foregroundStyle(Color.inkMuted)
             }
             AppLockSection()
         }

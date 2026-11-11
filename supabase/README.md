@@ -24,9 +24,9 @@ Nothing is deployed yet. Steps:
    - Google: on, with a **Web** OAuth client id and secret from Google Cloud (Supabase does
      the code exchange), and the iOS client id added to "Authorized Client IDs".
    - Azure (Microsoft): on, with an app registration from Microsoft Entra, tenant `common`
-     so personal and work accounts both work. Sabit is signing up for Azure for Students
-     (2026-11-11). The button stays hidden until `TAKADE_MICROSOFT_SIGN_IN = YES` in
-     `Config/TakaDe.xcconfig`; flip it once Azure is on in Supabase.
+     so personal and work accounts both work. **Skipped for launch (Sabit, 2026-11-11):** the
+     university Azure account can't register apps. The button stays hidden while
+     `TAKADE_MICROSOFT_SIGN_IN = NO` in `Config/TakaDe.xcconfig`; flip it if Azure is set up later.
    - Turn on **Allow manual linking**, so people can link more sign-ins from the Account tab.
 4. **Functions:** `supabase functions deploy delete-account`.
 5. Tell the coding thread, which then checks every flow on a phone.

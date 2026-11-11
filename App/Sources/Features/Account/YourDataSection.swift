@@ -26,10 +26,14 @@ struct YourDataSection: View {
             }
         } header: {
             Text("Your data")
+                .foregroundStyle(Color.inkMuted)
         } footer: {
-            if exportURL != nil {
-                Text("The file holds all your groups, names and amounts. Once you share it, it's outside TakaDe's protection.")
+            Group {
+                if exportURL != nil {
+                    Text("The file holds all your groups, names and amounts. Once you share it, it's outside TakaDe's protection.")
+                }
             }
+            .foregroundStyle(Color.inkMuted)
         }
         .confirmationDialog("Delete all your data?", isPresented: $confirmingErase, titleVisibility: .visible) {
             Button("Delete everything", role: .destructive, action: erase)

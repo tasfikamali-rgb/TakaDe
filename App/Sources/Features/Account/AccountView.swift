@@ -22,13 +22,15 @@ struct AccountView: View {
                     .listRowInsets(EdgeInsets())
             }
             Section {
-                TextField("Your name", text: $myName)
+                TextField("Your name", text: $myName, prompt: Text("Your name").foregroundStyle(Color.inkMuted))
                     .textContentType(.name)
                     .onSubmit(saveName)
             } header: {
                 Text("Your name")
+                    .foregroundStyle(Color.inkMuted)
             } footer: {
                 Text("This is how you appear in new groups, exactly as you type it")
+                    .foregroundStyle(Color.inkMuted)
             }
             if account.isSignedIn {
                 signedInSections
@@ -90,10 +92,14 @@ struct AccountView: View {
             }
         } header: {
             Text("Sign-in methods")
+                .foregroundStyle(Color.inkMuted)
         } footer: {
-            Text(account.usesAccountService
-                 ? LocalizedStringKey("Any of these opens the same account. TakaDe's sign-in service keeps your account, email and these links. Your groups and expenses stay on this phone.")
-                 : LocalizedStringKey("Your sign-in is kept on this phone only. TakaDe has no server and never sees your groups."))
+            Group {
+                Text(account.usesAccountService
+                     ? LocalizedStringKey("Any of these opens the same account. TakaDe's sign-in service keeps your account, email and these links. Your groups and expenses stay on this phone.")
+                     : LocalizedStringKey("Your sign-in is kept on this phone only. TakaDe has no server and never sees your groups."))
+            }
+            .foregroundStyle(Color.inkMuted)
         }
         Section {
             Button("Sign out", action: signOut)
@@ -112,9 +118,12 @@ struct AccountView: View {
                 .frame(maxWidth: .infinity, minHeight: 48)
                 .listRowBackground(Color.clear)
         } footer: {
-            Text(account.usesAccountService
-                 ? LocalizedStringKey("With an account you can sign in on a new phone. Your groups and expenses stay on this phone.")
-                 : LocalizedStringKey("Signing in keeps your name and email with your groups. It all stays on this phone."))
+            Group {
+                Text(account.usesAccountService
+                     ? LocalizedStringKey("With an account you can sign in on a new phone. Your groups and expenses stay on this phone.")
+                     : LocalizedStringKey("Signing in keeps your name and email with your groups. It all stays on this phone."))
+            }
+            .foregroundStyle(Color.inkMuted)
         }
     }
 

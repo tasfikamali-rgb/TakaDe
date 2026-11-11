@@ -28,35 +28,42 @@ struct NewGroupView: View {
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                 } footer: {
-                    if kind == .mess {
-                        Text("Count everyone's meals each day. At the end of the month, bazar is shared by meals eaten. You keep the books.")
+                    Group {
+                        if kind == .mess {
+                            Text("Count everyone's meals each day. At the end of the month, bazar is shared by meals eaten. You keep the books.")
+                        }
                     }
+                    .foregroundStyle(Color.inkMuted)
                 }
                 Section {
                     // Vertical so long names wrap at large text sizes; Return still moves on.
-                    TextField("Group name", text: $name, axis: .vertical)
+                    TextField("Group name", text: $name, prompt: Text("Group name").foregroundStyle(Color.inkMuted), axis: .vertical)
                         .focused($focus, equals: .group)
                         .submitLabel(.next)
                         .returnMovesOn($name) { focus = .me }
                 } footer: {
-                    if kind == .mess {
-                        Text("Like Mirpur mess or Hall room 212")
-                    } else {
-                        Text("For a trip, a flat or a dinner, like Cox's Bazar trip")
+                    Group {
+                        if kind == .mess {
+                            Text("Like Mirpur mess or Hall room 212")
+                        } else {
+                            Text("For a trip, a flat or a dinner, like Cox's Bazar trip")
+                        }
                     }
+                    .foregroundStyle(Color.inkMuted)
                 }
                 Section {
-                    TextField("Your name", text: $myName, axis: .vertical)
+                    TextField("Your name", text: $myName, prompt: Text("Your name").foregroundStyle(Color.inkMuted), axis: .vertical)
                         .textContentType(.name)
                         .focused($focus, equals: .me)
                         .submitLabel(.next)
                         .returnMovesOn($myName) { focus = others.first.map { Field.other($0.id) } }
                 } footer: {
                     Text("Names are kept exactly as you type them")
+                        .foregroundStyle(Color.inkMuted)
                 }
                 Section {
                     ForEach($others) { $person in
-                        TextField("Name", text: $person.text, axis: .vertical)
+                        TextField("Name", text: $person.text, prompt: Text("Name").foregroundStyle(Color.inkMuted), axis: .vertical)
                             .focused($focus, equals: .other(person.id))
                             .submitLabel(.next)
                             .returnMovesOn($person.text) { focusAfter(person.id) }
@@ -66,10 +73,14 @@ struct NewGroupView: View {
                         .background(ContactPicker(isPresented: $pickingContacts, onPick: addContacts))
                 } header: {
                     Text("Who else is in it")
+                        .foregroundStyle(Color.inkMuted)
                 } footer: {
-                    if let duplicate = duplicateName {
-                        Text("Two people are called \(duplicate). Add something to tell them apart, like an initial.")
+                    Group {
+                        if let duplicate = duplicateName {
+                            Text("Two people are called \(duplicate). Add something to tell them apart, like an initial.")
+                        }
                     }
+                    .foregroundStyle(Color.inkMuted)
                 }
                 if let error {
                     Section { Text(error).foregroundStyle(Color.owe) }
