@@ -5,12 +5,20 @@ appId: app.takade.ios
     visible: "English"
     timeout: 20000
 - tapOn: "English"
+- takeScreenshot: ${OUT}/00a-onboarding-language
 - tapOn: "Continue"
+- takeScreenshot: ${OUT}/00b-onboarding-account
 - tapOn: "Continue without account"
 - tapOn: "Your name"
 - inputText: "Sabit"
-- hideKeyboard
-- tapOn: "Start splitting"
+# Return submits the name (the field's onSubmit finishes onboarding). The button
+# sits under the keyboard on small screens, so only tap it if it's still there.
+- pressKey: Enter
+- runFlow:
+    when:
+      visible: "Start splitting"
+    commands:
+      - tapOn: "Start splitting"
 - extendedWaitUntil:
     visible: "No groups yet"
     timeout: 10000

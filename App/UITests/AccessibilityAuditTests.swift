@@ -86,8 +86,8 @@ final class AccessibilityAuditTests: XCTestCase {
         let name = app.textFields["Your name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap()
-        name.typeText("Sabit")
-        app.buttons["Start splitting"].tap()
+        name.typeText("Sabit\n") // Return submits, like the Start splitting button.
+        if app.buttons["Start splitting"].exists { app.buttons["Start splitting"].tap() }
     }
 
     /// Runs the audit, ignoring only contrast and Dynamic Type reports on standard
