@@ -15,6 +15,10 @@ final class AccessibilityAuditTests: XCTestCase {
     func testA_Onboarding() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["English"].waitForExistence(timeout: 10))
+        // First launch after install is slow on CI; the audit times out if it starts
+        // while the app is still settling.
+        _ = app.buttons["Continue"].waitForExistence(timeout: 10)
+        sleep(3)
         try audit(app)
     }
 
