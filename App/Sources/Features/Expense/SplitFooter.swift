@@ -13,7 +13,9 @@ struct SplitFooter: View {
         case .some(.failure(let error)):
             Text(verbatim: SplitErrorMessage.text(for: error)).foregroundStyle(Color.owe)
         case .some(.success), .none:
-            if draft.hasRoundingRemainder {
+            if draft.method == .adjusted {
+                Text("Add +150 for someone's extra drink, or -60 for less. The rest is split equally.")
+            } else if draft.hasRoundingRemainder {
                 Text("Leftover poisha go to the first people listed, so the total always matches")
             }
         }

@@ -3962,6 +3962,125 @@
           }
         }
       }
+    },
+    "Adjust": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সমন্বয়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust"
+          }
+        }
+      }
+    },
+    "±0": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "±0"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "±0"
+          }
+        }
+      }
+    },
+    "Extra for %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-এর জন্য বাড়তি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra for %@"
+          }
+        }
+      }
+    },
+    "Use a minus for less": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কম হলে মাইনাস দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use a minus for less"
+          }
+        }
+      }
+    },
+    "Add +150 for someone's extra drink, or -60 for less. The rest is split equally.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কারও বাড়তি ড্রিংকের জন্য +150, বা কম হলে -60 দিন। বাকিটা সমান ভাগ হবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add +150 for someone's extra drink, or -60 for less. The rest is split equally."
+          }
+        }
+      }
+    },
+    "The extras add up to more than the total": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাড়তিগুলো মোটের চেয়ে বেশি হয়ে গেছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The extras add up to more than the total"
+          }
+        }
+      }
+    },
+    "Someone's share would be below zero. Check the minus amounts.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কারও ভাগ শূন্যের নিচে চলে যাচ্ছে। মাইনাসগুলো দেখে নিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone's share would be below zero. Check the minus amounts."
+          }
+        }
+      }
     }
   }
 }

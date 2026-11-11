@@ -53,4 +53,52 @@ final class SplitTests: XCTestCase {
     func testOverflowIsReportedNotWrapped() {
         XCTAssertThrowsError(try SplitCalculator.allocate(Money(minorUnits: .max / 2), by: .shares([a: 4, b: 1])))
     }
+
+    // MARK: Adjusted
+
+    func testAdjustedAddsExtraOnTopOfEqualSplit() throws {
+        // 1,050 dinner, A had a 150 drink: 900 split three ways, then +150 for A.
+        let rule = SplitRule.adjusted([a: Money(minorUnits: 150_00), b: .zero(), c: .zero()])
+        let alloc = try SplitCalculator.allocate(Money(minorUnits: 1_050_00), by: rule)
+        XCTAssertEqual(alloc.shares[a]?.minorUnits, 450_00)
+        XCTAssertEqual(alloc.shares[b]?.minorUnits, 300_00)
+        XCTAssertEqual(alloc.shares[c]?.minorUnits, 300_00)
+    }
+
+    func testAdjustedAllowsMinus() throws {
+        // C skipped dessert: 60 less for C.
+        let rule = SplitRule.adjusted([a: .zero(), b: .zero(), c: Money(minorUnits: -60_00)])
+        let alloc = try SplitCalculator.allocate(Money(minorUnits: 600_00), by: rule)
+        XCTAssertEqual(alloc.shares[a]?.minorUnits, 220_00)
+        XCTAssertEqual(alloc.shares[b]?.minorUnits, 220_00)
+        XCTAssertEqual(alloc.shares[c]?.minorUnits, 160_00)
+    }
+
+    func testAdjustedAlwaysSumsToTotal() throws {
+        for total in [1, 7, 100, 101, 12_345, 1_000_003] as [Int64] {
+            let rule = SplitRule.adjusted([a: Money(minorUnits: 1), b: .zero(), c: Money(minorUnits: -1)])
+            let alloc = try SplitCalculator.allocate(Money(minorUnits: total), by: rule)
+            XCTAssertEqual(try alloc.total(in: .bdt).minorUnits, total)
+        }
+    }
+
+    func testAdjustmentsLargerThanTotalAreRejected() {
+        let rule = SplitRule.adjusted([a: Money(minorUnits: 500), b: .zero()])
+        XCTAssertThrowsError(try SplitCalculator.allocate(Money(minorUnits: 400), by: rule)) { error in
+            XCTAssertEqual(error as? SplitError, .adjustmentsExceedTotal(total: Money(minorUnits: 400), adjustments: Money(minorUnits: 500)))
+        }
+    }
+
+    func testMinusLargerThanEqualPartIsRejected() {
+        let rule = SplitRule.adjusted([a: .zero(), b: Money(minorUnits: -300)])
+        XCTAssertThrowsError(try SplitCalculator.allocate(Money(minorUnits: 200), by: rule)) { error in
+            XCTAssertEqual(error as? SplitError, .negativeAmount(b))
+        }
+    }
+
+    func testAdjustedRuleRoundTripsThroughCodable() throws {
+        let rule = SplitRule.adjusted([a: Money(minorUnits: 150_00), b: .zero()])
+        let data = try JSONEncoder().encode(rule)
+        XCTAssertEqual(try JSONDecoder().decode(SplitRule.self, from: data), rule)
+    }
 }

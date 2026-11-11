@@ -20,6 +20,7 @@ final class ExpenseDraft {
     private var exactText: [MemberID: String] = [:]
     private var percentText: [MemberID: String] = [:]
     private var shareCounts: [MemberID: Int] = [:]
+    private var adjustText: [MemberID: String] = [:]
 
     init(group: ExpenseGroup) {
         self.group = group
@@ -51,6 +52,10 @@ final class ExpenseDraft {
         case .shares(let weights):
             method = .shares
             shareCounts = Dictionary(uniqueKeysWithValues: group.members.map { ($0.id, weights[$0.id, default: 0]) })
+        case .adjusted(let adjustments):
+            method = .adjusted
+            included = Set(adjustments.keys)
+            adjustText = adjustments.filter { !$0.value.isZero }.mapValues(Self.signedText)
         }
     }
 
@@ -69,6 +74,12 @@ final class ExpenseDraft {
     subscript(sharesFor id: MemberID) -> Int {
         get { shareCounts[id, default: 1] }
         set { shareCounts[id] = newValue }
+    }
+
+    /// "+150" or "-60": the extra (or less) this person pays on top of an equal part.
+    subscript(adjustFor id: MemberID) -> String {
+        get { adjustText[id, default: ""] }
+        set { adjustText[id] = newValue }
     }
 
     subscript(includes id: MemberID) -> Bool {
@@ -105,7 +116,24 @@ final class ExpenseDraft {
         case .shares:
             let weights = Dictionary(uniqueKeysWithValues: group.members.map { ($0.id, shareCounts[$0.id, default: 1]) }).filter { $0.value > 0 }
             return weights.isEmpty ? nil : .shares(weights)
+        case .adjusted:
+            var adjustments: [MemberID: Money] = [:]
+            for member in group.members where included.contains(member.id) {
+                var text = adjustText[member.id, default: ""].trimmingCharacters(in: .whitespaces)
+                if text.hasPrefix("+") { text.removeFirst() }
+                if text.isEmpty || text == "-" {
+                    adjustments[member.id] = .zero(group.currency)
+                    continue
+                }
+                guard let value = try? Money.parse(text, currency: group.currency) else { return nil }
+                adjustments[member.id] = value
+            }
+            return adjustments.isEmpty ? nil : .adjusted(adjustments)
         }
+    }
+
+    private static func signedText(_ money: Money) -> String {
+        money.isNegative ? "-" + KeypadText.plain(money.magnitude) : "+" + KeypadText.plain(money)
     }
 
     var preview: Result<Allocation, SplitError>? {

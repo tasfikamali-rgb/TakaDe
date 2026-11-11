@@ -21,6 +21,10 @@ enum SplitErrorMessage {
             return String(localized: "Percentages need to add up to 100", bundle: .appLanguage)
         case .noParticipants:
             return String(localized: "Pick at least one person", bundle: .appLanguage)
+        case .adjustmentsExceedTotal:
+            return String(localized: "The extras add up to more than the total", bundle: .appLanguage)
+        case .negativeAmount:
+            return String(localized: "Someone's share would be below zero. Check the minus amounts.", bundle: .appLanguage)
         case .nonPositiveTotal:
             return String(localized: "Enter an amount above zero", bundle: .appLanguage)
         default:

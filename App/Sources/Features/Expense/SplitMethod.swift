@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum SplitMethod: String, CaseIterable, Identifiable {
-    case equal, exact, percentage, shares
+    case equal, exact, percentage, shares, adjusted
 
     var id: String { rawValue }
 
@@ -11,6 +11,7 @@ enum SplitMethod: String, CaseIterable, Identifiable {
         case .exact: "Amounts"
         case .percentage: "Percent"
         case .shares: "Shares"
+        case .adjusted: "Adjust"
         }
     }
 }
