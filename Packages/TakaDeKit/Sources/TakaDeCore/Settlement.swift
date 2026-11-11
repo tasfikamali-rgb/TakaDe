@@ -18,6 +18,9 @@ public enum SettlementStatus: String, Codable, Sendable, CaseIterable {
     case handoffStarted = "handoff_started"
     case pending
     case reportedUnverified = "reported_unverified"
+    /// The person who was owed marked it received (e.g. cash in hand). Clears the debt,
+    /// but is the recipient's word, never provider verification.
+    case acknowledgedByRecipient = "acknowledged_by_recipient"
     case confirmed
     case failed
     case reversed
@@ -32,8 +35,12 @@ public enum SettlementStatus: String, Codable, Sendable, CaseIterable {
         case (.pending, .confirmed), (.reportedUnverified, .confirmed),
              (.confirmed, .reversed):
             return withProviderEvidence
-        case (.reportedUnverified, .reversed):
-            // The user withdrawing their own report.
+        case (.notStarted, .acknowledgedByRecipient), (.handoffStarted, .acknowledgedByRecipient),
+             (.pending, .acknowledgedByRecipient), (.reportedUnverified, .acknowledgedByRecipient):
+            // Only callable through Settlement.acknowledge(by:), which checks the recipient.
+            return true
+        case (.reportedUnverified, .reversed), (.acknowledgedByRecipient, .reversed):
+            // Withdrawing a report or acknowledgement made by mistake.
             return true
         default:
             return false
@@ -43,7 +50,7 @@ public enum SettlementStatus: String, Codable, Sendable, CaseIterable {
     /// Whether this settlement should reduce what people owe in the displayed balance.
     /// Unverified reports count, but the UI must label them as reported, not verified.
     public var countsTowardBalance: Bool {
-        self == .reportedUnverified || self == .confirmed
+        self == .reportedUnverified || self == .acknowledgedByRecipient || self == .confirmed
     }
 }
 
@@ -76,7 +83,18 @@ public struct Settlement: Hashable, Codable, Sendable, Identifiable {
         self.updatedAt = createdAt
     }
 
+    /// Marks the settlement as received. Only the recipient may do this.
+    public mutating func acknowledge(by member: MemberID, at date: Date = Date()) throws {
+        guard member == to else { throw LedgerError.onlyRecipientCanAcknowledge }
+        guard status.canTransition(to: .acknowledgedByRecipient, withProviderEvidence: false) else {
+            throw LedgerError.illegalStatusTransition(from: status, to: .acknowledgedByRecipient)
+        }
+        status = .acknowledgedByRecipient
+        updatedAt = date
+    }
+
     public mutating func transition(to next: SettlementStatus, withProviderEvidence: Bool = false, at date: Date = Date()) throws {
+        guard next != .acknowledgedByRecipient else { throw LedgerError.onlyRecipientCanAcknowledge }
         guard status.canTransition(to: next, withProviderEvidence: withProviderEvidence) else {
             throw LedgerError.illegalStatusTransition(from: status, to: next)
         }

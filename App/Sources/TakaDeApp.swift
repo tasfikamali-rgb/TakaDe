@@ -1,6 +1,4 @@
 import SwiftUI
-import TakaDeCore
-import TakaDePersistence
 
 @main
 struct TakaDeApp: App {

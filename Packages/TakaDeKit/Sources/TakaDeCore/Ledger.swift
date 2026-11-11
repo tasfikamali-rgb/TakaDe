@@ -87,4 +87,5 @@ public enum LedgerError: Error, Equatable, Sendable {
     case settlementToSelf
     case nonPositiveSettlement
     case illegalStatusTransition(from: SettlementStatus, to: SettlementStatus)
+    case onlyRecipientCanAcknowledge
 }

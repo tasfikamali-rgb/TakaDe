@@ -10,3 +10,6 @@ Packages/TakaDeKit/Package.resolved
 .design-refs/
 # Fonts are licensed for bundling but fetched by script; see scripts/fetch-fonts.sh
 App/Resources/Fonts/*.otf
+App/Info.plist
+build/
+screenshots-local/

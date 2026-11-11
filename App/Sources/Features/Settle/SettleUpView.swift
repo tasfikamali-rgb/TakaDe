@@ -1,11 +1,12 @@
 import SwiftUI
 import TakaDeCore
 
-/// Records that a debt was paid outside the app. TakaDe does not move money, and
-/// a recorded payment stays "reported, not verified" until a provider integration exists.
+/// Records a payment made outside the app. TakaDe never moves money. If you paid, it's
+/// saved as reported by you. If you were paid, you mark it received.
 struct SettleUpView: View {
-    @Environment(AppModel.self) private var model
+    @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let group: ExpenseGroup
     let balances: GroupBalances
 
@@ -13,119 +14,89 @@ struct SettleUpView: View {
     @State private var method: SettlementMethod = .cash
     @State private var reference = ""
     @State private var saveError: String?
+    @State private var recorded: SuggestedTransfer?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Text("TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here.")
+                        .font(AppFont.body)
+                        .foregroundStyle(Color.inkMuted)
+                }
+                TransferPickerSection(group: group, transfers: myTransfers, selected: $selected)
+                if let selected {
+                    PaymentDetailsSection(isMePaying: selected.from == group.me?.id, method: $method, reference: $reference)
+                }
+                if let saveError {
+                    Section { Text(saveError).foregroundStyle(Color.owe) }
+                }
+            }
+            .readableWidth()
+            .navigationTitle("Settle up")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel", action: cancel) }
+            }
+            .safeAreaInset(edge: .bottom) {
+                if let selected {
+                    SwipeToConfirm(title: swipeTitle(selected), onConfirm: record)
+                        .padding(.horizontal, Spacing.screenMargin)
+                        .padding(.bottom, Spacing.xs)
+                        .readableWidth()
+                }
+            }
+        }
+        .overlay {
+            if let recorded {
+                SuccessOverlay(amount: recorded.amount, message: successMessage(recorded), onClose: cancel)
+                    .transition(reduceMotion ? .opacity : .scale(scale: 0.2, anchor: .bottomLeading).combined(with: .opacity))
+            }
+        }
+        .onAppear(perform: preselect)
+    }
 
     private var myTransfers: [SuggestedTransfer] {
         guard let me = group.me else { return [] }
         return BalanceCalculator.suggestedTransfers(balances).filter { $0.from == me.id || $0.to == me.id }
     }
 
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    Text("TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here so the balance updates.")
-                        .font(AppFont.body)
-                        .foregroundStyle(Color.inkMuted)
-                }
-
-                Section("Suggested payments") {
-                    if myTransfers.isEmpty {
-                        Text("You're settled up in this group.")
-                    }
-                    ForEach(myTransfers, id: \.self) { t in
-                        Button {
-                            selected = t
-                        } label: {
-                            HStack {
-                                Text(describe(t))
-                                    .foregroundStyle(Color.ink)
-                                Spacer()
-                                AmountText(money: t.amount, font: AppFont.body.weight(.semibold))
-                                if selected == t {
-                                    Image(systemName: "checkmark").foregroundStyle(Color.ink)
-                                        .accessibilityLabel("Selected")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if selected != nil {
-                    Section {
-                        Picker("Paid with", selection: $method) {
-                            ForEach(SettlementMethod.allCases, id: \.self) { Text($0.label).tag($0) }
-                        }
-                        if method != .cash {
-                            TextField("Transaction ID (optional)", text: $reference)
-                                .textInputAutocapitalization(.characters)
-                                .autocorrectionDisabled()
-                        }
-                    } footer: {
-                        Text("This is saved as reported by you. It isn't checked with bKash, upay or any bank.")
-                    }
-                }
-
-                if let saveError {
-                    Section { Text(saveError).foregroundStyle(Color.owe) }
-                }
-            }
-            .navigationTitle("Settle up")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-            }
-            .safeAreaInset(edge: .bottom) {
-                if let selected {
-                    Button { record(selected) } label: {
-                        Text(recordLabel(selected))
-                            .font(AppFont.headline)
-                            .frame(maxWidth: .infinity, minHeight: 56)
-                            .background(Capsule().fill(Color.ink))
-                            .foregroundStyle(Color.canvas)
-                    }
-                    .padding(.horizontal, Spacing.screenMargin)
-                    .padding(.bottom, Spacing.xs)
-                }
-            }
-        }
+    private func preselect() {
+        if selected == nil, myTransfers.count == 1 { selected = myTransfers.first }
     }
 
-    private func describe(_ t: SuggestedTransfer) -> String {
-        if t.from == group.me?.id {
-            return String(localized: "You pay \(group.name(of: t.to))")
-        }
-        return String(localized: "\(group.name(of: t.from)) pays you")
-    }
-
-    private func recordLabel(_ t: SuggestedTransfer) -> String {
+    private func swipeTitle(_ t: SuggestedTransfer) -> String {
         let amount = MoneyFormatter.format(t.amount).plain
-        return String(localized: "Record \(amount) as paid")
+        return t.from == group.me?.id
+            ? String(localized: "Swipe to record \(amount) paid")
+            : String(localized: "Swipe to mark \(amount) received")
     }
 
-    private func record(_ t: SuggestedTransfer) {
+    private func successMessage(_ t: SuggestedTransfer) -> String {
+        t.from == group.me?.id
+            ? String(localized: "Recorded as paid to \(group.storedName(of: t.to))")
+            : String(localized: "Marked received from \(group.storedName(of: t.from))")
+    }
+
+    private func cancel() { dismiss() }
+
+    private func record() {
+        guard let t = selected, let me = group.me else { return }
         Task {
             do {
                 var settlement = try Settlement(
                     groupID: group.id, from: t.from, to: t.to, amount: t.amount, method: method,
                     userReference: reference.isEmpty ? nil : reference)
-                try settlement.transition(to: .reportedUnverified)
-                try await model.repository.save(settlement, actor: group.me?.id)
-                dismiss()
+                if t.to == me.id {
+                    try settlement.acknowledge(by: me.id)
+                } else {
+                    try settlement.transition(to: .reportedUnverified)
+                }
+                try await app.record(settlement, in: group)
+                withAnimation(Motion.standard(reduceMotion: reduceMotion)) { recorded = t }
             } catch {
                 saveError = String(localized: "The payment wasn't recorded. Try again.")
             }
-        }
-    }
-}
-
-extension SettlementMethod {
-    var label: String {
-        switch self {
-        case .cash: String(localized: "Cash")
-        case .bkash: "bKash"
-        case .upay: "upay"
-        case .bankTransfer: String(localized: "Bank transfer")
-        case .other: String(localized: "Other")
         }
     }
 }

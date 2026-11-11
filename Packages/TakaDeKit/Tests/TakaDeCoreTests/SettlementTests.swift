@@ -26,4 +26,13 @@ final class SettlementTests: XCTestCase {
         XCTAssertThrowsError(try Settlement(groupID: GroupID(), from: a, to: a, amount: Money(minorUnits: 1), method: .cash))
         XCTAssertThrowsError(try Settlement(groupID: GroupID(), from: a, to: b, amount: .zero(), method: .cash))
     }
+
+    func testOnlyRecipientCanAcknowledge() throws {
+        var s = try make()
+        XCTAssertThrowsError(try s.acknowledge(by: a))
+        XCTAssertThrowsError(try s.transition(to: .acknowledgedByRecipient))
+        try s.acknowledge(by: b)
+        XCTAssertEqual(s.status, .acknowledgedByRecipient)
+        XCTAssertTrue(s.status.countsTowardBalance)
+    }
 }

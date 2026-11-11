@@ -37,6 +37,15 @@ final class BalanceTests: XCTestCase {
         XCTAssertEqual(after.unverifiedSettled[b]?.minorUnits, 500)
     }
 
+    func testAcknowledgedSettlementIsNotCountedAsUnverified() throws {
+        let e = try expense(1000, paidBy: a, among: [a, b])
+        var s = try Settlement(groupID: group, from: b, to: a, amount: Money(minorUnits: 500), method: .cash)
+        try s.acknowledge(by: a)
+        let bal = try BalanceCalculator.balances(members: [a, b], currency: .bdt, expenses: [e], settlements: [s])
+        XCTAssertEqual(bal.net(for: b).minorUnits, 0)
+        XCTAssertNil(bal.unverifiedSettled[b])
+    }
+
     func testUnknownMemberIsAnError() throws {
         let e = try expense(1000, paidBy: a, among: [a, b])
         XCTAssertThrowsError(try BalanceCalculator.balances(members: [a], currency: .bdt, expenses: [e], settlements: []))

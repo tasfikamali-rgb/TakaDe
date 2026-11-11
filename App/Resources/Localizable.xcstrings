@@ -3,7 +3,7 @@
   "version": "1.0",
   "strings": {
     "%@ added an expense": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -14,7 +14,7 @@
       }
     },
     "%@ changed the group": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -25,18 +25,18 @@
       }
     },
     "%@ created the group": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%@ গ্রুপটি তৈরি করেছেন"
+            "value": "%@ গ্রুপটি খুলেছেন"
           }
         }
       }
     },
     "%@ deleted an expense": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -47,18 +47,18 @@
       }
     },
     "%@ edited an expense": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%@ একটি খরচ সম্পাদনা করেছেন"
+            "value": "%@ একটি খরচ বদলেছেন"
           }
         }
       }
     },
     "%@ made a change": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -69,7 +69,7 @@
       }
     },
     "%@ paid %@": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -79,8 +79,30 @@
         }
       }
     },
+    "%@ pays %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ দেবেন %2$@-কে"
+          }
+        }
+      }
+    },
+    "%@ pays %@ %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ দেবেন %2$@-কে %3$@"
+          }
+        }
+      }
+    },
     "%@ pays you": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -91,7 +113,7 @@
       }
     },
     "%@ recorded a payment": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -101,30 +123,63 @@
         }
       }
     },
-    "%@ still needs to be assigned.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "%@ still needs someone to pay it": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "এখনো %@ ভাগ করা বাকি।"
+            "value": "%@ এখনো কারো ভাগে পড়েনি"
           }
         }
       }
     },
-    "%@: %lld": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "%@ taka": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%1$@: %2$lld"
+            "value": "%@ টাকা"
+          }
+        }
+      }
+    },
+    "%@ taka %lld poisha": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ টাকা %2$lld পয়সা"
+          }
+        }
+      }
+    },
+    "%@ · %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ · %lld shares": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$lld অংশ"
           }
         }
       }
     },
     "%lld people": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -134,8 +189,19 @@
         }
       }
     },
+    "Activity": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সাম্প্রতিক"
+          }
+        }
+      }
+    },
     "Add": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -146,7 +212,7 @@
       }
     },
     "Add a person": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -157,7 +223,7 @@
       }
     },
     "Add another person": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -168,7 +234,7 @@
       }
     },
     "Add expense": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -178,19 +244,52 @@
         }
       }
     },
-    "Amount in taka": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Amount": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "টাকার পরিমাণ"
+            "value": "পরিমাণ"
+          }
+        }
+      }
+    },
+    "Amount for %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-এর পরিমাণ"
+          }
+        }
+      }
+    },
+    "Amounts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরিমাণ"
+          }
+        }
+      }
+    },
+    "Automatic": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "স্বয়ংক্রিয়"
           }
         }
       }
     },
     "Balances": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -201,7 +300,7 @@
       }
     },
     "Bank transfer": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -212,7 +311,7 @@
       }
     },
     "Cancel": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -223,7 +322,7 @@
       }
     },
     "Cash": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -233,19 +332,41 @@
         }
       }
     },
-    "Check the amounts.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Check the amounts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "পরিমাণগুলো দেখে নিন।"
+            "value": "পরিমাণগুলো দেখে নিন"
+          }
+        }
+      }
+    },
+    "Check these before using them": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যবহারের আগে এগুলো দেখে নিন"
+          }
+        }
+      }
+    },
+    "Clear": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুছে ফেলুন"
           }
         }
       }
     },
     "Confirmed by the provider": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -256,29 +377,51 @@
       }
     },
     "Create": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "তৈরি করুন"
+            "value": "খুলুন"
           }
         }
       }
     },
-    "Create a group for a trip, a flat or a dinner, then add what each person paid.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Create a group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ভ্রমণ, বাসা বা খাওয়াদাওয়ার জন্য একটি গ্রুপ খুলুন, তারপর কে কত দিয়েছে যোগ করুন।"
+            "value": "গ্রুপ খুলুন"
+          }
+        }
+      }
+    },
+    "Date": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তারিখ"
+          }
+        }
+      }
+    },
+    "Decimal point": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দশমিক"
           }
         }
       }
     },
     "Delete": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -288,52 +431,85 @@
         }
       }
     },
-    "Enter an amount above zero.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Divided by": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "শূন্যের বেশি পরিমাণ লিখুন।"
+            "value": "ভাগ"
+          }
+        }
+      }
+    },
+    "Done": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "হয়ে গেছে"
+          }
+        }
+      }
+    },
+    "Double-tap to confirm": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নিশ্চিত করতে দুবার ট্যাপ করুন"
+          }
+        }
+      }
+    },
+    "Enter an amount above zero": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শূন্যের বেশি পরিমাণ লিখুন"
           }
         }
       }
     },
     "Equally": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "সমানভাবে"
+            "value": "সমান"
           }
         }
       }
     },
-    "Everything is stored only on this phone. Nothing is uploaded, and there's no account yet.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Everyone is settled up": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "সবকিছু শুধু এই ফোনেই থাকে। কিছুই আপলোড হয় না, আর এখনো কোনো অ্যাকাউন্ট নেই।"
+            "value": "সবার হিসাব মিটে গেছে"
           }
         }
       }
     },
-    "Exact amounts": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Everything stays on this phone. Nothing is uploaded and there's no account.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "নির্দিষ্ট পরিমাণ"
+            "value": "সবকিছু এই ফোনেই থাকে। কিছুই আপলোড হয় না, কোনো অ্যাকাউন্টও নেই।"
           }
         }
       }
     },
     "Expenses": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -343,8 +519,19 @@
         }
       }
     },
+    "Expenses you add in any group show up here": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যেকোনো গ্রুপে যোগ করা খরচ এখানে দেখাবে"
+          }
+        }
+      }
+    },
     "Failed": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -354,8 +541,19 @@
         }
       }
     },
+    "From photos": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি থেকে"
+          }
+        }
+      }
+    },
     "Group name, like Cox's Bazar trip": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -365,19 +563,8 @@
         }
       }
     },
-    "Group not found": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "গ্রুপ পাওয়া যায়নি"
-          }
-        }
-      }
-    },
     "Groups": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -388,7 +575,7 @@
       }
     },
     "History": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -398,30 +585,19 @@
         }
       }
     },
-    "Home": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Includes payments you recorded that no provider has verified:": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "হোম"
-          }
-        }
-      }
-    },
-    "Includes payments reported in the app but not verified:": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "অ্যাপে জানানো কিন্তু যাচাই না করা পেমেন্টসহ:"
+            "value": "আপনার লেখা এমন পেমেন্টসহ, যা কোনো প্রোভাইডার যাচাই করেনি:"
           }
         }
       }
     },
     "Language": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -431,19 +607,63 @@
         }
       }
     },
-    "Leftover poisha go to the first people in the list, so the total always matches.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Leftover poisha go to the first people listed, so the total always matches": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "বাড়তি পয়সা তালিকার প্রথম দিকের জনদের ভাগে যায়, যাতে মোট সবসময় মেলে।"
+            "value": "বাড়তি পয়সা তালিকার প্রথম দিকের জনদের ভাগে যায়, তাই মোট সবসময় মেলে"
+          }
+        }
+      }
+    },
+    "Make one for a trip, a flat or a dinner, then add what each person paid. Everything stays on this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভ্রমণ, বাসা বা খাওয়াদাওয়ার জন্য একটি গ্রুপ খুলুন, তারপর কে কত দিয়েছে লিখুন। সবকিছু এই ফোনেই থাকে।"
+          }
+        }
+      }
+    },
+    "Marked received by the person paid": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যিনি পেয়েছেন তিনি পাওয়া হিসেবে চিহ্নিত করেছেন"
+          }
+        }
+      }
+    },
+    "Marked received from %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-এর কাছ থেকে পাওয়া লেখা হলো"
+          }
+        }
+      }
+    },
+    "Minus": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বিয়োগ"
           }
         }
       }
     },
     "Name": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -453,19 +673,19 @@
         }
       }
     },
-    "Names are kept exactly as you type them.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Names are kept exactly as you type them": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "নাম ঠিক যেভাবে লিখবেন সেভাবেই থাকবে।"
+            "value": "নাম ঠিক যেভাবে লিখবেন সেভাবেই থাকবে"
           }
         }
       }
     },
     "New group": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -475,8 +695,41 @@
         }
       }
     },
+    "No activity yet": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখনো কিছু নেই"
+          }
+        }
+      }
+    },
+    "No amount found. Try a sharper, flatter photo, or type it in.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কোনো পরিমাণ পাওয়া যায়নি। আরো পরিষ্কার ও সোজা ছবি তুলুন, অথবা নিজে লিখুন।"
+          }
+        }
+      }
+    },
+    "No changes yet": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখনো কোনো পরিবর্তন নেই"
+          }
+        }
+      }
+    },
     "No groups yet": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -487,7 +740,7 @@
       }
     },
     "Not started": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -497,19 +750,19 @@
         }
       }
     },
-    "Nothing added yet.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Nothing added yet": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "এখনো কিছু যোগ করা হয়নি।"
+            "value": "এখনো কিছু যোগ করা হয়নি"
           }
         }
       }
     },
     "Numbers": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -519,19 +772,52 @@
         }
       }
     },
-    "Opened the payment app. Not confirmed.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Only mark it received once the money has reached you": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "পেমেন্ট অ্যাপ খোলা হয়েছে। নিশ্চিত হয়নি।"
+            "value": "টাকা হাতে আসার পরই পাওয়া হিসেবে চিহ্নিত করুন"
+          }
+        }
+      }
+    },
+    "Opens the keypad": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কিপ্যাড খোলে"
+          }
+        }
+      }
+    },
+    "Operator": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "চিহ্ন"
+          }
+        }
+      }
+    },
+    "Or create one for a trip, a flat or a dinner": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অথবা ভ্রমণ, বাসা বা খাওয়ার জন্য নতুন একটি খুলুন"
           }
         }
       }
     },
     "Other": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -542,7 +828,7 @@
       }
     },
     "Paid by": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -553,7 +839,7 @@
       }
     },
     "Paid by %@": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -564,7 +850,7 @@
       }
     },
     "Paid with": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -574,8 +860,19 @@
         }
       }
     },
+    "Payment app opened, not confirmed": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পেমেন্ট অ্যাপ খোলা হয়েছে, নিশ্চিত হয়নি"
+          }
+        }
+      }
+    },
     "Payments": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -586,7 +883,7 @@
       }
     },
     "Percent": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -596,30 +893,63 @@
         }
       }
     },
-    "Percentages need to add up to 100.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Percent for %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "শতাংশের যোগফল ১০০ হতে হবে।"
+            "value": "%@-এর শতাংশ"
           }
         }
       }
     },
-    "Pick at least one person.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Percentages need to add up to 100": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "অন্তত একজন বেছে নিন।"
+            "value": "শতাংশের যোগফল ১০০ হতে হবে"
+          }
+        }
+      }
+    },
+    "Pick a group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "একটি গ্রুপ বেছে নিন"
+          }
+        }
+      }
+    },
+    "Pick at least one person": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্তত একজন বেছে নিন"
+          }
+        }
+      }
+    },
+    "Plus": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যোগ"
           }
         }
       }
     },
     "Profile": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -629,30 +959,52 @@
         }
       }
     },
-    "Record %@ as paid": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Read on this phone. The photo isn't saved or uploaded.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%@ পরিশোধিত হিসেবে লিখুন"
+            "value": "এই ফোনেই পড়া হয়েছে। ছবিটি সংরক্ষণ বা আপলোড হয় না।"
           }
         }
       }
     },
-    "Reported in TakaDe. Not verified with the provider.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Receipt": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "টাকাদে-তে জানানো হয়েছে। প্রোভাইডারের সাথে যাচাই হয়নি।"
+            "value": "রসিদ"
+          }
+        }
+      }
+    },
+    "Recorded as paid to %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে দেওয়া হয়েছে লেখা হলো"
+          }
+        }
+      }
+    },
+    "Recorded by you, not verified": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি লিখেছেন, যাচাই হয়নি"
           }
         }
       }
     },
     "Reversed": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -662,19 +1014,19 @@
         }
       }
     },
-    "Same as device": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Same as phone": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ডিভাইসের মতো"
+            "value": "ফোনের মতো"
           }
         }
       }
     },
     "Save": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -684,19 +1036,41 @@
         }
       }
     },
-    "Selected": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Saved as recorded by you. It isn't checked with bKash, upay or any bank, and TakaDe never asks for your PIN.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "নির্বাচিত"
+            "value": "আপনার লেখা হিসেবে সংরক্ষিত হবে। বিকাশ, উপায় বা কোনো ব্যাংকের সাথে যাচাই হয় না, আর টাকাদে কখনো আপনার পিন চায় না।"
+          }
+        }
+      }
+    },
+    "Scan receipt": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদ স্ক্যান করুন"
+          }
+        }
+      }
+    },
+    "Scan receipt from photos": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি থেকে রসিদ স্ক্যান করুন"
           }
         }
       }
     },
     "Settle up": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -707,7 +1081,7 @@
       }
     },
     "Settled up": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -717,19 +1091,52 @@
         }
       }
     },
-    "Shares": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Share balances": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ভাগ"
+            "value": "ব্যালান্স শেয়ার করুন"
+          }
+        }
+      }
+    },
+    "Shares": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অংশ"
+          }
+        }
+      }
+    },
+    "Shop": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দোকান"
+          }
+        }
+      }
+    },
+    "Shop name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দোকানের নাম"
           }
         }
       }
     },
     "Someone": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -740,18 +1147,18 @@
       }
     },
     "Split": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ভাগ করুন"
+            "value": "ভাগ"
           }
         }
       }
     },
     "Suggested payments": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -761,41 +1168,85 @@
         }
       }
     },
-    "TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here so the balance updates.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Swipe to mark %@ received": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "টাকাদে টাকা পাঠায় না। নগদ, বিকাশ বা ব্যাংকে যেভাবে দেন সেভাবে দিন, তারপর এখানে লিখে রাখুন যাতে ব্যালান্স হালনাগাদ হয়।"
+            "value": "%@ পাওয়া হয়েছে লিখতে সোয়াইপ করুন"
           }
         }
       }
     },
-    "The amounts are %@ more than the total.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "Swipe to record %@ paid": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "পরিমাণগুলো মোটের চেয়ে %@ বেশি।"
+            "value": "%@ দেওয়া হয়েছে লিখতে সোয়াইপ করুন"
           }
         }
       }
     },
-    "The expense wasn't saved. Try again.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "খরচটি সংরক্ষণ হয়নি। আবার চেষ্টা করুন।"
+            "value": "টাকাদে টাকা পাঠায় না। নগদ, বিকাশ বা ব্যাংকে যেভাবে দেন সেভাবে দিন, তারপর এখানে লিখে রাখুন।"
+          }
+        }
+      }
+    },
+    "Tap anywhere to close": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধ করতে যেকোনো জায়গায় ট্যাপ করুন"
+          }
+        }
+      }
+    },
+    "That photo couldn't be opened. Try another one.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবিটি খোলা যায়নি। অন্য একটি চেষ্টা করুন।"
+          }
+        }
+      }
+    },
+    "The amounts add up to %@ more than the total": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরিমাণগুলোর যোগফল মোটের চেয়ে %@ বেশি"
+          }
+        }
+      }
+    },
+    "The expense wasn't saved. Check the amounts and try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খরচটি সংরক্ষণ হয়নি। পরিমাণ দেখে আবার চেষ্টা করুন।"
           }
         }
       }
     },
     "The group wasn't saved. Try again.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -806,7 +1257,7 @@
       }
     },
     "The payment wasn't recorded. Try again.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -816,19 +1267,52 @@
         }
       }
     },
-    "This is saved as reported by you. It isn't checked with bKash, upay or any bank.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "The receipt couldn't be read. Type the amount instead.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "এটি আপনার জানানো হিসেবে সংরক্ষিত হবে। বিকাশ, উপায় বা কোনো ব্যাংকের সাথে যাচাই করা হয় না।"
+            "value": "রসিদটি পড়া যায়নি। পরিমাণটি নিজে লিখুন।"
+          }
+        }
+      }
+    },
+    "This group is gone": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপটি আর নেই"
+          }
+        }
+      }
+    },
+    "Times": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গুণ"
+          }
+        }
+      }
+    },
+    "Total": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মোট"
           }
         }
       }
     },
     "Transaction ID (optional)": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -838,8 +1322,30 @@
         }
       }
     },
+    "Use the receipt's date": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদের তারিখ ব্যবহার করুন"
+          }
+        }
+      }
+    },
+    "Use these": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এগুলো ব্যবহার করুন"
+          }
+        }
+      }
+    },
     "Waiting for confirmation": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -849,8 +1355,19 @@
         }
       }
     },
+    "We weren't sure about the total. Pick the right one": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মোট নিয়ে নিশ্চিত হওয়া যায়নি। সঠিকটি বেছে নিন"
+          }
+        }
+      }
+    },
     "What was it for?": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -861,7 +1378,7 @@
       }
     },
     "Who else is in it": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -871,8 +1388,19 @@
         }
       }
     },
+    "Worked out with TakaDe": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "টাকাদে দিয়ে হিসাব করা"
+          }
+        }
+      }
+    },
     "You": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -883,7 +1411,7 @@
       }
     },
     "You are owed": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -894,7 +1422,7 @@
       }
     },
     "You are owed in total": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -905,7 +1433,7 @@
       }
     },
     "You owe": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -916,7 +1444,7 @@
       }
     },
     "You owe in total": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -927,29 +1455,29 @@
       }
     },
     "You pay %@": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "আপনি %@-কে দেবেন"
+            "value": "আপনি দেবেন %@-কে"
           }
         }
       }
     },
-    "You're settled up in this group.": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+    "You're settled up in this group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "এই গ্রুপে আপনার হিসাব মিটে গেছে।"
+            "value": "এই গ্রুপে আপনার হিসাব মিটে গেছে"
           }
         }
       }
     },
     "Your data": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -959,8 +1487,19 @@
         }
       }
     },
+    "Your groups couldn't be loaded. Restart the app to try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার গ্রুপগুলো লোড হয়নি। অ্যাপটি বন্ধ করে আবার খুলুন।"
+          }
+        }
+      }
+    },
     "Your name": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
@@ -970,35 +1509,24 @@
         }
       }
     },
+    "Your saved data couldn't be opened, so changes made now won't be kept. Restart the app to try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার সংরক্ষিত তথ্য খোলা যায়নি, তাই এখনকার পরিবর্তন থাকবে না। আবার চেষ্টা করতে অ্যাপটি বন্ধ করে খুলুন।"
+          }
+        }
+      }
+    },
     "minus": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
             "value": "ঋণাত্মক"
-          }
-        }
-      }
-    },
-    "poisha": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "পয়সা"
-          }
-        }
-      }
-    },
-    "taka": {
-      "comment": "Machine-drafted Bengali; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "টাকা"
           }
         }
       }

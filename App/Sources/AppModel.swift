@@ -9,6 +9,8 @@ import TakaDePersistence
 final class AppModel {
     private(set) var groups: [ExpenseGroup] = []
     private(set) var loadError: String?
+    /// Bumped after every write so dependent views reload.
+    private(set) var revision = 0
     let repository: LedgerRepository
 
     init(repository: LedgerRepository) {
@@ -25,7 +27,7 @@ final class AppModel {
             return AppModel(repository: repo)
         } catch {
             let model = AppModel(repository: try! SQLiteLedgerRepository())
-            model.loadError = "Your data couldn't be opened. Changes made now won't be saved. (\(error.localizedDescription))"
+            model.loadError = String(localized: "Your saved data couldn't be opened, so changes made now won't be kept. Restart the app to try again.")
             return model
         }
     }
@@ -37,9 +39,14 @@ final class AppModel {
     func reload() async {
         do {
             groups = try await repository.groups()
+            revision += 1
         } catch {
-            loadError = error.localizedDescription
+            loadError = String(localized: "Your groups couldn't be loaded. Restart the app to try again.")
         }
+    }
+
+    func group(_ id: GroupID) -> ExpenseGroup? {
+        groups.first { $0.id == id }
     }
 
     func createGroup(name: String, myName: String, otherNames: [String]) async throws -> ExpenseGroup {
@@ -58,6 +65,21 @@ final class AppModel {
         await reload()
     }
 
+    func save(_ expense: Expense, in group: ExpenseGroup) async throws {
+        try await repository.save(expense, actor: group.me?.id)
+        await reload()
+    }
+
+    func delete(_ expense: Expense, in group: ExpenseGroup) async throws {
+        try await repository.delete(expense.id, actor: group.me?.id)
+        await reload()
+    }
+
+    func record(_ settlement: Settlement, in group: ExpenseGroup) async throws {
+        try await repository.save(settlement, actor: group.me?.id)
+        await reload()
+    }
+
     /// Net position of "me" across all groups. Assumes one currency (BDT) for now.
     func myTotal() async -> Money {
         var total: Int64 = 0
@@ -73,10 +95,14 @@ final class AppModel {
         let settlements = try await repository.settlements(in: group.id)
         return try BalanceCalculator.balances(members: group.members.map(\.id), currency: group.currency, expenses: expenses, settlements: settlements)
     }
-}
 
-extension ExpenseGroup {
-    var me: Member? { members.first(where: \.isMe) }
-    func member(_ id: MemberID) -> Member? { members.first { $0.id == id } }
-    func name(of id: MemberID) -> String { member(id)?.displayName ?? "?" }
+    /// Most recent expenses across every group, newest first.
+    func recentActivity(limit: Int = 50) async -> [ActivityItem] {
+        var items: [ActivityItem] = []
+        for group in groups {
+            let expenses = (try? await repository.expenses(in: group.id, includeDeleted: false)) ?? []
+            items += expenses.map { ActivityItem(group: group, expense: $0) }
+        }
+        return Array(items.sorted { $0.expense.occurredAt > $1.expense.occurredAt }.prefix(limit))
+    }
 }
