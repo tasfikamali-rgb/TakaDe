@@ -18,12 +18,9 @@ struct SettleUpView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    Text("TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here.")
-                        .font(AppFont.body)
-                        .foregroundStyle(Color.inkMuted)
-                }
+            LayeredForm {
+                SettleUpHeader(group: group, transfer: selected, isSettled: myTransfers.isEmpty)
+            } content: {
                 TransferPickerSection(group: group, transfers: myTransfers, selected: $selected)
                 if let selected {
                     PaymentDetailsSection(isMePaying: selected.from == group.me?.id, method: $method, reference: $reference)
@@ -32,7 +29,6 @@ struct SettleUpView: View {
                     Section { Text(saveError).foregroundStyle(Color.owe) }
                 }
             }
-            .readableWidth()
             .navigationTitle("Settle up")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

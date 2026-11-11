@@ -23,9 +23,16 @@ struct AddExpenseView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            LayeredForm {
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    Text(verbatim: draft.group.name)
+                        .font(AppFont.label)
+                        .foregroundStyle(Color.ink.opacity(0.72))
+                        .lineLimit(1)
+                    AmountField(draft: draft, size: .balance, onTap: openKeypad)
+                }
+            } content: {
                 Section {
-                    AmountField(draft: draft, onTap: openKeypad)
                     TextField("What was it for?", text: $draft.title)
                     DatePicker("Date", selection: $draft.occurredAt, displayedComponents: .date)
                     ReceiptScanButton(onReviewed: draft.apply)
@@ -51,7 +58,6 @@ struct AddExpenseView: View {
                     }
                 }
             }
-            .readableWidth()
             .navigationTitle(draft.isEditing ? "Edit expense" : "Add expense")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
