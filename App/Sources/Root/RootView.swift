@@ -9,7 +9,9 @@ struct RootView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var tab: AppTab = .home
+    // Scene storage, so a language switch (which rebuilds the whole tree) or a new window
+    // comes back to the same tab instead of jumping to Groups.
+    @SceneStorage("selectedTab") private var tab: AppTab = .home
     @State private var chrome = AppChrome()
 
     @State private var windowSize: CGSize = .zero

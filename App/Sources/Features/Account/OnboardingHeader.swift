@@ -14,8 +14,9 @@ struct OnboardingHeader: View {
                         .frame(width: index == progress ? 24 : 8, height: 8)
                 }
             }
-            .accessibilityElement()
-            .accessibilityLabel(Text("Step \(progress + 1) of 3"))
+            // Decorative: the step is read with the title instead, so there's no tiny
+            // element for VoiceOver to land on.
+            .accessibilityHidden(true)
             Text(verbatim: "TakaDe")
                 .font(AppFont.label)
                 .foregroundStyle(Color.onHeader.opacity(0.72))
@@ -25,6 +26,8 @@ struct OnboardingHeader: View {
                 .tracking(-0.005 * 28)
                 .foregroundStyle(Color.onHeader)
                 .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityValue(Text("Step \(progress + 1) of 3"))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Spacing.screenMargin)

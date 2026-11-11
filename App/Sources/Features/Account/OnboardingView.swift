@@ -95,6 +95,7 @@ struct OnboardingView: View {
             Text("You can change this any time in Settings")
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: Spacing.l)
             Button("Continue") { go(to: .welcome) }
                 .buttonStyle(PillButtonStyle())
@@ -152,6 +153,7 @@ struct OnboardingView: View {
             Text("This is how you appear in groups, exactly as you type it")
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
             if let errorMessage {
                 Text(verbatim: errorMessage).font(AppFont.caption).foregroundStyle(Color.owe)
             }
