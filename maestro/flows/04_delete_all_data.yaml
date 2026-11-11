@@ -14,7 +14,6 @@ tags:
 - inputText: "Trip"
 - tapOn: "Name"
 - inputText: "Rishan"
-- hideKeyboard
 - tapOn: "Create"
 - extendedWaitUntil:
     visible: "Settle up"

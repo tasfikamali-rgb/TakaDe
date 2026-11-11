@@ -16,7 +16,6 @@ tags:
 # "Your name" is prefilled from onboarding.
 - tapOn: "Name"
 - inputText: "Rishan"
-- hideKeyboard
 - takeScreenshot: ${OUT}/02-new-group
 - tapOn: "Create"
 - extendedWaitUntil:
@@ -36,7 +35,6 @@ tags:
 - tapOn: "Done"
 - tapOn: "What was it for?"
 - inputText: "Dinner"
-- hideKeyboard
 - takeScreenshot: ${OUT}/05-add-expense
 - tapOn: "Save"
 - extendedWaitUntil:
