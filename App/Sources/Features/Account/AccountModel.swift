@@ -2,6 +2,7 @@ import AuthenticationServices
 import Foundation
 import Observation
 import TakaDeCore
+import UIKit
 
 /// The device owner's profile and their sign-in.
 ///
@@ -25,6 +26,8 @@ final class AccountModel {
     private(set) var profile: LocalProfile?
     private(set) var identities: [AccountIdentity] = []
     private(set) var isLoaded = false
+    /// The profile picture, kept on this phone only (ProfilePhotoFile).
+    private(set) var photo: UIImage?
     let store: ProfileRepository
     let google: GoogleSignInService?
     let supabase: SupabaseAuth?
@@ -65,6 +68,7 @@ final class AccountModel {
 
     func load() async {
         profile = try? await store.profile()
+        photo = ProfilePhotoFile.load()
         identities = (try? await store.accountIdentities()) ?? []
         isLoaded = true
         await checkAppleCredential()
@@ -284,12 +288,25 @@ final class AccountModel {
         await supabase?.signOut()
         KeychainStore.deleteAll()
         try await store.eraseEverything()
-        for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey] {
+        for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey, HomeRegion.storageKey] {
             UserDefaults.standard.removeObject(forKey: key)
         }
+        ProfilePhotoFile.remove()
+        photo = nil
         profile = nil
         identities = []
         await app.reload()
+    }
+
+    // MARK: Profile photo
+
+    func setPhoto(_ data: Data) async throws {
+        photo = try await ProfilePhotoFile.save(data)
+    }
+
+    func removePhoto() {
+        ProfilePhotoFile.remove()
+        photo = nil
     }
 
     // MARK: Export

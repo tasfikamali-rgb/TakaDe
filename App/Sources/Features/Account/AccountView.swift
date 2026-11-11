@@ -173,12 +173,14 @@ private struct ProfileHeader: View {
 
     var body: some View {
         HStack(spacing: Spacing.m) {
-            Avatar(name: name.isEmpty ? "?" : name, size: 64, fill: .lilac)
+            ProfilePhotoPicker(name: name, size: 72)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(verbatim: name.isEmpty ? "—" : name)
-                    .font(AppFont.title)
-                    .foregroundStyle(Color.ink)
-                    .lineLimit(2)
+                Group {
+                    if name.isEmpty { Text("Add your name below") } else { Text(verbatim: name) }
+                }
+                .font(AppFont.title)
+                .foregroundStyle(Color.ink)
+                .lineLimit(2)
                 if let email {
                     Text(verbatim: email).font(AppFont.label).foregroundStyle(Color.inkMuted)
                 } else {
@@ -187,9 +189,9 @@ private struct ProfileHeader: View {
                         .foregroundStyle(Color.inkMuted)
                 }
             }
+            .accessibilityElement(children: .combine)
         }
         .padding(.vertical, Spacing.s)
-        .accessibilityElement(children: .combine)
     }
 }
 

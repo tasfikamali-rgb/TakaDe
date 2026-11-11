@@ -27,7 +27,7 @@ tags:
 - tapOn: "Delete everything"
 # Back to first launch, and the group is gone.
 - extendedWaitUntil:
-    visible: "English"
+    visible: "Get started"
     timeout: 10000
 - runFlow: ../subflows/onboarding.yaml
 - assertVisible: "No groups yet"

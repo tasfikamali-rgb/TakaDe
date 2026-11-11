@@ -1,9 +1,16 @@
-# First launch: language, account choice, name. Run after launchApp with clearState.
+# First launch: welcome, where you're from, language, account choice, name.
+# Run after launchApp with clearState.
 appId: app.takade.ios
 ---
 - extendedWaitUntil:
-    visible: "English"
+    visible: "Get started"
     timeout: 20000
+- tapOn: "Get started"
+# Where you're from: the suggestion is already picked.
+- tapOn: "Continue"
+- extendedWaitUntil:
+    visible: "English"
+    timeout: 5000
 - tapOn: "English"
 - takeScreenshot: ${OUT}/00a-onboarding-language
 - tapOn: "Continue"

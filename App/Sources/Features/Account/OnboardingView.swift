@@ -1,16 +1,19 @@
 import SwiftUI
 import TakaDeCore
 
-/// First launch: language, then Create an account, Sign in, or Continue without account,
-/// then a name and a sign-in method as needed. Groups and expenses always stay on this phone.
+/// First launch (Sabit, 2026-11-11): a welcome screen with the logo, where you're from,
+/// language, then Create an account, Sign in, or Continue without account, then a name
+/// (and photo) and a sign-in method as needed. Groups and expenses always stay on this phone.
 struct OnboardingView: View {
-    enum Step: Int { case language, welcome, name, method }
+    enum Step: Int { case welcome, region, language, account, name, method }
     enum Mode: String { case create, signIn, guest }
 
     @Environment(AccountModel.self) private var account
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     // Survive the rebuild that a language change triggers.
-    @AppStorage("onboardingStep") private var stepRaw = Step.language.rawValue
+    @AppStorage("onboardingStep") private var stepRaw = Step.welcome.rawValue
+    @AppStorage(HomeRegion.storageKey) private var region = HomeRegion.suggested
+    @Environment(\.locale) private var locale
     @AppStorage("onboardingMode") private var modeRaw = Mode.guest.rawValue
     @AppStorage(AccountModel.nameKey) private var savedName = ""
     @State private var name = ""
@@ -22,18 +25,54 @@ struct OnboardingView: View {
     @State private var errorMessage: String?
     @State private var saving = false
 
-    private var step: Step { Step(rawValue: stepRaw) ?? .language }
+    private var step: Step { Step(rawValue: stepRaw) ?? .welcome }
     private var mode: Mode { Mode(rawValue: modeRaw) ?? .guest }
 
     var body: some View {
+        Group {
+            if step == .welcome { welcomeScreen } else { stepScreen }
+        }
+        .animation(Motion.standard, value: stepRaw)
+        .onAppear {
+            if name.isEmpty { name = savedName }
+            // A sign-in isn't kept across launches until the profile exists, so start over.
+            if step == .method || step == .name && mode == .signIn { stepRaw = Step.account.rawValue }
+        }
+    }
+
+    /// The first thing anyone sees: the logo on the brand colour, and one way forward.
+    private var welcomeScreen: some View {
+        GeometryReader { proxy in
+            VStack(spacing: Spacing.l) {
+                Spacer()
+                TakaLogo(width: min(300, proxy.size.width - Spacing.screenMargin * 2))
+                Text("Split bills with friends. Settle up in taka.")
+                    .font(AppFont.title)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(Color("launchWord"))
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                Button("Get started") { go(to: .region) }
+                    .buttonStyle(PillButtonStyle(fill: Color("launchWord"), text: Color("launchBackground")))
+            }
+            .padding(.horizontal, Spacing.screenMargin)
+            .padding(.bottom, Spacing.l)
+            .frame(maxWidth: .infinity)
+            .readableWidth()
+        }
+        .background(Color("launchBackground").ignoresSafeArea())
+    }
+
+    private var stepScreen: some View {
         VStack(alignment: .leading, spacing: 0) {
             OnboardingHeader(step: step, mode: mode)
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.l) {
                     SheetGrabber()
                     switch step {
+                    case .welcome, .region: regionStep
                     case .language: languageStep
-                    case .welcome: welcomeStep
+                    case .account: accountStep
                     case .name: nameStep
                     case .method: methodStep
                     }
@@ -53,23 +92,63 @@ struct OnboardingView: View {
             )
         }
         .background(Color.header.ignoresSafeArea())
-        .animation(Motion.standard, value: stepRaw)
-        .onAppear {
-            if name.isEmpty { name = savedName }
-            // A sign-in isn't kept across launches until the profile exists, so start over.
-            if step == .method || step == .name && mode == .signIn { stepRaw = Step.welcome.rawValue }
-            preselectPhoneLanguage()
-        }
     }
 
-    /// Starts on the phone's own language, so most people just tap Continue.
-    private func preselectPhoneLanguage() {
-        guard language == .system, step == .language else { return }
+    /// Suggests Bangla for Bangladesh, otherwise the phone's own language, so most people
+    /// just tap Continue. Only while the language still follows the phone.
+    private func suggestLanguage() {
+        guard language == .system else { return }
         let phoneUsesBengali = Locale.preferredLanguages.first?.hasPrefix("bn") == true
-        language = phoneUsesBengali ? .bengali : .english
+        language = region == "BD" || phoneUsesBengali ? .bengali : .english
     }
 
     // MARK: Steps
+
+    private var regionStep: some View {
+        VStack(alignment: .leading, spacing: Spacing.s) {
+            ForEach(HomeRegion.choices, id: \.self) { code in
+                Button { region = code } label: {
+                    HStack(spacing: Spacing.s) {
+                        Text(verbatim: HomeRegion.flag(code))
+                            .font(.title2)
+                            .accessibilityHidden(true)
+                        regionName(code).font(AppFont.headline)
+                        Spacer()
+                        Image(systemName: region == code ? "checkmark.circle.fill" : "circle")
+                            .font(.title3)
+                            .accessibilityHidden(true)
+                    }
+                    .foregroundStyle(Color.ink)
+                    .padding(.horizontal, Spacing.m)
+                    .frame(minHeight: 56)
+                    .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+                    .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
+                        .stroke(Color.ink, lineWidth: region == code ? 2 : 0))
+                }
+                .buttonStyle(PressScaleButtonStyle())
+                .accessibilityAddTraits(region == code ? .isSelected : [])
+            }
+            Text("This suggests your language. It stays on this phone.")
+                .font(AppFont.caption)
+                .foregroundStyle(Color.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: Spacing.l)
+            Button("Continue") {
+                suggestLanguage()
+                go(to: .language)
+            }
+            .buttonStyle(PillButtonStyle())
+            Button("Back") { go(to: .welcome) }
+                .font(AppFont.label)
+                .foregroundStyle(Color.inkMuted)
+                .frame(maxWidth: .infinity, minHeight: 44)
+        }
+    }
+
+    private func regionName(_ code: String) -> Text {
+        if code == HomeRegion.elsewhere { return Text("Somewhere else") }
+        return Text(verbatim: locale.localizedString(forRegionCode: code) ?? code)
+    }
 
     private var languageStep: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
@@ -97,12 +176,16 @@ struct OnboardingView: View {
                 .foregroundStyle(Color.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: Spacing.l)
-            Button("Continue") { go(to: .welcome) }
+            Button("Continue") { go(to: .account) }
                 .buttonStyle(PillButtonStyle())
+            Button("Back") { go(to: .region) }
+                .font(AppFont.label)
+                .foregroundStyle(Color.inkMuted)
+                .frame(maxWidth: .infinity, minHeight: 44)
         }
     }
 
-    private var welcomeStep: some View {
+    private var accountStep: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             Text(account.usesAccountService
                  ? LocalizedStringKey("An account lets you sign in on a new phone. Your groups and expenses stay on this phone either way.")
@@ -142,7 +225,17 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.lilac))
             }
-            TextField("Your name", text: $name)
+            ProfilePhotoPicker(name: name, size: 104)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, Spacing.xs)
+            Text("Add a photo so friends spot you quickly. It stays on this phone.")
+                .font(AppFont.caption)
+                .foregroundStyle(Color.inkMuted)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.bottom, Spacing.s)
+            TextField("Your name", text: $name, prompt: Text("Your name").foregroundStyle(Color.inkMuted))
                 .font(AppFont.headline)
                 .textContentType(.name)
                 .submitLabel(asksForMethod ? .next : .done)
@@ -176,7 +269,7 @@ struct OnboardingView: View {
                     .font(AppFont.caption)
                     .foregroundStyle(Color.inkMuted)
             }
-            Button("Back") { go(to: mode == .create ? .name : .welcome) }
+            Button("Back") { go(to: mode == .create ? .name : .account) }
                 .font(AppFont.label)
                 .foregroundStyle(Color.inkMuted)
                 .frame(maxWidth: .infinity, minHeight: 44)
@@ -208,7 +301,7 @@ struct OnboardingView: View {
             signedIn = false
         }
         notice = nil
-        go(to: .welcome)
+        go(to: .account)
     }
 
     /// Picking the other door is fine: a sign-in that made a new account becomes Create,
@@ -244,7 +337,7 @@ struct OnboardingView: View {
         Task {
             do {
                 try await account.completeOnboarding(name: trimmedName)
-                stepRaw = Step.language.rawValue
+                stepRaw = Step.welcome.rawValue
                 modeRaw = Mode.guest.rawValue
             } catch {
                 errorMessage = String(localized: "Your profile wasn't saved. Try again.", bundle: .appLanguage)

@@ -2960,23 +2960,6 @@
         }
       }
     },
-    "Step %lld of 3": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "৩ ধাপের %lld নম্বর"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Step %lld of 3"
-          }
-        }
-      }
-    },
     "Choose your language": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -5610,7 +5593,8 @@
             "value": "Split bills with friends, settle up in taka"
           }
         }
-      }
+      },
+      "extractionState": "stale"
     },
     "Sign in to your account": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
@@ -6441,6 +6425,244 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your groups, expenses and payments stay on this phone, in an encrypted file that unlocks after you first unlock your phone. They're never uploaded."
+          }
+        }
+      }
+    },
+    "Add a photo so friends spot you quickly. It stays on this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি দিন, যাতে বন্ধুরা আপনাকে সহজে চিনতে পারে। ছবিটা এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a photo so friends spot you quickly. It stays on this phone."
+          }
+        }
+      }
+    },
+    "Add a profile photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রোফাইল ছবি দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a profile photo"
+          }
+        }
+      }
+    },
+    "Add your name below": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নিচে আপনার নাম লিখুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add your name below"
+          }
+        }
+      }
+    },
+    "Change profile photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রোফাইল ছবি বদলান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change profile photo"
+          }
+        }
+      }
+    },
+    "Choose a new photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নতুন ছবি বাছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a new photo"
+          }
+        }
+      }
+    },
+    "Get started": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুরু করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get started"
+          }
+        }
+      }
+    },
+    "Remove photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি সরান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove photo"
+          }
+        }
+      }
+    },
+    "Set up your account": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার অ্যাকাউন্ট সেট আপ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up your account"
+          }
+        }
+      }
+    },
+    "Somewhere else": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্য কোথাও"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somewhere else"
+          }
+        }
+      }
+    },
+    "Split bills with friends. Settle up in taka.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধুদের সাথে খরচ ভাগ করুন। টাকায় হিসাব মেটান।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split bills with friends. Settle up in taka."
+          }
+        }
+      }
+    },
+    "Step %lld of %lld": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%2$lld ধাপের %1$lld নম্বর"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %1$lld of %2$lld"
+          }
+        }
+      }
+    },
+    "That photo couldn't be used. Try another one.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ছবিটা ব্যবহার করা গেল না। অন্য একটা চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That photo couldn't be used. Try another one."
+          }
+        }
+      }
+    },
+    "This suggests your language. It stays on this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটা দেখে আপনার ভাষা বেছে দেওয়া হয়। এটা এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This suggests your language. It stays on this phone."
+          }
+        }
+      }
+    },
+    "Where are you from?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি কোথা থেকে?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where are you from?"
           }
         }
       }
