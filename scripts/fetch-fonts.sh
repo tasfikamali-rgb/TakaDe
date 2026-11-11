@@ -2,6 +2,7 @@
 # Downloads Ranade and Author from Fontshare (free for commercial use; keep the
 # license files) and copies the needed weights into App/Resources/Fonts.
 # The app falls back to the system font if these are missing.
+# Hind Siliguri (Bengali text, SIL OFL) is committed in App/Resources/Fonts/HindSiliguri.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 tmp=$(mktemp -d)
