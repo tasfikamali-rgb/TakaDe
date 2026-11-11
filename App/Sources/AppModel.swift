@@ -16,11 +16,22 @@ final class AppModel {
     let profiles: ProfileRepository
     /// The same database: daily meal counts for mess groups.
     let mess: MessRepository
+    /// The same database: which groups are shared and what still has to go up.
+    let syncStore: SyncRepository
+    /// Called after every change made on this phone, so a shared group syncs it.
+    @ObservationIgnored var onLocalChange: ((GroupID) -> Void)?
+    /// A group to open, e.g. right after joining one from a link.
+    var requestedGroup: GroupID?
 
     init(store: SQLiteLedgerRepository) {
         repository = store
         profiles = store
         mess = store
+        syncStore = store
+    }
+
+    private func changed(_ group: GroupID) {
+        onLocalChange?(group)
     }
 
     /// The on-device database, protected by iOS Data Protection until first unlock.
@@ -91,6 +102,7 @@ final class AppModel {
         updated.members.append(contentsOf: names.map { Member(displayName: $0) })
         try await repository.save(updated, actor: group.me?.id)
         await reload()
+        changed(group.id)
     }
 
     // MARK: Monthly repeats
@@ -109,7 +121,10 @@ final class AppModel {
         for group in groups where group.archivedAt == nil {
             guard let expenses = try? await repository.expenses(in: group.id, includeDeleted: true) else { continue }
             for copy in MonthlyRepeat.dueCopies(of: expenses) {
-                if (try? await repository.save(copy, actor: nil)) != nil { added = true }
+                if (try? await repository.save(copy, actor: nil)) != nil {
+                    added = true
+                    changed(group.id)
+                }
             }
         }
         if added { await reload() }
@@ -124,6 +139,7 @@ final class AppModel {
     func save(_ meal: MealCount, in group: ExpenseGroup) async throws {
         try await mess.save(meal, in: group.id, actor: group.me?.id)
         revision += 1
+        changed(group.id)
     }
 
     func messSummary(for group: ExpenseGroup, month: MessMonth) async throws -> MessMonthSummary {
@@ -143,6 +159,7 @@ final class AppModel {
             try await repository.save(updated, actor: group.me?.id)
         }
         await reload()
+        changed(group.id)
     }
 
     func setSimplifiesDebts(_ on: Bool, for group: ExpenseGroup) async throws {
@@ -150,16 +167,19 @@ final class AppModel {
         updated.simplifiesDebts = on
         try await repository.save(updated, actor: group.me?.id)
         await reload()
+        changed(group.id)
     }
 
     func save(_ expense: Expense, in group: ExpenseGroup) async throws {
         try await repository.save(expense, actor: group.me?.id)
         await reload()
+        changed(group.id)
     }
 
     func delete(_ expense: Expense, in group: ExpenseGroup) async throws {
         try await repository.delete(expense.id, actor: group.me?.id)
         await reload()
+        changed(group.id)
     }
 
     /// Brings back a soft-deleted expense (the undo after a delete).
@@ -169,11 +189,13 @@ final class AppModel {
         restored.version += 1
         try await repository.save(restored, actor: group.me?.id)
         await reload()
+        changed(group.id)
     }
 
     func record(_ settlement: Settlement, in group: ExpenseGroup) async throws {
         try await repository.save(settlement, actor: group.me?.id)
         await reload()
+        changed(group.id)
     }
 
     /// Net position of "me" across all groups. Assumes one currency (BDT) for now.

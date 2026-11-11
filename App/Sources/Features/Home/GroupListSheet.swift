@@ -5,20 +5,32 @@ import TakaDeCore
 /// header, so header and content read as two physical layers.
 struct GroupListSheet: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(GroupSync.self) private var sync
     let groups: [ExpenseGroup]
     @Binding var selection: GroupID?
     let onNewGroup: () -> Void
+    let onJoin: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             SheetGrabber()
                 .padding(.bottom, Spacing.xs)
-            Text("Groups")
-                .font(AppFont.headline)
-                .foregroundStyle(Color.ink)
-                .padding(.bottom, Spacing.xxs)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Groups")
+                    .font(AppFont.headline)
+                    .foregroundStyle(Color.ink)
+                    .accessibilityAddTraits(.isHeader)
+                Spacer()
+                if sync.isAvailable && !groups.isEmpty {
+                    Button("Join with a link", systemImage: "link", action: onJoin)
+                        .font(AppFont.label)
+                        .foregroundStyle(Color.ink)
+                        .frame(minHeight: 44)
+                }
+            }
+            .padding(.bottom, Spacing.xxs)
             if groups.isEmpty {
-                EmptyGroupsCard(onNewGroup: onNewGroup)
+                EmptyGroupsCard(onNewGroup: onNewGroup, onJoin: sync.isAvailable ? onJoin : nil)
             } else {
                 ForEach(groups) { group in
                     Button { selection = group.id } label: {

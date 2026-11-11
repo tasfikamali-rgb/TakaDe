@@ -2,11 +2,13 @@ import SwiftUI
 import TakaDeCore
 
 /// Lilac header for a group (DESIGN.md section 2, optional group tint).
-struct GroupHeader: View {
+struct GroupHeader<Status: View>: View {
     let group: ExpenseGroup
     /// Nil while loading, so the header doesn't flash "Settled up".
     let myNet: Money?
     let onAddExpense: () -> Void
+    /// For a shared group, whether everything has reached the other phones.
+    @ViewBuilder var status: () -> Status
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
@@ -15,6 +17,7 @@ struct GroupHeader: View {
                 .font(AppFont.title)
                 .tracking(-0.005 * 28)
                 .foregroundStyle(Color.ink)
+            status()
             if let myNet {
                 let state = BalanceState(myNet)
                 Text(state.label)
