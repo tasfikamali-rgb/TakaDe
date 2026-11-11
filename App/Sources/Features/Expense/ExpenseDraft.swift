@@ -19,6 +19,8 @@ final class ExpenseDraft {
     var payer: MemberID
     /// When on, each person types what they paid instead of one payer paying it all.
     var severalPayers = false
+    /// Adds a copy every month on the same day, like rent.
+    var repeatsMonthly = false
     private var paidText: [MemberID: String] = [:]
     var method: SplitMethod = .equal
     var included: Set<MemberID>
@@ -42,6 +44,7 @@ final class ExpenseDraft {
         amountExpression = KeypadText.plain(expense.total)
         occurredAt = expense.occurredAt
         chosenCategory = .some(expense.category)
+        repeatsMonthly = expense.repeatsMonthly
         payer = expense.paidBy.keys.sorted().first ?? group.me?.id ?? group.members[0].id
         if expense.paidBy.count > 1 {
             severalPayers = true
@@ -220,10 +223,10 @@ final class ExpenseDraft {
             // Same id and a new version, so history shows an edit rather than a new expense.
             return try Expense(id: original.id, groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy,
                                splitRule: rule, occurredAt: occurredAt, note: original.note, category: category,
-                               version: original.version + 1)
+                               version: original.version + 1, repeatsMonthly: repeatsMonthly, repeatOf: original.repeatOf)
         }
         return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy, splitRule: rule,
-                           occurredAt: occurredAt, category: category)
+                           occurredAt: occurredAt, category: category, repeatsMonthly: repeatsMonthly)
     }
 
     /// Fills in fields from a reviewed receipt suggestion.

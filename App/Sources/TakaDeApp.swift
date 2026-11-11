@@ -27,11 +27,16 @@ struct TakaDeApp: App {
                 .task {
                     await account.load()
                     await model.reload()
+                    await model.addDueRepeats()
                 }
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     lock.scenePhaseChanged(to: phase)
                     // Windows can appear after launch (a new scene, the lock cover).
-                    if phase == .active { appearance.apply(animated: false) }
+                    if phase == .active {
+                        appearance.apply(animated: false)
+                        // Rent due today shows up when the app comes back, not only at launch.
+                        Task { await model.addDueRepeats() }
+                    }
                 }
                 .onChange(of: appearance, initial: true) { old, new in
                     new.apply(animated: old != new)

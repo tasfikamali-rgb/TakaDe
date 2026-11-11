@@ -35,6 +35,10 @@ struct AddExpenseView: View {
                 Section {
                     TextField("What was it for?", text: $draft.title)
                     DatePicker("Date", selection: $draft.occurredAt, displayedComponents: .date)
+                    // A monthly copy follows its original, so only the original can repeat.
+                    if draft.original?.repeatOf == nil {
+                        Toggle("Repeat every month", isOn: $draft.repeatsMonthly)
+                    }
                     Picker(selection: $draft.category) {
                         Text("None").tag(ExpenseCategory?.none)
                         ForEach(ExpenseCategory.allCases, id: \.self) { category in
