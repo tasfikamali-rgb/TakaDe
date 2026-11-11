@@ -5,6 +5,7 @@ import SwiftUI
 /// users double-tap to confirm instead. `onConfirm` returns false if the action failed,
 /// and the thumb springs back so the person can try again.
 struct SwipeToConfirm: View {
+    @Environment(\.colorScheme) private var colorScheme
     let title: String
     let onConfirm: () async -> Bool
 
@@ -21,7 +22,11 @@ struct SwipeToConfirm: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
-            Capsule().fill(Color.header)
+            Capsule()
+                .fill(Color.header)
+                // Light mode has no dark surfaces, so the white track needs an edge and a lift.
+                .overlay(Capsule().stroke(Color.ink.opacity(colorScheme == .dark ? 0 : 0.08), lineWidth: 1))
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0 : 0.14), radius: 16, y: 6)
             Text(verbatim: title)
                 .font(AppFont.bodyEmphasis)
                 .foregroundStyle(Color.onHeader.opacity(1 - Double(min(offset / maxOffset, 1)) * 0.8))
@@ -33,6 +38,7 @@ struct SwipeToConfirm: View {
                 .padding(.trailing, Spacing.m)
             Circle()
                 .fill(Color.lime)
+                .overlay(Circle().stroke(Color.ink.opacity(0.1), lineWidth: 1))
                 .overlay(Image(systemName: confirmed ? "checkmark" : "arrow.right").font(.headline).foregroundStyle(Color.onLime))
                 .frame(width: thumb, height: thumb)
                 .padding(inset)

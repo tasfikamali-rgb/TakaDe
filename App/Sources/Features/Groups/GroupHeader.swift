@@ -13,7 +13,7 @@ struct GroupHeader: View {
             AvatarStack(names: group.members.map(\.displayName), size: 32, ring: .lilac, fill: .surface)
             Text(verbatim: group.name)
                 .font(AppFont.title)
-                .tracking(-0.02 * 28)
+                .tracking(-0.005 * 28)
                 .foregroundStyle(Color.ink)
             if let myNet {
                 let state = BalanceState(myNet)
