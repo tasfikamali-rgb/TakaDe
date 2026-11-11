@@ -8,6 +8,7 @@ struct RootView: View {
     @Environment(AccountModel.self) private var account
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var tab: AppTab = .home
     @State private var chrome = AppChrome()
 
@@ -33,6 +34,8 @@ struct RootView: View {
             }
         }
         .tint(.ink)
+        // Fonts with a Bengali fallback are scaled when built, so rebuild on a text size change.
+        .id(dynamicTypeSize)
         .onGeometryChange(for: CGSize.self) { proxy in
             // The whole window, safe areas included, so bars and notches don't skew the shape.
             let insets = proxy.safeAreaInsets
