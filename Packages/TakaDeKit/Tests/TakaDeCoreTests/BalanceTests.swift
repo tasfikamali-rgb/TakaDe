@@ -93,8 +93,14 @@ final class BalanceTests: XCTestCase {
     }
 
     func testOldGroupSnapshotDecodesWithSimplifyOn() throws {
-        let json = #"{"id":"\#(UUID().uuidString)","name":"Trip","currency":{"code":"BDT","minorUnitDigits":2},"members":[],"createdAt":0}"#
-        let group = try JSONDecoder().decode(ExpenseGroup.self, from: Data(json.utf8))
-        XCTAssertTrue(group.simplifiesDebts)
+        let group = ExpenseGroup(name: "Trip", members: [Member(displayName: "A")], simplifiesDebts: false, kind: .mess, managerID: a)
+        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(group)) as! [String: Any]
+        json.removeValue(forKey: "simplifiesDebts")
+        json.removeValue(forKey: "kind")
+        json.removeValue(forKey: "managerID")
+        let old = try JSONDecoder().decode(ExpenseGroup.self, from: JSONSerialization.data(withJSONObject: json))
+        XCTAssertTrue(old.simplifiesDebts)
+        XCTAssertEqual(old.kind, .standard)
+        XCTAssertNil(old.managerID)
     }
 }

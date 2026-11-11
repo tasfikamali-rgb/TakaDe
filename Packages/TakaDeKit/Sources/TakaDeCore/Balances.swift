@@ -88,10 +88,24 @@ public enum BalanceCalculator {
                 for (member, share) in expense.allocation.shares { try add(member, payer, share.minorUnits) }
                 continue
             }
-            let weights = Dictionary(uniqueKeysWithValues: payers.map { ($0.key, Int($0.value.minorUnits)) })
-            for (member, share) in expense.allocation.shares where share.minorUnits > 0 {
-                let parts = try SplitCalculator.allocate(share, by: .shares(weights))
-                for (payer, part) in parts.shares { try add(member, payer, part.minorUnits) }
+            // Several payers: give each payer but the last their exact amount, spread over
+            // the participants by share; the last payer takes what's left of each share. Rows
+            // add up to each share and columns to each payment, so nothing is lost to rounding.
+            let shares = expense.allocation.shares.filter { $0.value.minorUnits > 0 }
+            guard !shares.isEmpty else { continue }
+            let weights = Dictionary(uniqueKeysWithValues: shares.map { ($0.key, Int($0.value.minorUnits)) })
+            let orderedPayers = payers.keys.sorted()
+            var assigned: [MemberID: Int64] = [:]
+            for payer in orderedPayers.dropLast() {
+                let parts = try SplitCalculator.allocate(payers[payer]!, by: .shares(weights))
+                for (member, part) in parts.shares {
+                    try add(member, payer, part.minorUnits)
+                    assigned[member, default: 0] += part.minorUnits
+                }
+            }
+            let last = orderedPayers.last!
+            for (member, share) in shares {
+                try add(member, last, share.minorUnits - assigned[member, default: 0])
             }
         }
 
