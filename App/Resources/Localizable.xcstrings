@@ -3401,6 +3401,40 @@
           }
         }
       }
+    },
+    "Group name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপের নাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Group name"
+          }
+        }
+      }
+    },
+    "For a trip, a flat or a dinner, like Cox's Bazar trip": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভ্রমণ, বাসা বা দাওয়াতের জন্য, যেমন কক্সবাজার ট্রিপ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For a trip, a flat or a dinner, like Cox's Bazar trip"
+          }
+        }
+      }
     }
   }
 }

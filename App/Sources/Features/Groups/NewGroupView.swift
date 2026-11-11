@@ -6,7 +6,7 @@ struct NewGroupView: View {
     @Environment(\.dismiss) private var dismiss
     let onCreated: (GroupID) -> Void
 
-    @AppStorage("myDisplayName") private var myName = ""
+    @AppStorage(AccountModel.nameKey) private var myName = ""
     @State private var name = ""
     @State private var others: [DraftName] = [DraftName()]
     @State private var error: String?
@@ -15,17 +15,19 @@ struct NewGroupView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Group name, like Cox's Bazar trip", text: $name)
+                    TextField("Group name", text: $name, axis: .vertical)
+                } footer: {
+                    Text("For a trip, a flat or a dinner, like Cox's Bazar trip")
                 }
                 Section {
-                    TextField("Your name", text: $myName)
+                    TextField("Your name", text: $myName, axis: .vertical)
                         .textContentType(.name)
                 } footer: {
                     Text("Names are kept exactly as you type them")
                 }
                 Section("Who else is in it") {
                     ForEach($others) { $person in
-                        TextField("Name", text: $person.text)
+                        TextField("Name", text: $person.text, axis: .vertical)
                     }
                     Button("Add another person", systemImage: "plus", action: addRow)
                 }
