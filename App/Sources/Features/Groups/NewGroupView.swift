@@ -25,11 +25,13 @@ struct NewGroupView: View {
                 } footer: {
                     Text("Names are kept exactly as you type them")
                 }
-                Section("Who else is in it") {
+                Section {
                     ForEach($others) { $person in
                         TextField("Name", text: $person.text, axis: .vertical)
                     }
                     Button("Add another person", systemImage: "plus", action: addRow)
+                } header: {
+                    Text("Who else is in it")
                 } footer: {
                     if let duplicate = duplicateName {
                         Text("Two people are called \(duplicate). Add something to tell them apart, like an initial.")
