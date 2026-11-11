@@ -9,6 +9,7 @@ struct GroupSheet: View {
     let onOpen: (Expense) -> Void
     let onDelete: (Expense) -> Void
     let onAddMember: () -> Void
+    let onOpenMember: (Member) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xl) {
@@ -19,7 +20,7 @@ struct GroupSheet: View {
                     .foregroundStyle(Color.owe)
             }
             if let balances = model.balances {
-                MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember)
+                MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember, onOpenMember: onOpenMember)
             }
             ExpensesCard(group: group, expenses: model.expenses, onOpen: onOpen, onDelete: onDelete)
             if !model.settlements.isEmpty {

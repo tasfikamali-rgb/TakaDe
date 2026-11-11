@@ -5,6 +5,8 @@ struct MemberBalancesCard: View {
     let group: ExpenseGroup
     let balances: GroupBalances
     let onAddMember: () -> Void
+    /// Opens the person's bKash, Nagad, Rocket, upay or bank numbers.
+    let onOpenMember: (Member) -> Void
 
     var body: some View {
         SectionCard(title: "Balances") {
@@ -15,15 +17,20 @@ struct MemberBalancesCard: View {
                 .frame(minWidth: 44, minHeight: 44)
         } content: {
             ForEach(group.members) { member in
-                HStack(spacing: Spacing.s) {
-                    Avatar(name: member.displayName, size: 36)
-                    Text(verbatim: group.displayName(of: member.id))
-                        .font(AppFont.body)
-                        .foregroundStyle(Color.ink)
-                    Spacer()
-                    BalancePill(net: balances.net(for: member.id), isMe: member.isMe)
+                Button { onOpenMember(member) } label: {
+                    HStack(spacing: Spacing.s) {
+                        Avatar(name: member.displayName, size: 36)
+                        Text(verbatim: group.displayName(of: member.id))
+                            .font(AppFont.body)
+                            .foregroundStyle(Color.ink)
+                        Spacer()
+                        BalancePill(net: balances.net(for: member.id), isMe: member.isMe)
+                    }
+                    .padding(.vertical, Spacing.xs)
+                    .contentShape(Rectangle())
                 }
-                .padding(.vertical, Spacing.xs)
+                .buttonStyle(.plain)
+                .accessibilityHint(Text("Shows their bKash and bank numbers"))
             }
             if let me = group.me, let unverified = balances.unverifiedSettled[me.id], !unverified.isZero {
                 HStack(spacing: Spacing.xxs) {

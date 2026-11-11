@@ -9,12 +9,15 @@ struct SettleUpView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let group: ExpenseGroup
     let balances: GroupBalances
+    /// Earlier payments in this group, to catch a transaction id typed twice.
+    var settlements: [Settlement] = []
 
     @State private var selected: SuggestedTransfer?
     @State private var method: SettlementMethod = .cash
     @State private var reference = ""
     @State private var saveError: String?
     @State private var recorded: SuggestedTransfer?
+    @State private var payeeHandles: [PaymentHandle] = []
 
     var body: some View {
         NavigationStack {
@@ -22,8 +25,18 @@ struct SettleUpView: View {
                 SettleUpHeader(group: group, transfer: selected, isSettled: myTransfers.isEmpty)
             } content: {
                 TransferPickerSection(group: group, transfers: myTransfers, selected: $selected)
+                if let selected, selected.from == group.me?.id, !payeeHandles.isEmpty {
+                    Section {
+                        ForEach(payeeHandles) { PaymentHandleRow(handle: $0) }
+                    } header: {
+                        Text("Send to \(group.storedName(of: selected.to))")
+                    } footer: {
+                        Text("Copy the number into bKash or your bank app, pay there, then come back and record it.")
+                    }
+                }
                 if let selected {
-                    PaymentDetailsSection(isMePaying: selected.from == group.me?.id, method: $method, reference: $reference)
+                    PaymentDetailsSection(isMePaying: selected.from == group.me?.id, method: $method, reference: $reference,
+                                          duplicateWarning: duplicateWarning)
                 }
                 if let saveError {
                     Section { Text(saveError).foregroundStyle(Color.owe) }
@@ -51,6 +64,7 @@ struct SettleUpView: View {
             }
         }
         .onAppear(perform: preselect)
+        .task(id: selected) { await loadPayeeHandles() }
     }
 
     private var myTransfers: [SuggestedTransfer] {
@@ -60,6 +74,22 @@ struct SettleUpView: View {
 
     private func preselect() {
         if selected == nil, myTransfers.count == 1 { selected = myTransfers.first }
+    }
+
+    private func loadPayeeHandles() async {
+        guard let selected, selected.from == group.me?.id else {
+            payeeHandles = []
+            return
+        }
+        payeeHandles = (try? await app.profiles.paymentHandles(for: selected.to)) ?? []
+        // Start "Paid with" on how they like to be paid.
+        if method == .cash, let first = payeeHandles.first { method = first.rail.settlementMethod }
+    }
+
+    /// Set when the typed transaction id was already used for a payment in this group.
+    private var duplicateWarning: String? {
+        guard method != .cash, Settlement.duplicate(ofReference: reference, in: settlements) != nil else { return nil }
+        return String(localized: "This transaction ID is already recorded in this group. One payment can only settle one debt.", bundle: .appLanguage)
     }
 
     private func swipeTitle(_ t: SuggestedTransfer) -> String {
@@ -79,6 +109,10 @@ struct SettleUpView: View {
 
     private func record() async -> Bool {
         guard let t = selected, let me = group.me else { return false }
+        if duplicateWarning != nil {
+            saveError = duplicateWarning
+            return false
+        }
         do {
                 var settlement = try Settlement(
                     groupID: group.id, from: t.from, to: t.to, amount: t.amount, method: method,

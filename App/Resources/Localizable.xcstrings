@@ -4132,6 +4132,380 @@
           }
         }
       }
+    },
+    "Bank account": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যাংক অ্যাকাউন্ট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bank account"
+          }
+        }
+      }
+    },
+    "No numbers saved yet": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখনও কোনো নম্বর সেভ করা নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No numbers saved yet"
+          }
+        }
+      }
+    },
+    "How to pay %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে কীভাবে টাকা পাঠাবেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to pay %@"
+          }
+        }
+      }
+    },
+    "Type": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ধরন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        }
+      }
+    },
+    "Mobile number, like 01712-345678": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মোবাইল নম্বর, যেমন 01712-345678"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mobile number, like 01712-345678"
+          }
+        }
+      }
+    },
+    "Bank, branch and account number": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যাংক, শাখা ও অ্যাকাউন্ট নম্বর"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bank, branch and account number"
+          }
+        }
+      }
+    },
+    "Save number": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নম্বর সেভ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save number"
+          }
+        }
+      }
+    },
+    "Add a number": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "একটি নম্বর যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a number"
+          }
+        }
+      }
+    },
+    "Only the number people send money to. TakaDe never asks for a PIN, password or OTP. Saved on this phone only.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুধু যে নম্বরে টাকা পাঠানো হয় সেটি। TakaDe কখনো PIN, পাসওয়ার্ড বা OTP চায় না। শুধু এই ফোনে সেভ থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the number people send money to. TakaDe never asks for a PIN, password or OTP. Saved on this phone only."
+          }
+        }
+      }
+    },
+    "That isn't an 11-digit Bangladeshi mobile number": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর নয়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That isn't an 11-digit Bangladeshi mobile number"
+          }
+        }
+      }
+    },
+    "Type the bank details, up to 80 characters": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যাংকের তথ্য লিখুন, সর্বোচ্চ ৮০ অক্ষর"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type the bank details, up to 80 characters"
+          }
+        }
+      }
+    },
+    "The number wasn't saved. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নম্বরটি সেভ হয়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The number wasn't saved. Try again."
+          }
+        }
+      }
+    },
+    "Copied": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কপি হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied"
+          }
+        }
+      }
+    },
+    "Copy": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কপি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy"
+          }
+        }
+      }
+    },
+    "Shows their bKash and bank numbers": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তাঁর বিকাশ ও ব্যাংক নম্বর দেখায়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows their bKash and bank numbers"
+          }
+        }
+      }
+    },
+    "Send to %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে পাঠান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send to %@"
+          }
+        }
+      }
+    },
+    "Copy the number into bKash or your bank app, pay there, then come back and record it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নম্বরটি কপি করে বিকাশ বা ব্যাংক অ্যাপে পেমেন্ট করুন, তারপর ফিরে এসে এখানে লিখে রাখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy the number into bKash or your bank app, pay there, then come back and record it."
+          }
+        }
+      }
+    },
+    "This transaction ID is already recorded in this group. One payment can only settle one debt.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ট্রানজ্যাকশন আইডি এই গ্রুপে আগেই লেখা আছে। একটি পেমেন্ট দিয়ে একটিই দেনা মেটানো যায়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This transaction ID is already recorded in this group. One payment can only settle one debt."
+          }
+        }
+      }
+    },
+    "%@ TrxID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ TrxID"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ TrxID"
+          }
+        }
+      }
+    },
+    "Transaction ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ট্রানজ্যাকশন আইডি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transaction ID"
+          }
+        }
+      }
+    },
+    "Optional, like 8N7A6B5C4D": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ঐচ্ছিক, যেমন 8N7A6B5C4D"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optional, like 8N7A6B5C4D"
+          }
+        }
+      }
+    },
+    "The TrxID is in the %@ message after you pay. It's saved as typed by you and isn't checked with %@. TakaDe never asks for your PIN.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পেমেন্টের পর %@-এর মেসেজে TrxID থাকে। এটি আপনার লেখা হিসেবেই সেভ হয়, %@-এর সাথে যাচাই করা হয় না। TakaDe কখনো আপনার PIN চায় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The TrxID is in the %@ message after you pay. It's saved as typed by you and isn't checked with %@. TakaDe never asks for your PIN."
+          }
+        }
+      }
     }
   }
 }

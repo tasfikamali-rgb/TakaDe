@@ -14,6 +14,7 @@ struct GroupDetailContent: View {
     @State private var showingAddMember = false
     @State private var newMemberName = ""
     @State private var duplicateMember: String?
+    @State private var paymentMember: Member?
     @State private var recentlyDeleted: Expense?
     @State private var editing: Expense?
     @State private var errorMessage: String?
@@ -28,7 +29,8 @@ struct GroupDetailContent: View {
                     errorMessage: errorMessage,
                     onOpen: open,
                     onDelete: delete,
-                    onAddMember: askForMember)
+                    onAddMember: askForMember,
+                    onOpenMember: openMember)
             }
             .frame(maxWidth: .infinity)
         }
@@ -85,8 +87,11 @@ struct GroupDetailContent: View {
         }
         .sheet(isPresented: $showingSettle) {
             if let balances = model.balances {
-                SettleUpView(group: group, balances: balances)
+                SettleUpView(group: group, balances: balances, settlements: model.settlements)
             }
+        }
+        .sheet(item: $paymentMember) { member in
+            MemberPaymentSheet(group: group, member: member)
         }
         .alert("Add a person", isPresented: $showingAddMember) {
             TextField("Name", text: $newMemberName)
@@ -129,6 +134,11 @@ struct GroupDetailContent: View {
     }
 
     private func askForMember() { showingAddMember = true }
+
+    private func openMember(_ member: Member) {
+        recentlyDeleted = nil
+        paymentMember = member
+    }
 
     /// Same check as a new group: a name already in the group, ignoring case and spaces,
     /// gets a warning. Both are allowed, and the name is never changed.

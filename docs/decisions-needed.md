@@ -37,5 +37,5 @@ needs disclosure and a processor review). **Decided 2026-11-11:** on-device (ADR
 Product name spelling (TakaDe), logo and app icon. The icon slot is currently empty.
 - **Decided 2026-11-11:** Apple and Google sign-in in release 1, optional, kept on the device only (ADR 11).
 - **Owner action:** Google OAuth iOS client id in `Config/Google.local.xcconfig`; paid Apple Developer Program for Sign in with Apple.
-- **Decided 2026-11-11:** members can store an optional bKash, Nagad, Rocket, upay or bank number for others to copy when settling. Schema is ready; the UI is next.
+- **Decided 2026-11-11:** members can store an optional bKash, Nagad, Rocket, upay or bank number for others to copy when settling. Built: tap a person on the group screen to add numbers; Settle up shows them with Copy.
 - **Decided 2026-11-11:** optional Face ID or passcode lock in Profile, off by default (ADR 14). Built.
