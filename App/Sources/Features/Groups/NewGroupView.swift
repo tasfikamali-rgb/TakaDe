@@ -30,6 +30,10 @@ struct NewGroupView: View {
                         TextField("Name", text: $person.text, axis: .vertical)
                     }
                     Button("Add another person", systemImage: "plus", action: addRow)
+                } footer: {
+                    if let duplicate = duplicateName {
+                        Text("Two people are called \(duplicate). Add something to tell them apart, like an initial.")
+                    }
                 }
                 if let error {
                     Section { Text(error).foregroundStyle(Color.owe) }
@@ -49,6 +53,18 @@ struct NewGroupView: View {
 
     private var cleanedOthers: [String] {
         others.map { $0.text.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+    }
+
+    /// The first name used twice, compared without case or extra spaces. Names are never
+    /// changed for the person; this only warns, because both are allowed.
+    private var duplicateName: String? {
+        var seen = Set<String>()
+        for name in [myName.trimmingCharacters(in: .whitespaces)] + cleanedOthers where !name.isEmpty {
+            let key = name.lowercased()
+            if seen.contains(key) { return name }
+            seen.insert(key)
+        }
+        return nil
     }
 
     private var canSave: Bool {

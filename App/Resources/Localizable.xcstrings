@@ -3435,6 +3435,23 @@
           }
         }
       }
+    },
+    "Two people are called %@. Add something to tell them apart, like an initial.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দুজনের নাম %@। আলাদা করে চিনতে কিছু যোগ করুন, যেমন নামের আদ্যক্ষর।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two people are called %@. Add something to tell them apart, like an initial."
+          }
+        }
+      }
     }
   }
 }
