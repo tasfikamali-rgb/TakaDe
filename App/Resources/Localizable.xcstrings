@@ -4608,6 +4608,193 @@
           }
         }
       }
+    },
+    "Food": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খাবার"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Food"
+          }
+        }
+      }
+    },
+    "Bazar": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাজার"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bazar"
+          }
+        }
+      }
+    },
+    "Transport": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যাতায়াত"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transport"
+          }
+        }
+      }
+    },
+    "Stay": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "থাকা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stay"
+          }
+        }
+      }
+    },
+    "Rent": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভাড়া"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rent"
+          }
+        }
+      }
+    },
+    "Bills": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বিল"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bills"
+          }
+        }
+      }
+    },
+    "Shopping": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কেনাকাটা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shopping"
+          }
+        }
+      }
+    },
+    "Fun": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আনন্দ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fun"
+          }
+        }
+      }
+    },
+    "Health": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "স্বাস্থ্য"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health"
+          }
+        }
+      }
+    },
+    "None": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
+          }
+        }
+      }
+    },
+    "Category": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ধরন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Category"
+          }
+        }
+      }
     }
   }
 }

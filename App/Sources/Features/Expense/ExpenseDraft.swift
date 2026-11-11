@@ -14,6 +14,8 @@ final class ExpenseDraft {
     /// What's on the keypad, e.g. "1200÷4".
     var amountExpression = ""
     var occurredAt = Date()
+    /// Chosen by the person; nil means "use the guess from the title".
+    var chosenCategory: ExpenseCategory??
     var payer: MemberID
     /// When on, each person types what they paid instead of one payer paying it all.
     var severalPayers = false
@@ -39,6 +41,7 @@ final class ExpenseDraft {
         title = expense.title
         amountExpression = KeypadText.plain(expense.total)
         occurredAt = expense.occurredAt
+        chosenCategory = .some(expense.category)
         payer = expense.paidBy.keys.sorted().first ?? group.me?.id ?? group.members[0].id
         if expense.paidBy.count > 1 {
             severalPayers = true
@@ -67,6 +70,12 @@ final class ExpenseDraft {
     }
 
     var isEditing: Bool { original != nil }
+
+    /// The person's choice, or a guess from the title until they pick one.
+    var category: ExpenseCategory? {
+        get { chosenCategory ?? ExpenseCategory.guess(from: title) }
+        set { chosenCategory = .some(newValue) }
+    }
 
     subscript(exactFor id: MemberID) -> String {
         get { exactText[id, default: ""] }
@@ -210,9 +219,11 @@ final class ExpenseDraft {
         if let original {
             // Same id and a new version, so history shows an edit rather than a new expense.
             return try Expense(id: original.id, groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy,
-                               splitRule: rule, occurredAt: occurredAt, note: original.note, version: original.version + 1)
+                               splitRule: rule, occurredAt: occurredAt, note: original.note, category: category,
+                               version: original.version + 1)
         }
-        return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy, splitRule: rule, occurredAt: occurredAt)
+        return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy, splitRule: rule,
+                           occurredAt: occurredAt, category: category)
     }
 
     /// Fills in fields from a reviewed receipt suggestion.

@@ -35,6 +35,14 @@ struct AddExpenseView: View {
                 Section {
                     TextField("What was it for?", text: $draft.title)
                     DatePicker("Date", selection: $draft.occurredAt, displayedComponents: .date)
+                    Picker(selection: $draft.category) {
+                        Text("None").tag(ExpenseCategory?.none)
+                        ForEach(ExpenseCategory.allCases, id: \.self) { category in
+                            Label(category.label, systemImage: category.systemImage).tag(Optional(category))
+                        }
+                    } label: {
+                        Text("Category")
+                    }
                     ReceiptScanButton(onReviewed: draft.apply)
                 }
 

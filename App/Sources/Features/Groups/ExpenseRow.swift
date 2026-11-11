@@ -9,7 +9,11 @@ struct ExpenseRow: View {
 
     var body: some View {
         HStack(spacing: Spacing.s) {
-            Avatar(name: expense.paidBy.keys.map(group.storedName(of:)).sorted().first ?? "?", size: 36)
+            if let category = expense.category {
+                CategoryBadge(category: category)
+            } else {
+                Avatar(name: expense.paidBy.keys.map(group.storedName(of:)).sorted().first ?? "?", size: 36)
+            }
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(verbatim: expense.title).font(AppFont.bodyEmphasis)
                 Text("Paid by \(payerNames.formatted(.list(type: .and)))")

@@ -67,12 +67,14 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
     public var allocation: Allocation
     public var occurredAt: Date
     public var note: String?
+    /// Optional; older expenses have none.
+    public var category: ExpenseCategory?
     /// Incremented on each edit. Edits are recorded in the audit log.
     public var version: Int
     /// Soft delete. Deleted expenses stop affecting balances but stay in history.
     public var deletedAt: Date?
 
-    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, version: Int = 1, deletedAt: Date? = nil) throws {
+    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, category: ExpenseCategory? = nil, version: Int = 1, deletedAt: Date? = nil) throws {
         self.id = id
         self.groupID = groupID
         self.title = title
@@ -82,6 +84,7 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
         self.allocation = try SplitCalculator.allocate(total, by: splitRule)
         self.occurredAt = occurredAt
         self.note = note
+        self.category = category
         self.version = version
         self.deletedAt = deletedAt
         try validate()
