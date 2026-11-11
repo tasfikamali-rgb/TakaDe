@@ -39,3 +39,14 @@ Product name spelling (TakaDe), logo and app icon. The icon slot is currently em
 - **Owner action:** Google OAuth iOS client id in `Config/Google.local.xcconfig`; paid Apple Developer Program for Sign in with Apple.
 - **Decided 2026-11-11:** members can store an optional bKash, Nagad, Rocket, upay or bank number for others to copy when settling. Built: tap a person on the group screen to add numbers; Settle up shows them with Copy.
 - **Decided 2026-11-11:** optional Face ID or passcode lock in Profile, off by default (ADR 14). Built.
+
+## 7. Store accounts and release checks (blocks: testing on real phones, publishing)
+- **Apple Developer Program** (US$99/year) for TestFlight and the App Store, and
+  **Google Play Console** (US$25 once) for internal testing, the pre-launch report and Play.
+  Decide whose name/entity owns them; it shows on the store listing.
+- **Export compliance:** whether the app uses non-exempt encryption. Today it only uses the
+  operating system's encryption, which is usually exempt, but the owner (with advice if
+  needed) should confirm before we set `ITSAppUsesNonExemptEncryption`.
+- **App icon** 1024×1024 (see section 6). CI flags it as a release blocker.
+- **Privacy answers:** the App Store privacy label and Play Data safety form must match
+  `App/Resources/PrivacyInfo.xcprivacy` ("no data collected") while the app stays local-only.

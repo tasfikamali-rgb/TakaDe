@@ -1,0 +1,28 @@
+# HIG (iPhone Duo, iPad, split view): "Keep functionality and the state of
+# elements the same between displays." Rotating changes the width the same way
+# folding does, so the open group and its data must survive it.
+appId: app.takade.ios
+name: Rotate keeps the open group
+tags:
+  - adaptive
+---
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/onboarding.yaml
+- tapOn: "Create a group"
+- tapOn: "Group name"
+- inputText: "Flat"
+# "Your name" is prefilled from onboarding.
+- tapOn: "Name"
+- inputText: "Rishan"
+- tapOn: "Create"
+- extendedWaitUntil:
+    visible: "Settle up"
+    timeout: 10000
+- setOrientation: LANDSCAPE_LEFT
+- assertVisible: "Flat"
+- assertVisible: "Settle up"
+- takeScreenshot: ${OUT}/10-group-landscape
+- setOrientation: PORTRAIT
+- assertVisible: "Flat"
+- assertVisible: "Settle up"

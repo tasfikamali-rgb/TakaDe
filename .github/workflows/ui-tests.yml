@@ -1,0 +1,263 @@
+name: UI flows and screenshots
+
+# Drives the real app with Maestro on an iPhone and an iPad simulator, in light
+# and dark mode, and uploads the screenshots. Download them from the run page
+# (Artifacts) instead of installing a simulator locally. See docs/testing.md.
+
+# These use macOS runners, which count 10x against the private-repo free
+# minutes, so they don't run on every push: they run on merge to main, by hand
+# (Actions → UI flows and screenshots → Run workflow), or on a pull request when
+# it gets the `ui-tests` label.
+on:
+  pull_request:
+    types: [labeled, synchronize]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ui-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAESTRO_DRIVER_STARTUP_TIMEOUT: "240000"
+  MAESTRO_CLI_NO_ANALYTICS: "1"
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_INSTALL_CLEANUP: "1"
+
+jobs:
+  build:
+    name: Build simulator app
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'ui-tests')
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
+      - run: scripts/ci/build-sim-app.sh
+      # Tar keeps the executable bit, which upload-artifact drops.
+      - run: tar -czf build/TakaDe.app.tgz -C build TakaDe.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TakaDe-simulator-app
+          path: build/TakaDe.app.tgz
+          retention-days: 7
+
+  accessibility:
+    name: Accessibility audit and launch tests
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'ui-tests')
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
+      - name: Install XcodeGen and generate project
+        run: brew install xcodegen && xcodegen generate --quiet
+      - name: Boot simulator
+        id: sim
+        run: echo "udid=$(scripts/ci/boot-simulator.sh 'iPhone 16')" >> "$GITHUB_OUTPUT"
+      - name: Build app and UI tests
+        run: |
+          xcodebuild build-for-testing \
+            -project TakaDe.xcodeproj -scheme TakaDe \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            -clonedSourcePackagesDirPath build/SourcePackages \
+            -quiet
+      - name: Accessibility audit and launch tests
+        run: |
+          xcodebuild test-without-building \
+            -project TakaDe.xcodeproj -scheme TakaDe \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            -resultBundlePath build/UITests.xcresult \
+            -quiet
+      - name: Show UI test failures
+        if: failure()
+        run: |
+          xcrun xcresulttool get test-results summary --path build/UITests.xcresult --compact \
+            | python3 scripts/ci/xcresult_failures.py
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: build/UITests.xcresult
+          retention-days: 7
+
+  flows:
+    name: Maestro on ${{ matrix.device }}
+    needs: build
+    runs-on: macos-15
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ["iPhone 16", "iPad Pro 13-inch"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+      - uses: actions/download-artifact@v4
+        with:
+          name: TakaDe-simulator-app
+          path: build
+      - run: tar -xzf build/TakaDe.app.tgz -C build
+      - name: Install Maestro
+        run: |
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Boot simulator and install app
+        id: sim
+        run: |
+          udid=$(scripts/ci/boot-simulator.sh "${{ matrix.device }}")
+          xcrun simctl install "$udid" build/TakaDe.app
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          echo "slug=$(echo '${{ matrix.device }}' | tr ' A-Z' '-a-z')" >> "$GITHUB_OUTPUT"
+      - name: Flows in light mode
+        run: |
+          maestro --version
+          xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance light
+          out="maestro-results/${{ steps.sim.outputs.slug }}-light"
+          mkdir -p "$out"
+          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" \
+            --format junit --output "$out/report.xml" maestro/flows
+      - name: Flows in dark mode
+        if: success() || failure()
+        run: |
+          xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance dark
+          out="maestro-results/${{ steps.sim.outputs.slug }}-dark"
+          mkdir -p "$out"
+          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" \
+            --format junit --output "$out/report.xml" maestro/flows
+      - name: Collect Maestro debug output
+        if: failure()
+        run: |
+          cp -R "$HOME/.maestro/tests" maestro-results/debug 2>/dev/null || true
+          # What was on screen when it stopped: visible texts and labels.
+          maestro --device "${{ steps.sim.outputs.udid }}" hierarchy 2>/dev/null \
+            | python3 -c 'import json,sys
+          def walk(n):
+              a = n.get("attributes", {})
+              t = a.get("text") or a.get("accessibilityText") or a.get("hintText")
+              if t: print("  -", t[:80])
+              for c in n.get("children", []): walk(c)
+          walk(json.load(sys.stdin))' || true
+      - name: Upload screenshots
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ steps.sim.outputs.slug }}
+          path: maestro-results
+          retention-days: 14
+
+  iphone-duo:
+    # Apple's iPhone Duo (HIG page added Sept 2026). Needs a newer Xcode than the
+    # rest of CI; the job looks for the simulator and reports clearly when the
+    # runner doesn't have it, rather than pretending it was tested.
+    name: iPhone Duo (if the runner has it)
+    needs: build
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select newest Xcode
+        run: |
+          xcode=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+      - name: Find iPhone Duo simulator
+        id: duo
+        run: |
+          udid=$(scripts/ci/boot-simulator.sh "iPhone Duo" 2>/dev/null || true)
+          if [ -z "$udid" ]; then
+            type=$(xcrun simctl list devicetypes | grep -i "iPhone Duo" | head -1 | sed -E 's/.*\((com\.apple[^)]*)\).*/\1/')
+            runtime=$(xcrun simctl list runtimes -j | python3 -c 'import json,sys; r=[x for x in json.load(sys.stdin)["runtimes"] if x["isAvailable"] and x["platform"]=="iOS"]; print(r[-1]["identifier"] if r else "")')
+            if [ -n "$type" ] && [ -n "$runtime" ]; then
+              xcrun simctl create "iPhone Duo" "$type" "$runtime" >/dev/null
+              udid=$(scripts/ci/boot-simulator.sh "iPhone Duo")
+            fi
+          fi
+          if [ -z "$udid" ]; then
+            echo "::warning title=iPhone Duo NOT tested::This runner's Xcode has no iPhone Duo simulator. Device types available:"
+            xcrun simctl list devicetypes | grep -i iphone | tail -8
+            echo "### iPhone Duo: NOT TESTED" >> "$GITHUB_STEP_SUMMARY"
+            echo "The GitHub runner's Xcode ($(xcodebuild -version | head -1)) has no iPhone Duo simulator." >> "$GITHUB_STEP_SUMMARY"
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/download-artifact@v4
+        if: steps.duo.outputs.available == 'true'
+        with:
+          name: TakaDe-simulator-app
+          path: build
+      - name: Install Maestro and app
+        if: steps.duo.outputs.available == 'true'
+        run: |
+          tar -xzf build/TakaDe.app.tgz -C build
+          xcrun simctl install "${{ steps.duo.outputs.udid }}" build/TakaDe.app
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Flows on iPhone Duo (default pose), light and dark
+        if: steps.duo.outputs.available == 'true'
+        run: |
+          for mode in light dark; do
+            xcrun simctl ui "${{ steps.duo.outputs.udid }}" appearance $mode
+            out="maestro-results/iphone-duo-$mode"; mkdir -p "$out"
+            maestro --device "${{ steps.duo.outputs.udid }}" test -e OUT="$out" \
+              --format junit --output "$out/report.xml" maestro/flows
+          done
+          echo "### iPhone Duo: tested in its default simulator pose" >> "$GITHUB_STEP_SUMMARY"
+          echo "Folded/unfolded poses are switched in Xcode's Device Hub; there's no documented command-line switch yet, so the other pose is checked by hand." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload screenshots
+        if: steps.duo.outputs.available == 'true' && (success() || failure())
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-iphone-duo
+          path: maestro-results
+          retention-days: 14
+
+  maestro-cloud:
+    # Optional: runs the same flows on Maestro Cloud's device fleet in parallel.
+    # Does nothing until the owner adds the MAESTRO_CLOUD_API_KEY and
+    # MAESTRO_CLOUD_PROJECT_ID repository secrets (see docs/testing.md).
+    name: Maestro Cloud (when configured)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MAESTRO_CLOUD_API_KEY: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+    steps:
+      - name: Skip when not configured
+        if: env.MAESTRO_CLOUD_API_KEY == ''
+        run: echo "Maestro Cloud isn't set up yet (no MAESTRO_CLOUD_API_KEY secret)." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@v4
+        if: env.MAESTRO_CLOUD_API_KEY != ''
+      - uses: actions/download-artifact@v4
+        if: env.MAESTRO_CLOUD_API_KEY != ''
+        with:
+          name: TakaDe-simulator-app
+          path: build
+      - if: env.MAESTRO_CLOUD_API_KEY != ''
+        run: tar -xzf build/TakaDe.app.tgz -C build
+      - uses: mobile-dev-inc/action-maestro-cloud@v1
+        if: env.MAESTRO_CLOUD_API_KEY != ''
+        with:
+          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          project-id: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
+          app-file: build/TakaDe.app
+          workspace: maestro
