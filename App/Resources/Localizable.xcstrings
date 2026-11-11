@@ -4506,6 +4506,57 @@
           }
         }
       }
+    },
+    "Hi %@, a quick reminder from %@: %@ to me when you get a chance.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "হাই %1$@, %2$@ থেকে ছোট্ট একটা রিমাইন্ডার: সুযোগমতো আমাকে %3$@ পাঠিয়ে দিও।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hi %@, a quick reminder from %@: %@ to me when you get a chance."
+          }
+        }
+      }
+    },
+    "Remind %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে মনে করিয়ে দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remind %@"
+          }
+        }
+      }
+    },
+    "Sends a friendly message with the amount and your numbers through any chat app.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "টাকার পরিমাণ আর আপনার নম্বরসহ একটি বন্ধুসুলভ মেসেজ যেকোনো চ্যাট অ্যাপে পাঠায়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sends a friendly message with the amount and your numbers through any chat app."
+          }
+        }
+      }
     }
   }
 }

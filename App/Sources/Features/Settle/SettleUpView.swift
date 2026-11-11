@@ -18,6 +18,7 @@ struct SettleUpView: View {
     @State private var saveError: String?
     @State private var recorded: SuggestedTransfer?
     @State private var payeeHandles: [PaymentHandle] = []
+    @State private var myHandles: [PaymentHandle] = []
 
     var body: some View {
         NavigationStack {
@@ -32,6 +33,16 @@ struct SettleUpView: View {
                         Text("Send to \(group.storedName(of: selected.to))")
                     } footer: {
                         Text("Copy the number into bKash or your bank app, pay there, then come back and record it.")
+                    }
+                }
+                if let selected, let me = group.me, selected.to == me.id {
+                    Section {
+                        ShareLink(item: ReminderText.make(to: group.storedName(of: selected.from), amount: selected.amount,
+                                                          group: group.name, handles: myHandles)) {
+                            Label("Remind \(group.storedName(of: selected.from))", systemImage: "bell")
+                        }
+                    } footer: {
+                        Text("Sends a friendly message with the amount and your numbers through any chat app.")
                     }
                 }
                 if let selected {
@@ -77,6 +88,9 @@ struct SettleUpView: View {
     }
 
     private func loadPayeeHandles() async {
+        if let me = group.me, selected?.to == me.id {
+            myHandles = (try? await app.profiles.paymentHandles(for: me.id)) ?? []
+        }
         guard let selected, selected.from == group.me?.id else {
             payeeHandles = []
             return
