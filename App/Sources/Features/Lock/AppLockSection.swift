@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Profile > Lock: an optional Face ID, Touch ID or passcode lock, off by default.
+/// Settings > Lock: an optional Face ID, Touch ID or passcode lock, off by default.
 struct AppLockSection: View {
     @Environment(AppLock.self) private var lock
 

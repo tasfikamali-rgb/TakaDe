@@ -8,15 +8,15 @@ tags:
 - launchApp:
     clearState: true
 - runFlow: ../subflows/onboarding.yaml
-- tapOn: "Profile"
+- tapOn: "Settings"
 - scrollUntilVisible:
     element: "বাংলা"
     direction: DOWN
 - tapOn: "বাংলা"
-# The selector must change the UI without a restart. "Profile" should be gone.
-- assertNotVisible: "Profile"
+# The selector must change the UI without a restart. "Settings" should be gone.
+- assertNotVisible: "Settings"
 - scrollUntilVisible:
     element: "English"
     direction: UP
 - tapOn: "English"
-- assertVisible: "Profile"
+- assertVisible: "Settings"

@@ -3,31 +3,179 @@ import Foundation
 import Observation
 import TakaDeCore
 
-/// The device owner's profile and optional Apple or Google sign-in. Everything here stays on
-/// the phone: there is no TakaDe server (docs/adr/0011-on-device-sign-in.md).
+/// The device owner's profile and their sign-in.
+///
+/// With a sign-in service configured (Config/Supabase.local.xcconfig, ADR 0016), Create an
+/// account and Sign in make or open a TakaDe account that can have Apple, Google, Microsoft
+/// and email linked to it. The service holds only the account; groups and expenses stay on
+/// this phone. Without one, Apple and Google are linked on this phone only (ADR 0011).
 @MainActor
 @Observable
 final class AccountModel {
     /// Kept in UserDefaults too, because new groups read the name from there.
     static let nameKey = "myDisplayName"
 
+    /// What a sign-in found: the account's name if it has one, and whether this sign-in
+    /// just created the account.
+    struct SignInOutcome: Sendable {
+        var name: String?
+        var isNew: Bool
+    }
+
     private(set) var profile: LocalProfile?
+    private(set) var identities: [AccountIdentity] = []
     private(set) var isLoaded = false
     let store: ProfileRepository
     let google: GoogleSignInService?
+    let supabase: SupabaseAuth?
 
-    init(store: ProfileRepository, google: GoogleOAuthConfig? = .current) {
+    /// A sign-in made during first launch, before there's a profile to put it on.
+    private var pendingLinked: LinkedAccount?
+    private var pendingUser: AuthUser?
+
+    init(store: ProfileRepository, google: GoogleOAuthConfig? = .current, supabase: SupabaseConfig? = .current) {
         self.store = store
         self.google = google.map(GoogleSignInService.init(config:))
+        self.supabase = supabase.map(SupabaseAuth.init(config:))
     }
 
     var needsOnboarding: Bool { isLoaded && profile == nil }
     var account: LinkedAccount? { profile?.account }
+    var isSignedIn: Bool { profile?.isSignedIn ?? false }
+    /// True when accounts live on the sign-in service rather than on this phone only.
+    var usesAccountService: Bool { supabase != nil }
+
+    /// The sign-in methods to offer. Apple always comes first (App Review guideline 4.8).
+    var availableMethods: [SignInProvider] {
+        if supabase != nil { return [.apple, .google, .microsoft, .email] }
+        return google == nil ? [.apple] : [.apple, .google]
+    }
+
+    /// Methods not yet linked to the account, for "Add a sign-in method".
+    var linkableMethods: [SignInProvider] {
+        guard supabase != nil else { return [] }
+        let linked = Set(identities.map(\.provider))
+        return availableMethods.filter { !linked.contains($0) }
+    }
 
     func load() async {
         profile = try? await store.profile()
+        identities = (try? await store.accountIdentities()) ?? []
         isLoaded = true
         await checkAppleCredential()
+        await refreshAccount()
+    }
+
+    // MARK: Sign-in service
+
+    /// Apple, with the raw nonce whose hash went into the request.
+    func signInWithApple(_ authorization: ASAuthorization, rawNonce: String) async throws -> SignInOutcome {
+        guard let supabase else {
+            guard let identity = identity(from: authorization) else { throw SupabaseAuth.Failure.badResponse }
+            try await adoptOnDevice(identity.account)
+            return SignInOutcome(name: identity.name, isNew: false)
+        }
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let tokenData = credential.identityToken, let token = String(data: tokenData, encoding: .utf8)
+        else { throw SupabaseAuth.Failure.badResponse }
+        let name = credential.fullName.map { PersonNameComponentsFormatter.localizedString(from: $0, style: .default, options: []) }
+            .flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : $0 }
+        let user = try await supabase.signInWithApple(idToken: token, rawNonce: rawNonce, name: name)
+        return try await adopt(user)
+    }
+
+    /// Google or Microsoft through the browser sheet.
+    func signIn(with provider: SignInProvider) async throws -> SignInOutcome {
+        if let supabase, let oauth = SupabaseAuth.Provider(provider) {
+            return try await adopt(supabase.signIn(with: oauth))
+        }
+        guard provider == .google else { throw SupabaseAuth.Failure.couldNotStart }
+        let identity = try await signInWithGoogle()
+        try await adoptOnDevice(identity.account)
+        return SignInOutcome(name: identity.name, isNew: false)
+    }
+
+    func sendEmailCode(to email: String, creating: Bool, name: String?) async throws {
+        guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
+        try await supabase.sendEmailCode(to: email, create: creating, name: name)
+    }
+
+    func verifyEmailCode(_ code: String, email: String) async throws -> SignInOutcome {
+        guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
+        return try await adopt(supabase.verifyEmailCode(code, email: email))
+    }
+
+    /// Links another sign-in to the account that's signed in.
+    func link(_ provider: SignInProvider) async throws {
+        guard let supabase, let oauth = SupabaseAuth.Provider(provider) else { throw SupabaseAuth.Failure.couldNotStart }
+        _ = try await adopt(supabase.link(oauth))
+    }
+
+    func linkApple(_ authorization: ASAuthorization, rawNonce: String) async throws {
+        guard let supabase, let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let tokenData = credential.identityToken, let token = String(data: tokenData, encoding: .utf8)
+        else { throw SupabaseAuth.Failure.couldNotStart }
+        _ = try await adopt(supabase.linkApple(idToken: token, rawNonce: rawNonce))
+    }
+
+    func addEmail(_ email: String) async throws {
+        guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
+        try await supabase.addEmail(email)
+    }
+
+    func confirmEmail(code: String, email: String) async throws {
+        guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
+        _ = try await adopt(supabase.confirmEmailChange(code: code, email: email))
+    }
+
+    /// Removes one sign-in method. The last one can't be removed: sign out or delete the
+    /// account instead.
+    func unlink(_ identity: AccountIdentity) async throws {
+        guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
+        _ = try await adopt(supabase.unlink(identityID: identity.id))
+    }
+
+    /// Reads the account again, so links made on another phone show up. Quietly does
+    /// nothing offline.
+    func refreshAccount() async {
+        guard let supabase, supabase.session != nil, profile?.accountID != nil else { return }
+        if let user = try? await supabase.currentUser() { _ = try? await adopt(user) }
+    }
+
+    /// Keeps what the service returned: on the profile if there is one, otherwise until
+    /// first launch finishes.
+    private func adopt(_ user: AuthUser) async throws -> SignInOutcome {
+        let identities = user.identities.compactMap(Self.accountIdentity(from:))
+        if var profile {
+            profile.accountID = user.id
+            profile.accountEmail = user.email
+            profile.account = nil
+            try await save(profile)
+            // A new account made from the Account tab takes the name already on this phone.
+            if user.name == nil { _ = try? await supabase?.setName(profile.displayName) }
+        } else {
+            pendingUser = user
+        }
+        try await store.replaceAccountIdentities(identities)
+        self.identities = identities
+        return SignInOutcome(name: user.name, isNew: user.isNew)
+    }
+
+    private func adoptOnDevice(_ linked: LinkedAccount) async throws {
+        if profile != nil { try await link(linked) } else { pendingLinked = linked }
+    }
+
+    private static func accountIdentity(from item: AuthUser.Identity) -> AccountIdentity? {
+        let provider: SignInProvider
+        switch item.provider {
+        case "apple": provider = .apple
+        case "google": provider = .google
+        case "azure": provider = .microsoft
+        case "email": provider = .email
+        default: return nil
+        }
+        return AccountIdentity(id: item.identityID ?? item.id, provider: provider, providerUserID: item.id,
+                               email: item.email, linkedAt: item.createdAt ?? Date())
     }
 
     // MARK: Sign-in
@@ -58,14 +206,34 @@ final class AccountModel {
 
     // MARK: Onboarding and profile
 
-    func completeOnboarding(name: String, account: LinkedAccount?) async throws {
+    /// Makes the profile, with whatever sign-in happened during first launch.
+    func completeOnboarding(name: String) async throws {
         let defaults = UserDefaults.standard
         let profile = LocalProfile(
             displayName: name,
             languageCode: defaults.string(forKey: AppLanguage.storageKey).flatMap { $0 == AppLanguage.system.rawValue ? nil : $0 },
             digitStyle: defaults.string(forKey: DigitPreference.storageKey).flatMap { $0 == DigitPreference.automatic.rawValue ? nil : $0 },
-            account: account)
+            account: pendingLinked,
+            accountID: pendingUser?.id,
+            accountEmail: pendingUser?.email)
         try await save(profile)
+        pendingLinked = nil
+        pendingUser = nil
+        // Keep the name on the account too, so another phone shows it after signing in.
+        if let supabase, supabase.session != nil, profile.accountID != nil {
+            _ = try? await supabase.setName(name)
+        }
+    }
+
+    /// Drops a sign-in made during first launch, when the person goes back.
+    func discardPendingSignIn() async {
+        pendingLinked = nil
+        if pendingUser != nil {
+            pendingUser = nil
+            await supabase?.signOut()
+            try? await store.replaceAccountIdentities([])
+            identities = []
+        }
     }
 
     func rename(to name: String) async throws {
@@ -73,20 +241,33 @@ final class AccountModel {
         guard var profile, !trimmed.isEmpty, trimmed != profile.displayName else { return }
         profile.displayName = trimmed
         try await save(profile)
+        if let supabase, supabase.session != nil, profile.accountID != nil {
+            _ = try? await supabase.setName(trimmed)
+        }
     }
 
     /// Forgets the sign-in on this phone. Groups and the name stay.
     func signOut() async throws {
         guard var profile else { return }
         if profile.account?.provider == .google { await GoogleSignInService.revoke() }
+        await supabase?.signOut()
         KeychainStore.deleteAll()
         profile.account = nil
+        profile.accountID = nil
+        profile.accountEmail = nil
         try await save(profile)
+        try await store.replaceAccountIdentities([])
+        identities = []
     }
 
-    /// "Delete account": signs out, revokes Google access, clears the Keychain, and with
-    /// `eraseData` also deletes every group, expense and payment on this phone.
+    /// "Delete account": deletes the TakaDe account on the sign-in service (when there is
+    /// one), signs out, revokes Google access, clears the Keychain, and with `eraseData`
+    /// also deletes every group, expense and payment on this phone. If the service can't be
+    /// reached, nothing is removed, so the person can try again.
     func deleteAccount(eraseData: Bool, app: AppModel) async throws {
+        if let supabase, profile?.accountID != nil {
+            try await supabase.deleteAccount()
+        }
         try await signOut()
         if eraseData { try await eraseEverything(app: app) }
     }
@@ -94,12 +275,15 @@ final class AccountModel {
     /// "Delete all my data": the ledger, history, profile, sign-in and settings on this phone.
     func eraseEverything(app: AppModel) async throws {
         if profile?.account?.provider == .google { await GoogleSignInService.revoke() }
+        // Signs out of the account here; the account itself stays until "Delete account".
+        await supabase?.signOut()
         KeychainStore.deleteAll()
         try await store.eraseEverything()
         for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey] {
             UserDefaults.standard.removeObject(forKey: key)
         }
         profile = nil
+        identities = []
         await app.reload()
     }
 

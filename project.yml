@@ -35,13 +35,18 @@ targets:
       properties:
         CFBundleDisplayName: TakaDe
         CFBundleLocalizations: [en, bn]
-        UILaunchScreen: {}
+        UILaunchScreen:
+          UIColorName: launchBackground
+          UIImageName: LaunchMark
+          UIImageRespectsSafeAreaInsets: false
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: TakaDe uses the camera to read receipts on this phone. Photos are not saved or uploaded.
-        NSFaceIDUsageDescription: TakaDe uses Face ID to unlock the app when you turn on the lock in Profile. Your face data stays with iOS.
+        NSFaceIDUsageDescription: TakaDe uses Face ID to unlock the app when you turn on the lock in Settings. Your face data stays with iOS.
         # Google OAuth client for "Continue with Google"; empty hides the button (Config/Google.local.xcconfig).
         TakaDeGoogleClientID: $(TAKADE_GOOGLE_CLIENT_ID)
+        TakaDeSupabaseHost: $(TAKADE_SUPABASE_HOST)
+        TakaDeSupabaseAnonKey: $(TAKADE_SUPABASE_ANON_KEY)
         UIAppFonts: [Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, InterDisplay-SemiBold.ttf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf]
     settings:
       base:

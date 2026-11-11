@@ -15,7 +15,15 @@ struct ExpenseRow: View {
                 Avatar(name: expense.paidBy.keys.map(group.storedName(of:)).sorted().first ?? "?", size: 36)
             }
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(verbatim: expense.title).font(AppFont.bodyEmphasis)
+                HStack(spacing: Spacing.xxs) {
+                    Text(verbatim: expense.title).font(AppFont.bodyEmphasis)
+                    if expense.repeatsMonthly || expense.repeatOf != nil {
+                        Image(systemName: "repeat")
+                            .font(AppFont.caption)
+                            .foregroundStyle(Color.inkMuted)
+                            .accessibilityLabel(Text("Repeats every month"))
+                    }
+                }
                 Text("Paid by \(payerNames.formatted(.list(type: .and)))")
                     .font(AppFont.caption)
                     .foregroundStyle(Color.inkMuted)

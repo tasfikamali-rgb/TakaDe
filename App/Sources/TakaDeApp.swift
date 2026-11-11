@@ -5,6 +5,8 @@ struct TakaDeApp: App {
     @State private var model: AppModel
     @State private var account: AccountModel
     @State private var lock = AppLock()
+    /// Shown once per cold launch; see LaunchSplash.
+    @State private var showsSplash = true
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
@@ -27,14 +29,24 @@ struct TakaDeApp: App {
                 .task {
                     await account.load()
                     await model.reload()
+                    await model.addDueRepeats()
                 }
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     lock.scenePhaseChanged(to: phase)
                     // Windows can appear after launch (a new scene, the lock cover).
-                    if phase == .active { appearance.apply(animated: false) }
+                    if phase == .active {
+                        appearance.apply(animated: false)
+                        // Rent due today shows up when the app comes back, not only at launch.
+                        Task { await model.addDueRepeats() }
+                    }
                 }
                 .onChange(of: appearance, initial: true) { old, new in
                     new.apply(animated: old != new)
+                }
+                .overlay {
+                    if showsSplash {
+                        LaunchSplash { showsSplash = false }
+                    }
                 }
         }
     }

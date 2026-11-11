@@ -24,3 +24,11 @@ Planned schema (a later migration, written only when sync is built): `account`, 
 - The app, store listing and website must not say "end-to-end encrypted" until a security review of the real implementation, including key handling, recovery and the metadata above.
 - Payment verification is separate (CLAUDE.md principle 4). Encrypting the ledger doesn't make a reported payment verified.
 - Until sync ships, sharing stays a read-only summary or an export file.
+
+## Update 2026-11-11: hosting
+Sabit chose Supabase (Postgres) for accounts (ADR 16), sized for about 10,000 users. The relay will run on the same Supabase Postgres:
+- Shared groups sync as encrypted change rows, the `change_outbox` payloads.
+- Row-level security is set per group, so only that group's members can read or write its rows.
+- Supabase never stores readable expenses.
+
+This is still design only. Nothing is built or deployed.

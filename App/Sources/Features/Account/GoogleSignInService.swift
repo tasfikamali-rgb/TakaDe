@@ -156,7 +156,7 @@ final class GoogleSignInService {
 }
 
 /// Gives the browser sheet a window to present from.
-private final class PresentationAnchorProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
+final class PresentationAnchorProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         MainActor.assumeIsolated {
             let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }

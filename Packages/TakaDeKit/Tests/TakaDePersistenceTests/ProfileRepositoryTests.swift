@@ -14,6 +14,31 @@ final class ProfileRepositoryTests: XCTestCase {
         XCTAssertEqual(loaded?.languageCode, "bn")
     }
 
+    func testAccountAndIdentitiesRoundTripAndAreErased() async throws {
+        let repo = try SQLiteLedgerRepository()
+        let profile = LocalProfile(displayName: "Sabit", accountID: "8f1c-uuid", accountEmail: "sabit@example.com")
+        try await repo.save(profile)
+        let linked = Date(timeIntervalSince1970: 1_800_000_000)
+        let identities = [
+            AccountIdentity(id: "id-1", provider: .email, providerUserID: "8f1c-uuid", email: "sabit@example.com", linkedAt: linked),
+            AccountIdentity(id: "id-2", provider: .microsoft, providerUserID: "oid-1", email: nil, linkedAt: linked.addingTimeInterval(60)),
+        ]
+        try await repo.replaceAccountIdentities(identities)
+        let loaded = try await repo.profile()
+        XCTAssertEqual(loaded?.accountID, "8f1c-uuid")
+        XCTAssertEqual(loaded?.accountEmail, "sabit@example.com")
+        let storedIdentities = try await repo.accountIdentities()
+        XCTAssertEqual(storedIdentities, identities)
+
+        try await repo.replaceAccountIdentities([identities[0]])
+        let afterUnlink = try await repo.accountIdentities()
+        XCTAssertEqual(afterUnlink, [identities[0]])
+
+        try await repo.eraseEverything()
+        let afterErase = try await repo.accountIdentities()
+        XCTAssertTrue(afterErase.isEmpty)
+    }
+
     func testOnlyOneProfileIsKept() async throws {
         let repo = try SQLiteLedgerRepository()
         try await repo.save(LocalProfile(displayName: "A"))

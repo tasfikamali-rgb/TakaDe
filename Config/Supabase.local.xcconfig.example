@@ -1,0 +1,6 @@
+// Copy to Config/Supabase.local.xcconfig and fill in. Not committed.
+// Supabase dashboard > Project Settings > API. Only the host and the anon (public) key go
+// in the app. The service-role key stays on Supabase, in the delete-account function.
+// The host is already set in TakaDe.xcconfig; override it here only for another project.
+// TAKADE_SUPABASE_HOST = abcdefghijkl.supabase.co
+TAKADE_SUPABASE_ANON_KEY = paste-the-anon-public-key-here
