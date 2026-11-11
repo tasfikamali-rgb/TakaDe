@@ -56,7 +56,7 @@ If either download fails, stop and ask me to grab them manually from fontshare.c
 
 ## 1. Visual theme and atmosphere
 
-Calm, tactile, money you can touch. Light gray canvas, white sheets that slide up over a dark wallet header, one hot lime accent that only appears when something happens (selected tab, money sent, debt settled). Big numbers do the talking. Everything feels physical: sheets have weight, the nav notch is liquid, confirmation is a swipe, not a tap.
+Calm, tactile, money you can touch. Light gray canvas, white sheets that slide up over the wallet header (white in light mode, near-black only in dark mode), one hot lime accent that only appears when something happens (selected tab, money sent, debt settled). Big numbers do the talking. Everything feels physical: sheets have weight, the nav notch is liquid, confirmation is a swipe, not a tap.
 
 Density is low on home and high only inside transaction lists. One memorable thing per screen, everything around it quiet.
 
@@ -90,7 +90,8 @@ Take the specific idea from each reference, not the whole look. These are the pa
 |---|---|---|
 | `canvas` | `#F2F2F2` | App background, light mode |
 | `surface` | `#FFFFFF` | Sheets, cards, keypad keys |
-| `ink` | `#161616` | Primary text, dark header, nav bar |
+| `ink` | `#161616` | Primary text |
+| `header` | `#FFFFFF` | Wallet header, nav bar, swipe track. Light in light mode: dark surfaces belong to dark mode only (Sabit, 2026-11-11) |
 | `inkMuted` | `#8A8A8A` | Secondary text, "Available" labels, decimals |
 | `lime` | `#4BE83A` | Active tab circle, success screen, settle up. Never for body text |
 | `lilac` | `#DAD7EE` | Optional soft header tint for group screens |
@@ -98,7 +99,7 @@ Take the specific idea from each reference, not the whole look. These are the pa
 | `owe` | `#E5533D` | "You owe" amounts |
 | `bkash` | `#E2136E` | Only on bKash pay and settle buttons and the bKash logo badge |
 
-Dark mode: canvas `#0E0E0E`, surface `#1C1C1E`, raised surface `#2A2A2C`, ink becomes `#F5F5F5`, inkMuted becomes `#9A9A9F`, owed becomes `#3DD27A`, owe becomes `#FF6B57`. Lime and bKash pink stay the same. In dark mode the dark wallet header must still separate from the canvas, so it uses `#1C1C1E` with the sheet at `#000000` or the reverse; never two near identical blacks touching. Define every color in an asset catalog with light and dark variants; never hardcode hex in views.
+Dark mode: canvas `#0E0E0E`, surface `#1C1C1E`, raised surface `#2A2A2C`, ink becomes `#F5F5F5`, inkMuted becomes `#9A9A9F`, owed becomes `#3DD27A`, owe becomes `#FF6B57`. Lime and bKash pink stay the same. In dark mode the wallet header (`#2A2A2C`) must still separate from the canvas, so it uses `#1C1C1E` with the sheet at `#000000` or the reverse; never two near identical blacks touching. Define every color in an asset catalog with light and dark variants; never hardcode hex in views.
 
 ### Contrast and appearance, both modes perfect
 
@@ -114,21 +115,23 @@ Rule: no more than one saturated color visible at rest on a screen.
 
 ## 3. Typography
 
-Two families, clearly different jobs.
+One modern family, the kind big fintech apps use (changed from Ranade and Author on 2026-11-11 at Sabit's request).
 
-**Ranade** (Indian Type Foundry, Fontshare) is the display face: balances, amounts on the keypad, screen titles, success messages. **Author** (Satya Rajpurohit, Indian Type Foundry, Fontshare) is the humanist UI face: labels, buttons, list rows, body.
+**Inter Display** SemiBold is the display face: balances, amounts on the keypad, screen titles, success messages. **Inter** (Regular, Medium, SemiBold) is the UI face: labels, buttons, list rows, body. Both have tabular figures, so amounts line up and don't jitter. Open licensed (SIL OFL), so the files are committed in `App/Resources/Fonts/Inter`.
+
+**Hind Siliguri** (SIL OFL) covers Bengali: Bangla interface text, Bengali digits and the ৳ sign, at the same sizes and weights.
 
 Headline treatment follows the reference screenshot ("Trusted by teams that build world class apps."): medium to semibold weight, tight negative tracking, tight leading, sentence case, centered only for hero moments.
 
 | Style | Font | Size (pt) | Weight | Tracking | Leading |
 |---|---|---|---|---|---|
-| Balance | Ranade | 48 | Medium | -0.03em | 1.0 |
-| Keypad amount | Ranade | 56 | Medium | -0.03em | 1.0 |
-| Title | Ranade | 28 | Medium | -0.02em | 1.1 |
-| Headline | Author | 20 | Semibold | -0.01em | 1.2 |
-| Body | Author | 16 | Regular | 0 | 1.4 |
-| Label | Author | 14 | Medium | 0 | 1.3 |
-| Caption | Author | 12 | Medium | +0.01em | 1.3 |
+| Balance | Inter Display | 48 | Semibold | -0.03em | 1.0 |
+| Keypad amount | Inter Display | 56 | Semibold | -0.03em | 1.0 |
+| Title | Inter Display | 28 | Semibold | -0.02em | 1.1 |
+| Headline | Inter | 20 | Semibold | -0.01em | 1.2 |
+| Body | Inter | 16 | Regular | 0 | 1.4 |
+| Label | Inter | 14 | Medium | 0 | 1.3 |
+| Caption | Inter | 12 | Medium | +0.01em | 1.3 |
 
 Money formatting: the currency symbol `৳` and the decimals render smaller and in `inkMuted`, like `৳ 7,854.43` where `.43` is roughly 45% of the main size and baseline aligned. Always use `.monospacedDigit()` on amounts that change so numbers do not jitter. Animate amount changes with `.contentTransition(.numericText())`.
 
@@ -136,17 +139,17 @@ Register fonts through `Font.custom(_:size:relativeTo:)` so Dynamic Type still s
 
 ## 4. Components
 
-1. **Bottom nav with liquid notch** (from the Figma reference). A dark `ink` pill floating above the home indicator, four icons (Home, Activity, Groups, Profile). The selected icon sits in a lime circle that drops into a curved cutout in the bar. On tab change the cutout and circle slide together to the new tab. Build the bar as a custom `Shape` whose notch x position is `animatableData`, and move the circle with `matchedGeometryEffect`. Spring: response 0.4, damping 0.8. Fire `.sensoryFeedback(.selection, trigger:)` on the same frame.
+1. **Bottom nav with liquid notch** (from the Figma reference). A `header` pill (white with a soft shadow in light mode, raised dark gray in dark mode) floating above the home indicator, four icons (Home, Activity, Groups, Profile). The selected icon sits in a lime circle that drops into a curved cutout in the bar. On tab change the cutout and circle slide together to the new tab. Build the bar as a custom `Shape` whose notch x position is `animatableData`, and move the circle with `matchedGeometryEffect`. Spring: response 0.4, damping 0.8. Fire `.sensoryFeedback(.selection, trigger:)` on the same frame.
 
-2. **Wallet header**. Dark `ink` block at the top of Home with "Total balance" label, big Ranade balance, and two pill buttons side by side: Send (filled white) and Request (outlined). Below it a compact Spending or "You are owed" card with stacked avatars.
+2. **Wallet header**. `header` block at the top of Home (white in light mode, raised dark gray in dark mode) with "Total balance" label, big Inter Display balance, and two pill buttons side by side: Send (filled white) and Request (outlined). Below it a compact Spending or "You are owed" card with stacked avatars.
 
-3. **Transactions sheet**. White sheet with a grabber that overlaps the dark header and scrolls up over it. Rows: 36pt avatar or merchant logo, name, sub label, amount right aligned (`owed` green for incoming, `ink` for outgoing). Fade the top edge with a mask, no hard divider.
+3. **Transactions sheet**. White sheet with a grabber that overlaps the header and scrolls up over it. Rows: 36pt avatar or merchant logo, name, sub label, amount right aligned (`owed` green for incoming, `ink` for outgoing). Fade the top edge with a mask, no hard divider.
 
 4. **Amount keypad sheet** (from the send money video). Segmented Send / Request toggle at the top, recipient chip under it, huge centered amount, "Available ৳ x" caption. Then a row of + − × ÷ operators (this is core for splitting: `1200 ÷ 4` should just work), then a 3×4 keypad of soft rounded keys. Keys scale to 0.96 on press down, instantly.
 
 5. **Swipe to confirm**. Replaces the pay button on send and settle. A track with a thumb the user drags right; it tracks 1:1 with the finger, rubber bands past the end, and springs back if released before 70%. On commit, haptic success.
 
-6. **Success screen**. Full screen lime, big checkmark, amount in Ranade, "Sent to Pavlo" in Author. Enters by expanding from the confirm thumb's position. Tap anywhere to close; it collapses back the same way it came.
+6. **Success screen**. Full screen lime, big checkmark, amount in Inter Display, "Sent to Pavlo" in Inter. Enters by expanding from the confirm thumb's position. Tap anywhere to close; it collapses back the same way it came.
 
 7. **Send again grid**. 2×2 avatar tiles with a plus tile, next to a small income or balance trend card, as in the wallet reference.
 
