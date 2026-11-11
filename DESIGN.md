@@ -125,13 +125,13 @@ Headline treatment follows the reference screenshot ("Trusted by teams that buil
 
 | Style | Font | Size (pt) | Weight | Tracking | Leading |
 |---|---|---|---|---|---|
-| Balance | Inter Display | 48 | Semibold | -0.03em | 1.0 |
-| Keypad amount | Inter Display | 56 | Semibold | -0.03em | 1.0 |
-| Title | Inter Display | 28 | Semibold | -0.02em | 1.1 |
-| Headline | Inter | 20 | Semibold | -0.01em | 1.2 |
+| Balance | Inter Display | 48 | Semibold | -0.01em | 1.0 |
+| Keypad amount | Inter Display | 56 | Semibold | -0.01em | 1.0 |
+| Title | Inter Display | 28 | Semibold | -0.005em | 1.1 |
+| Headline | Inter | 20 | Semibold | 0 | 1.2 |
 | Body | Inter | 16 | Regular | 0 | 1.4 |
 | Label | Inter | 14 | Medium | 0 | 1.3 |
-| Caption | Inter | 12 | Medium | +0.01em | 1.3 |
+| Caption | Inter | 12 | Medium | 0 | 1.3 |
 
 Money formatting: the currency symbol `৳` and the decimals render smaller and in `inkMuted`, like `৳ 7,854.43` where `.43` is roughly 45% of the main size and baseline aligned. Always use `.monospacedDigit()` on amounts that change so numbers do not jitter. Animate amount changes with `.contentTransition(.numericText())`.
 

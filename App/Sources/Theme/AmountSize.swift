@@ -47,8 +47,9 @@ enum AmountSize {
     /// Tight negative tracking only on large display numbers, never on small text.
     var tracking: CGFloat {
         switch self {
-        case .keypad, .balance: -0.03 * points
-        case .title: -0.02 * points
+        // Inter Display is already tightly spaced, so only a touch of negative tracking.
+        case .keypad, .balance: -0.01 * points
+        case .title: -0.005 * points
         default: 0
         }
     }

@@ -29,6 +29,7 @@ struct NotchTabBar: View {
 
             Circle()
                 .fill(Color.lime)
+                .overlay(Circle().stroke(Color.ink.opacity(0.1), lineWidth: 1))
                 .frame(width: circle, height: circle)
                 .offset(x: centerX - circle / 2, y: 14 - circle / 2)
                 .accessibilityHidden(true)
