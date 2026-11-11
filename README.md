@@ -44,7 +44,6 @@ Requires a Mac with Xcode 16 or later.
 
 ```bash
 brew install xcodegen
-./scripts/fetch-fonts.sh          # optional; falls back to system fonts
 xcodegen generate
 open TakaDe.xcodeproj
 ```

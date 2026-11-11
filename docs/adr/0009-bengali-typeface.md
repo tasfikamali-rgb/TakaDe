@@ -15,5 +15,5 @@ Bundle Hind Siliguri (Regular, Medium, SemiBold; SIL Open Font License, so the f
 ## Consequences
 Latin names inside the Bengali interface render in Hind Siliguri's Latin, which is consistent within a screen. Bengali names typed into the English interface still fall back to the system face; a font cascade would fix that but loses Dynamic Type scaling in SwiftUI, so it is left for later.
 
-## Latin faces are not in git
-Ranade and Author come from Fontshare under the ITF Free Font License, which allows use in apps but not redistributing the font files, so they stay gitignored and `scripts/fetch-fonts.sh` downloads them. Builds without them fall back to SF. Screenshot and release builds must run the script first; the store-readiness check should fail when the files are missing.
+## Superseded in part
+Ranade and Author were replaced by Inter on 2026-11-11 (ADR 0012). Read "Inter" for "Author" and "Inter Display" for "Ranade" above; the Bengali pairing is unchanged.

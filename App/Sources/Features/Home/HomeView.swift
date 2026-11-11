@@ -6,6 +6,7 @@ import TakaDeCore
 /// The selection lives here, above the branch, so it survives a fold or resize.
 struct HomeView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(AppChrome.self) private var chrome
     @State private var selection: GroupID?
     @State private var path: [GroupID] = []
     @State private var showingNewGroup = false
@@ -33,9 +34,20 @@ struct HomeView: View {
             }
         }
         .onChange(of: selection) { _, newValue in syncPath(newValue) }
-        .onChange(of: path) { _, newValue in selection = newValue.last }
-        .onChange(of: horizontalSizeClass) { syncPath(selection) }
+        .onChange(of: path) { _, newValue in
+            selection = newValue.last
+            updateChrome()
+        }
+        .onChange(of: horizontalSizeClass) {
+            syncPath(selection)
+            updateChrome()
+        }
         .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open) }
+    }
+
+    /// Inside a group on a phone, the group's own "Settle up" takes the bottom edge.
+    private func updateChrome() {
+        chrome.hidesTabBar = horizontalSizeClass != .regular && !path.isEmpty
     }
 
     private func showNewGroup() { showingNewGroup = true }
@@ -50,5 +62,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView().environment(AppModel.preview())
+    HomeView().environment(AppModel.preview()).environment(AppChrome())
 }

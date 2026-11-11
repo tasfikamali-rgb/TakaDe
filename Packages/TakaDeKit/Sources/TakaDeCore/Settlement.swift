@@ -5,6 +5,8 @@ import Foundation
 public enum SettlementMethod: String, Codable, Sendable, CaseIterable {
     case cash
     case bkash
+    case nagad
+    case rocket
     case upay
     case bankTransfer
     case other

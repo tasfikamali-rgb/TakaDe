@@ -6,6 +6,7 @@ struct GroupSheet: View {
     let group: ExpenseGroup
     let model: GroupDetailModel
     let errorMessage: String?
+    let onOpen: (Expense) -> Void
     let onDelete: (Expense) -> Void
     let onAddMember: () -> Void
 
@@ -20,7 +21,7 @@ struct GroupSheet: View {
             if let balances = model.balances {
                 MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember)
             }
-            ExpensesCard(group: group, expenses: model.expenses, onDelete: onDelete)
+            ExpensesCard(group: group, expenses: model.expenses, onOpen: onOpen, onDelete: onDelete)
             if !model.settlements.isEmpty {
                 PaymentsCard(group: group, settlements: model.settlements)
             }

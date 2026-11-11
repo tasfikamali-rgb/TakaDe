@@ -14,6 +14,7 @@ struct GroupDetailContent: View {
     @State private var showingAddMember = false
     @State private var newMemberName = ""
     @State private var recentlyDeleted: Expense?
+    @State private var editing: Expense?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -24,6 +25,7 @@ struct GroupDetailContent: View {
                     group: group,
                     model: model,
                     errorMessage: errorMessage,
+                    onOpen: open,
                     onDelete: delete,
                     onAddMember: askForMember)
             }
@@ -48,8 +50,16 @@ struct GroupDetailContent: View {
                 Button("Settle up", action: settle)
                     .buttonStyle(PillButtonStyle())
                     .padding(.horizontal, Spacing.screenMargin)
+                    .padding(.top, Spacing.l)
                     .padding(.bottom, Spacing.xs)
                     .readableWidth()
+                    .background {
+                        // Rows pass under the pinned button; fade them out so the button reads cleanly.
+                        LinearGradient(stops: [.init(color: Color.canvas.opacity(0), location: 0), .init(color: Color.canvas, location: 0.45)],
+                                       startPoint: .top, endPoint: .bottom)
+                            .ignoresSafeArea()
+                            .allowsHitTesting(false)
+                    }
             }
         }
         .overlay(alignment: .bottom) {
@@ -68,6 +78,9 @@ struct GroupDetailContent: View {
         }
         .sheet(isPresented: $showingAddExpense) {
             AddExpenseView(group: group)
+        }
+        .sheet(item: $editing) { expense in
+            AddExpenseView(editing: expense, in: group, onDelete: delete)
         }
         .sheet(isPresented: $showingSettle) {
             if let balances = model.balances {
@@ -90,6 +103,11 @@ struct GroupDetailContent: View {
     private func settle() {
         recentlyDeleted = nil
         showingSettle = true
+    }
+
+    private func open(_ expense: Expense) {
+        recentlyDeleted = nil
+        editing = expense
     }
 
     private func askForMember() { showingAddMember = true }

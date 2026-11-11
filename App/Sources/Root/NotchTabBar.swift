@@ -9,12 +9,17 @@ struct NotchTabBar: View {
 
     private let height: CGFloat = 64
     private let circle: CGFloat = 48
+    /// Keeps the first and last tab far enough from the rounded ends for the dip to fit.
+    private let inset: CGFloat = 28
+
+    /// The bar plus its bottom gap, which pages leave free so nothing hides under it.
+    static let reservedHeight: CGFloat = 64 + Spacing.xs
 
     var body: some View {
         let tabs = AppTab.allCases
-        let slot = width / CGFloat(max(tabs.count, 1))
+        let slot = max(width - inset * 2, 0) / CGFloat(max(tabs.count, 1))
         let index = CGFloat(tabs.firstIndex(of: selection) ?? 0)
-        let centerX = slot * (index + 0.5)
+        let centerX = NotchBarShape.clampedNotchX(inset + slot * (index + 0.5), width: width, height: height)
 
         ZStack(alignment: .topLeading) {
             NotchBarShape(notchX: centerX)
@@ -33,6 +38,7 @@ struct NotchTabBar: View {
                     NotchTabButton(tab: tab, isSelected: tab == selection, select: { select(tab) })
                 }
             }
+            .padding(.horizontal, inset)
         }
         .frame(height: height)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }

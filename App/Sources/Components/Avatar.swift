@@ -10,7 +10,7 @@ struct Avatar: View {
 
     var body: some View {
         Text(verbatim: initial)
-            .font(AppFont.author(size * 0.42, .semibold, relativeTo: .body))
+            .font(AppFont.text(size * 0.42, .semibold, relativeTo: .body))
             .foregroundStyle(Color.ink)
             .frame(width: size, height: size)
             .background(Circle().fill(fill))
