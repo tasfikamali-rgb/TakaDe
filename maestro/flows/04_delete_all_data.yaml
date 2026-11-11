@@ -16,7 +16,7 @@ tags:
 - inputText: "Rishan"
 - tapOn: "Create"
 - extendedWaitUntil:
-    visible: "Settle up"
+    visible: "Add expense"
     timeout: 10000
 - tapOn: "Account"
 - scrollUntilVisible:

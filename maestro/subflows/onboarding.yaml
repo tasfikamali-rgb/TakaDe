@@ -26,6 +26,12 @@ appId: app.takade.ios
       visible: "Start splitting"
     commands:
       - tapOn: "Start splitting"
+# iPad portrait starts with the sidebar hidden.
+- runFlow:
+    when:
+      visible: "Show Sidebar"
+    commands:
+      - tapOn: "Show Sidebar"
 - extendedWaitUntil:
     visible: "No groups yet"
     timeout: 10000

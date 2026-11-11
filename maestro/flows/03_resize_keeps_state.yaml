@@ -17,12 +17,12 @@ tags:
 - inputText: "Rishan"
 - tapOn: "Create"
 - extendedWaitUntil:
-    visible: "Settle up"
+    visible: "Add expense"
     timeout: 10000
 - setOrientation: LANDSCAPE_LEFT
 - assertVisible: "Flat"
-- assertVisible: "Settle up"
+- assertVisible: "Add expense"
 - takeScreenshot: ${OUT}/10-group-landscape
 - setOrientation: PORTRAIT
 - assertVisible: "Flat"
-- assertVisible: "Settle up"
+- assertVisible: "Add expense"
