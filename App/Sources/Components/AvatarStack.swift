@@ -6,11 +6,12 @@ struct AvatarStack: View {
     var size: CGFloat = 28
     var limit = 4
     var ring: Color = .surface
+    var fill: Color = .surfaceRaised
 
     var body: some View {
         HStack(spacing: -size * 0.3) {
             ForEach(Array(names.prefix(limit).enumerated()), id: \.offset) { _, name in
-                Avatar(name: name, size: size, ring: ring)
+                Avatar(name: name, size: size, ring: ring, fill: fill)
             }
             if names.count > limit {
                 Text(verbatim: "+\(names.count - limit)")
