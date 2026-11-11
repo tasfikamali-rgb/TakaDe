@@ -6,6 +6,8 @@ Design system for a native iOS expense splitting app with bKash integration (thi
 
 Do these steps first, every new session, before touching any view code. Do not skip them because you think you already know the material; the skills carry project specific rules.
 
+The three skills in steps 1 to 3 are already checked in under `.claude/skills/` (see `.claude/skills/README.md`), so a fresh clone has them. Run those install commands only to update a skill.
+
 1. Install the Apple design skill (fluid motion, springs, gestures, materials, typography):
 
 ```bash
