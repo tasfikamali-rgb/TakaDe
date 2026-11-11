@@ -8,6 +8,8 @@ import TakaDeCore
 @Observable
 final class ExpenseDraft {
     let group: ExpenseGroup
+    /// The expense being edited, or nil for a new one.
+    let original: Expense?
     var title = ""
     /// What's on the keypad, e.g. "1200÷4".
     var amountExpression = ""
@@ -21,9 +23,38 @@ final class ExpenseDraft {
 
     init(group: ExpenseGroup) {
         self.group = group
+        original = nil
         payer = group.me?.id ?? group.members[0].id
         included = Set(group.members.map(\.id))
     }
+
+    /// Starts from a saved expense, so editing shows exactly what was recorded.
+    init(editing expense: Expense, in group: ExpenseGroup) {
+        self.group = group
+        original = expense
+        title = expense.title
+        amountExpression = KeypadText.plain(expense.total)
+        occurredAt = expense.occurredAt
+        payer = expense.paidBy.keys.sorted().first ?? group.me?.id ?? group.members[0].id
+        included = Set(group.members.map(\.id))
+        switch expense.splitRule {
+        case .equal(let members):
+            method = .equal
+            included = Set(members)
+        case .exact(let amounts):
+            method = .exact
+            exactText = amounts.mapValues(KeypadText.plain)
+        case .percentage(let basisPoints):
+            method = .percentage
+            let percent = Currency(code: "PCT", minorUnitDigits: 2)
+            percentText = basisPoints.mapValues { KeypadText.plain(Money(minorUnits: Int64($0), currency: percent)) }
+        case .shares(let weights):
+            method = .shares
+            shareCounts = Dictionary(uniqueKeysWithValues: group.members.map { ($0.id, weights[$0.id, default: 0]) })
+        }
+    }
+
+    var isEditing: Bool { original != nil }
 
     subscript(exactFor id: MemberID) -> String {
         get { exactText[id, default: ""] }
@@ -99,9 +130,9 @@ final class ExpenseDraft {
         return total.minorUnits % Int64(included.count) != 0
     }
 
-    /// True once anything has been typed, so a swipe-down doesn't throw it away.
+    /// True once anything has been typed (or, when editing, always), so a swipe-down doesn't throw it away.
     var hasContent: Bool {
-        !trimmedTitle.isEmpty || !amountExpression.isEmpty
+        isEditing || !trimmedTitle.isEmpty || !amountExpression.isEmpty
     }
 
     var canSave: Bool {
@@ -111,6 +142,11 @@ final class ExpenseDraft {
 
     func makeExpense() throws -> Expense {
         guard let total, let rule else { throw SplitError.noParticipants }
+        if let original {
+            // Same id and a new version, so history shows an edit rather than a new expense.
+            return try Expense(id: original.id, groupID: group.id, title: trimmedTitle, total: total, paidBy: [payer: total],
+                               splitRule: rule, occurredAt: occurredAt, note: original.note, version: original.version + 1)
+        }
         return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: [payer: total], splitRule: rule, occurredAt: occurredAt)
     }
 

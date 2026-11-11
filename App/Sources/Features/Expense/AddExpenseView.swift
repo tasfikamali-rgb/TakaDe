@@ -7,9 +7,18 @@ struct AddExpenseView: View {
     @State private var draft: ExpenseDraft
     @State private var showingKeypad = false
     @State private var saveError: String?
+    @State private var confirmingDelete = false
+    private let onDelete: ((Expense) -> Void)?
 
     init(group: ExpenseGroup) {
         _draft = State(initialValue: ExpenseDraft(group: group))
+        onDelete = nil
+    }
+
+    /// Opens a saved expense to change it, with Delete at the bottom.
+    init(editing expense: Expense, in group: ExpenseGroup, onDelete: @escaping (Expense) -> Void) {
+        _draft = State(initialValue: ExpenseDraft(editing: expense, in: group))
+        self.onDelete = onDelete
     }
 
     var body: some View {
@@ -35,9 +44,15 @@ struct AddExpenseView: View {
                 if let saveError {
                     Section { Text(saveError).foregroundStyle(Color.owe) }
                 }
+
+                if draft.original != nil, onDelete != nil {
+                    Section {
+                        Button("Delete expense", role: .destructive) { confirmingDelete = true }
+                    }
+                }
             }
             .readableWidth()
-            .navigationTitle("Add expense")
+            .navigationTitle(draft.isEditing ? "Edit expense" : "Add expense")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel", action: cancel) }
@@ -48,6 +63,11 @@ struct AddExpenseView: View {
             .sheet(isPresented: $showingKeypad) {
                 AmountKeypadSheet(expression: $draft.amountExpression, currency: draft.group.currency)
                     .presentationDetents([.large])
+            }
+            .confirmationDialog("Delete this expense?", isPresented: $confirmingDelete, titleVisibility: .visible) {
+                Button("Delete", role: .destructive, action: deleteExpense)
+            } message: {
+                Text("You can undo right after")
             }
             .onAppear(perform: openKeypadIfEmpty)
             .interactiveDismissDisabled(draft.hasContent)
@@ -61,6 +81,12 @@ struct AddExpenseView: View {
     }
 
     private func cancel() { dismiss() }
+
+    private func deleteExpense() {
+        guard let original = draft.original else { return }
+        dismiss()
+        onDelete?(original)
+    }
 
     private func save() {
         Task {

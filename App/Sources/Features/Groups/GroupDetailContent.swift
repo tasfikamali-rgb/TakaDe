@@ -14,6 +14,7 @@ struct GroupDetailContent: View {
     @State private var showingAddMember = false
     @State private var newMemberName = ""
     @State private var recentlyDeleted: Expense?
+    @State private var editing: Expense?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -24,6 +25,7 @@ struct GroupDetailContent: View {
                     group: group,
                     model: model,
                     errorMessage: errorMessage,
+                    onOpen: open,
                     onDelete: delete,
                     onAddMember: askForMember)
             }
@@ -69,6 +71,9 @@ struct GroupDetailContent: View {
         .sheet(isPresented: $showingAddExpense) {
             AddExpenseView(group: group)
         }
+        .sheet(item: $editing) { expense in
+            AddExpenseView(editing: expense, in: group, onDelete: delete)
+        }
         .sheet(isPresented: $showingSettle) {
             if let balances = model.balances {
                 SettleUpView(group: group, balances: balances)
@@ -90,6 +95,11 @@ struct GroupDetailContent: View {
     private func settle() {
         recentlyDeleted = nil
         showingSettle = true
+    }
+
+    private func open(_ expense: Expense) {
+        recentlyDeleted = nil
+        editing = expense
     }
 
     private func askForMember() { showingAddMember = true }
