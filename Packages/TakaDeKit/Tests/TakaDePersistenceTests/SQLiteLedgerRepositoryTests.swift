@@ -28,6 +28,30 @@ final class SQLiteLedgerRepositoryTests: XCTestCase {
         XCTAssertEqual(loaded?.simplifiesDebts, false)
     }
 
+    func testMessGroupAndMealCountsRoundTrip() async throws {
+        let repo = try SQLiteLedgerRepository()
+        var group = makeGroup()
+        let me = group.members[0].id, other = group.members[1].id
+        group.kind = .mess
+        group.managerID = me
+        try await repo.save(group, actor: me)
+        let loaded = try await repo.group(group.id)
+        XCTAssertEqual(loaded?.kind, .mess)
+        XCTAssertEqual(loaded?.managerID, me)
+
+        let day = MealDay(year: 2026, month: 11, day: 5)!
+        try await repo.save(try MealCount(memberID: other, day: day, halfMeals: 3), in: group.id, actor: me)
+        try await repo.save(try MealCount(memberID: other, day: day, halfMeals: 4), in: group.id, actor: me)
+        try await repo.save(try MealCount(memberID: me, day: MealDay(year: 2026, month: 12, day: 1)!, halfMeals: 2), in: group.id, actor: me)
+        let november = try await repo.mealCounts(in: group.id, month: MessMonth(year: 2026, month: 11)!)
+        XCTAssertEqual(november.count, 1)
+        XCTAssertEqual(november.first?.halfMeals, 4)
+
+        try await repo.save(try MealCount(memberID: other, day: day, halfMeals: 0), in: group.id, actor: me)
+        let cleared = try await repo.mealCounts(in: group.id, month: MessMonth(year: 2026, month: 11)!)
+        XCTAssertTrue(cleared.isEmpty)
+    }
+
     func testExpenseSaveDeleteAndHistory() async throws {
         let repo = try SQLiteLedgerRepository()
         let group = makeGroup()

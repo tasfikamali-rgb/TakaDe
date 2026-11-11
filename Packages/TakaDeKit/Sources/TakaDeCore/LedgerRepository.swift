@@ -15,3 +15,10 @@ public protocol LedgerRepository: Sendable {
 
     func history(of group: GroupID) async throws -> [AuditEvent]
 }
+
+/// Daily meal counts for mess groups.
+public protocol MessRepository: Sendable {
+    func mealCounts(in group: GroupID, month: MessMonth) async throws -> [MealCount]
+    /// Saves one person's count for one day; zero removes it. Recorded in the history.
+    func save(_ meal: MealCount, in group: GroupID, actor: MemberID?) async throws
+}

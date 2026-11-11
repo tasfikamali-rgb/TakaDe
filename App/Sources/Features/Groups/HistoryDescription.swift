@@ -11,6 +11,7 @@ enum HistoryDescription {
         case (.expense, .edited): return String(localized: "\(who) edited an expense", bundle: .appLanguage)
         case (.expense, .deleted): return String(localized: "\(who) deleted an expense", bundle: .appLanguage)
         case (.settlement, _): return String(localized: "\(who) recorded a payment", bundle: .appLanguage)
+        case (.meal, _): return String(localized: "\(who) updated meal counts", bundle: .appLanguage)
         default: return String(localized: "\(who) made a change", bundle: .appLanguage)
         }
     }

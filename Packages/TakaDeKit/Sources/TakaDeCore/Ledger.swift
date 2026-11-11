@@ -25,8 +25,12 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
     /// On: suggest the fewest payments, combining debts across people. Off: each person
     /// pays the people they actually owe. On by default.
     public var simplifiesDebts: Bool
+    /// A trip or flat (standard), or a mess with daily meal counts.
+    public var kind: GroupKind
+    /// Who keeps a mess's books: meals, bazar and deposits. Nil for standard groups.
+    public var managerID: MemberID?
 
-    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true) {
+    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil) {
         self.id = id
         self.name = name
         self.currency = currency
@@ -34,10 +38,14 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         self.createdAt = createdAt
         self.archivedAt = archivedAt
         self.simplifiesDebts = simplifiesDebts
+        self.kind = kind
+        self.managerID = managerID
     }
 
+    public var isMess: Bool { kind == .mess }
+
     private enum CodingKeys: String, CodingKey {
-        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts
+        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID
     }
 
     /// Older snapshots have no `simplifiesDebts`; they decode with it on.
@@ -50,6 +58,8 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         createdAt = try c.decode(Date.self, forKey: .createdAt)
         archivedAt = try c.decodeIfPresent(Date.self, forKey: .archivedAt)
         simplifiesDebts = try c.decodeIfPresent(Bool.self, forKey: .simplifiesDebts) ?? true
+        kind = try c.decodeIfPresent(GroupKind.self, forKey: .kind) ?? .standard
+        managerID = try c.decodeIfPresent(MemberID.self, forKey: .managerID)
     }
 }
 
