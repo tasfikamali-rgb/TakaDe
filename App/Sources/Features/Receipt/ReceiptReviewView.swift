@@ -56,6 +56,27 @@ struct ReceiptReviewView: View {
                     .pickerStyle(.inline)
                     .labelsHidden()
                 }
+                if !suggestion.items.isEmpty {
+                    Section {
+                        ForEach(suggestion.items.prefix(40)) { line in
+                            ReceiptLineRow(line: line)
+                        }
+                    } header: {
+                        Text("Items")
+                    } footer: {
+                        Text("For checking only. The expense saves the total.")
+                    }
+                }
+                if !suggestion.charges.isEmpty || suggestion.computedTotal != nil {
+                    Section("Tax and charges") {
+                        ForEach(suggestion.charges) { line in
+                            ReceiptLineRow(line: line)
+                        }
+                        if let total, let computed = suggestion.computedTotal {
+                            ReceiptCheckRow(computed: computed, total: total)
+                        }
+                    }
+                }
                 Section {
                     Toggle("Use the receipt's date", isOn: $includesDate)
                     if includesDate {
