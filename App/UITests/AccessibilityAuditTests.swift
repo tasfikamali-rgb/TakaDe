@@ -10,7 +10,9 @@ final class AccessibilityAuditTests: XCTestCase {
     }
 
     @MainActor
-    func testOnboarding() throws {
+    // Named to sort first: XCTest runs tests alphabetically on one install, and the
+    // other tests complete onboarding.
+    func testA_Onboarding() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["English"].waitForExistence(timeout: 10))
         try audit(app)
@@ -97,16 +99,19 @@ final class AccessibilityAuditTests: XCTestCase {
     @MainActor
     private func audit(_ app: XCUIApplication, for types: XCUIAccessibilityAuditType = .all) throws {
         try app.performAccessibilityAudit(for: types) { issue in
-            guard issue.auditType == .contrast || issue.auditType == .dynamicType,
-                  let element = issue.element,
-                  element.elementType == .button else { return false }
-            let navButtons = app.navigationBars.buttons.allElementsBoundByIndex.map(\.identifier)
-                + app.navigationBars.buttons.allElementsBoundByIndex.map(\.label)
-            let isNavBarButton = navButtons.contains(element.label) || navButtons.contains(element.identifier)
-            if isNavBarButton {
-                print("Ignored system navigation-bar audit issue: \(issue.compactDescription) on \(element.label)")
+            let label = issue.element?.label ?? "(no element)"
+            if issue.auditType == .contrast || issue.auditType == .dynamicType,
+               let element = issue.element, element.elementType == .button {
+                let navButtons = app.navigationBars.buttons.allElementsBoundByIndex
+                if navButtons.contains(where: { $0.label == element.label }) {
+                    print("Ignored system navigation-bar audit issue: \(issue.compactDescription) on \(label)")
+                    return true
+                }
             }
-            return isNavBarButton
+            // Report each issue with the element it's on, so CI logs say what to fix.
+            let type = issue.element.map { String(describing: $0.elementType) } ?? "?"
+            XCTFail("\(issue.compactDescription): \(type) \"\(label)\" — \(issue.detailedDescription)")
+            return true
         }
     }
 }
