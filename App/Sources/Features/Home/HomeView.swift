@@ -1,123 +1,66 @@
 import SwiftUI
 import TakaDeCore
 
-/// Home: one job, show where I stand overall, then my groups.
+/// Groups tab. Compact width: one column that pushes into a group. Regular width (iPad,
+/// wide windows, an unfolded phone): groups on the left, the open group on the right.
+/// The selection lives here, above the branch, so it survives a fold or resize.
 struct HomeView: View {
-    @Environment(AppModel.self) private var model
-    @State private var total: Money = .zero()
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(AppChrome.self) private var chrome
+    @State private var selection: GroupID?
+    @State private var path: [GroupID] = []
     @State private var showingNewGroup = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                header
-                VStack(alignment: .leading, spacing: Spacing.m) {
-                    Text("Groups")
-                        .font(AppFont.headline)
-                        .foregroundStyle(Color.ink)
-                    if model.groups.isEmpty {
-                        emptyState
-                    } else {
-                        ForEach(model.groups) { group in
-                            NavigationLink(value: group.id) {
-                                GroupRow(group: group)
-                            }
-                            .buttonStyle(.plain)
+        Group {
+            if horizontalSizeClass == .regular {
+                NavigationSplitView {
+                    HomeOverview(selection: $selection, onNewGroup: showNewGroup)
+                        .navigationSplitViewColumnWidth(min: 320, ideal: 380)
+                } detail: {
+                    NavigationStack {
+                        if let selection {
+                            GroupDetailView(groupID: selection)
+                        } else {
+                            ContentUnavailableView("Pick a group", systemImage: "person.3", description: Text("Or create one for a trip, a flat or a dinner"))
                         }
                     }
                 }
-                .padding(Spacing.screenMargin)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    UnevenRoundedRectangle(topLeadingRadius: Radius.sheet, topTrailingRadius: Radius.sheet, style: .continuous)
-                        .fill(Color.canvas)
-                        .ignoresSafeArea(edges: .bottom)
-                )
-                .offset(y: -Radius.sheet)
-                .padding(.bottom, -Radius.sheet)
+            } else {
+                NavigationStack(path: $path) {
+                    HomeOverview(selection: $selection, onNewGroup: showNewGroup)
+                        .navigationDestination(for: GroupID.self) { GroupDetailView(groupID: $0) }
+                }
             }
         }
-        .background(alignment: .top) { Color.header.frame(height: 400).ignoresSafeArea() }
-        .background(Color.canvas)
-        .scrollContentBackground(.hidden)
-        .navigationDestination(for: GroupID.self) { id in
-            if let group = model.groups.first(where: { $0.id == id }) {
-                GroupDetailView(groupID: group.id)
-            }
+        .onChange(of: selection) { _, newValue in syncPath(newValue) }
+        .onChange(of: path) { _, newValue in
+            selection = newValue.last
+            updateChrome()
         }
-        .sheet(isPresented: $showingNewGroup) { NewGroupView() }
-        .task(id: model.groups) { total = await model.myTotal() }
-        .toolbar(.hidden, for: .navigationBar)
+        .onChange(of: horizontalSizeClass) {
+            syncPath(selection)
+            updateChrome()
+        }
+        .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open) }
     }
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: Spacing.s) {
-            Text(total.minorUnits >= 0 ? LocalizedStringKey("You are owed in total") : LocalizedStringKey("You owe in total"))
-                .font(AppFont.label)
-                .foregroundStyle(Color.onHeader.opacity(0.7))
-            AmountText(money: total.magnitude, color: .onHeader)
-            Button {
-                showingNewGroup = true
-            } label: {
-                Text("New group")
-                    .font(AppFont.label)
-                    .padding(.horizontal, Spacing.l)
-                    .padding(.vertical, Spacing.s)
-                    .background(Capsule().fill(Color.onHeader))
-                    .foregroundStyle(Color.header)
-            }
-            .padding(.top, Spacing.xs)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, Spacing.screenMargin)
-        .padding(.top, Spacing.xxl)
-        .padding(.bottom, Spacing.huge + Radius.sheet)
-        .background(Color.header)
+    /// Inside a group on a phone, the group's own "Settle up" takes the bottom edge.
+    private func updateChrome() {
+        chrome.hidesTabBar = horizontalSizeClass != .regular && !path.isEmpty
     }
 
-    private var emptyState: some View {
-        VStack(alignment: .leading, spacing: Spacing.xs) {
-            Text("No groups yet")
-                .font(AppFont.body.weight(.semibold))
-            Text("Create a group for a trip, a flat or a dinner, then add what each person paid.")
-                .font(AppFont.body)
-                .foregroundStyle(Color.inkMuted)
-        }
-        .padding(Spacing.l)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+    private func showNewGroup() { showingNewGroup = true }
+
+    private func open(_ id: GroupID) { selection = id }
+
+    private func syncPath(_ id: GroupID?) {
+        guard horizontalSizeClass != .regular else { return }
+        if let id, path.last != id { path = [id] }
+        if id == nil, !path.isEmpty { path = [] }
     }
 }
 
-private struct GroupRow: View {
-    @Environment(AppModel.self) private var model
-    let group: ExpenseGroup
-    @State private var net: Money = .zero()
-
-    var body: some View {
-        HStack(spacing: Spacing.s) {
-            VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(group.name)
-                    .font(AppFont.body.weight(.semibold))
-                    .foregroundStyle(Color.ink)
-                Text("\(group.members.count) people")
-                    .font(AppFont.caption)
-                    .foregroundStyle(Color.inkMuted)
-            }
-            Spacer(minLength: Spacing.s)
-            BalancePill(net: net)
-            Image(systemName: "chevron.right")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(Color.inkMuted)
-                .accessibilityHidden(true)
-        }
-        .padding(Spacing.m)
-        .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
-        .contentShape(Rectangle())
-        .task(id: group) {
-            if let me = group.me, let balances = try? await model.balances(for: group) {
-                net = balances.net(for: me.id)
-            }
-        }
-    }
+#Preview {
+    HomeView().environment(AppModel.preview()).environment(AppChrome())
 }

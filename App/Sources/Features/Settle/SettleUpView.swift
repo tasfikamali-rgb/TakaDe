@@ -1,70 +1,62 @@
 import SwiftUI
 import TakaDeCore
 
-/// Records that a debt was paid outside the app. TakaDe does not move money, and
-/// a recorded payment stays "reported, not verified" until a provider integration exists.
+/// Records a payment made outside the app. TakaDe never moves money. If you paid, it's
+/// saved as reported by you. If you were paid, you mark it received.
 struct SettleUpView: View {
-    @Environment(AppModel.self) private var model
+    @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let group: ExpenseGroup
     let balances: GroupBalances
+    /// Earlier payments in this group, to catch a transaction id typed twice.
+    var settlements: [Settlement] = []
 
     @State private var selected: SuggestedTransfer?
     @State private var method: SettlementMethod = .cash
     @State private var reference = ""
     @State private var saveError: String?
-
-    private var myTransfers: [SuggestedTransfer] {
-        guard let me = group.me else { return [] }
-        return BalanceCalculator.suggestedTransfers(balances).filter { $0.from == me.id || $0.to == me.id }
-    }
+    @State private var recorded: SuggestedTransfer?
+    @State private var payeeHandles: [PaymentHandle] = []
+    @State private var myHandles: [PaymentHandle] = []
+    @State private var simplifies: Bool?
 
     var body: some View {
         NavigationStack {
-            Form {
+            LayeredForm {
+                SettleUpHeader(group: group, transfer: selected, isSettled: myTransfers.isEmpty)
+            } content: {
+                TransferPickerSection(group: group, transfers: myTransfers, selected: $selected)
                 Section {
-                    Text("TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here so the balance updates.")
-                        .font(AppFont.body)
-                        .foregroundStyle(Color.inkMuted)
+                    Toggle("Fewest payments", isOn: Binding(get: { isSimplified }, set: setSimplified))
+                } footer: {
+                    Text(isSimplified
+                         ? LocalizedStringKey("Debts are combined across the group, so fewer payments settle everyone. You may pay someone you didn't borrow from.")
+                         : LocalizedStringKey("Each person pays the people they actually owe. This can mean more payments."))
                 }
-
-                Section("Suggested payments") {
-                    if myTransfers.isEmpty {
-                        Text("You're settled up in this group.")
-                    }
-                    ForEach(myTransfers, id: \.self) { t in
-                        Button {
-                            selected = t
-                        } label: {
-                            HStack {
-                                Text(describe(t))
-                                    .foregroundStyle(Color.ink)
-                                Spacer()
-                                AmountText(money: t.amount, font: AppFont.body.weight(.semibold))
-                                if selected == t {
-                                    Image(systemName: "checkmark").foregroundStyle(Color.ink)
-                                        .accessibilityLabel("Selected")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if selected != nil {
+                if let selected, selected.from == group.me?.id, !payeeHandles.isEmpty {
                     Section {
-                        Picker("Paid with", selection: $method) {
-                            ForEach(SettlementMethod.allCases, id: \.self) { Text($0.label).tag($0) }
-                        }
-                        if method != .cash {
-                            TextField("Transaction ID (optional)", text: $reference)
-                                .textInputAutocapitalization(.characters)
-                                .autocorrectionDisabled()
+                        ForEach(payeeHandles) { PaymentHandleRow(handle: $0) }
+                    } header: {
+                        Text("Send to \(group.storedName(of: selected.to))")
+                    } footer: {
+                        Text("Copy the number into bKash or your bank app, pay there, then come back and record it.")
+                    }
+                }
+                if let selected, let me = group.me, selected.to == me.id {
+                    Section {
+                        ShareLink(item: ReminderText.make(to: group.storedName(of: selected.from), amount: selected.amount,
+                                                          group: group.name, handles: myHandles)) {
+                            Label("Remind \(group.storedName(of: selected.from))", systemImage: "bell")
                         }
                     } footer: {
-                        Text("This is saved as reported by you. It isn't checked with bKash, upay or any bank.")
+                        Text("Sends a friendly message with the amount and your numbers through any chat app.")
                     }
                 }
-
+                if let selected {
+                    PaymentDetailsSection(isMePaying: selected.from == group.me?.id, method: $method, reference: $reference,
+                                          duplicateWarning: duplicateWarning)
+                }
                 if let saveError {
                     Section { Text(saveError).foregroundStyle(Color.owe) }
                 }
@@ -72,60 +64,102 @@ struct SettleUpView: View {
             .navigationTitle("Settle up")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel", action: cancel) }
             }
             .safeAreaInset(edge: .bottom) {
                 if let selected {
-                    Button { record(selected) } label: {
-                        Text(recordLabel(selected))
-                            .font(AppFont.headline)
-                            .frame(maxWidth: .infinity, minHeight: 56)
-                            .background(Capsule().fill(Color.ink))
-                            .foregroundStyle(Color.canvas)
-                    }
-                    .padding(.horizontal, Spacing.screenMargin)
-                    .padding(.bottom, Spacing.xs)
+                    SwipeToConfirm(title: swipeTitle(selected), onConfirm: record)
+                        .id(selected)
+                        .padding(.horizontal, Spacing.screenMargin)
+                        .padding(.bottom, Spacing.xs)
+                        .readableWidth()
                 }
             }
         }
-    }
-
-    private func describe(_ t: SuggestedTransfer) -> String {
-        if t.from == group.me?.id {
-            return String(localized: "You pay \(group.name(of: t.to))")
+        .overlay {
+            if let recorded {
+                SuccessOverlay(amount: recorded.amount, message: successMessage(recorded), onClose: cancel)
+                    .transition(reduceMotion ? .opacity : .scale(scale: 0.2, anchor: .bottomTrailing).combined(with: .opacity))
+            }
         }
-        return String(localized: "\(group.name(of: t.from)) pays you")
+        .onAppear(perform: preselect)
+        .task(id: selected) { await loadPayeeHandles() }
     }
 
-    private func recordLabel(_ t: SuggestedTransfer) -> String {
+    private var myTransfers: [SuggestedTransfer] {
+        guard let me = group.me else { return [] }
+        return BalanceCalculator.transfers(balances, simplify: isSimplified).filter { $0.from == me.id || $0.to == me.id }
+    }
+
+    private var isSimplified: Bool { simplifies ?? group.simplifiesDebts }
+
+    private func setSimplified(_ on: Bool) {
+        simplifies = on
+        selected = nil
+        preselect()
+        Task { try? await app.setSimplifiesDebts(on, for: group) }
+    }
+
+    private func preselect() {
+        if selected == nil, myTransfers.count == 1 { selected = myTransfers.first }
+    }
+
+    private func loadPayeeHandles() async {
+        if let me = group.me, selected?.to == me.id {
+            myHandles = (try? await app.profiles.paymentHandles(for: me.id)) ?? []
+        }
+        guard let selected, selected.from == group.me?.id else {
+            payeeHandles = []
+            return
+        }
+        payeeHandles = (try? await app.profiles.paymentHandles(for: selected.to)) ?? []
+        // Start "Paid with" on how they like to be paid.
+        if method == .cash, let first = payeeHandles.first { method = first.rail.settlementMethod }
+    }
+
+    /// Set when the typed transaction id was already used for a payment in this group.
+    private var duplicateWarning: String? {
+        guard method != .cash, Settlement.duplicate(ofReference: reference, in: settlements) != nil else { return nil }
+        return String(localized: "This transaction ID is already recorded in this group. One payment can only settle one debt.", bundle: .appLanguage)
+    }
+
+    private func swipeTitle(_ t: SuggestedTransfer) -> String {
         let amount = MoneyFormatter.format(t.amount).plain
-        return String(localized: "Record \(amount) as paid")
+        return t.from == group.me?.id
+            ? String(localized: "Swipe to record \(amount) paid", bundle: .appLanguage)
+            : String(localized: "Swipe to mark \(amount) received", bundle: .appLanguage)
     }
 
-    private func record(_ t: SuggestedTransfer) {
-        Task {
-            do {
+    private func successMessage(_ t: SuggestedTransfer) -> String {
+        t.from == group.me?.id
+            ? String(localized: "Recorded as paid to \(group.storedName(of: t.to))", bundle: .appLanguage)
+            : String(localized: "Marked received from \(group.storedName(of: t.from))", bundle: .appLanguage)
+    }
+
+    private func cancel() { dismiss() }
+
+    private func record() async -> Bool {
+        guard let t = selected, let me = group.me else { return false }
+        if duplicateWarning != nil {
+            saveError = duplicateWarning
+            return false
+        }
+        do {
                 var settlement = try Settlement(
                     groupID: group.id, from: t.from, to: t.to, amount: t.amount, method: method,
                     userReference: reference.isEmpty ? nil : reference)
-                try settlement.transition(to: .reportedUnverified)
-                try await model.repository.save(settlement, actor: group.me?.id)
-                dismiss()
-            } catch {
-                saveError = String(localized: "The payment wasn't recorded. Try again.")
-            }
-        }
-    }
-}
-
-extension SettlementMethod {
-    var label: String {
-        switch self {
-        case .cash: String(localized: "Cash")
-        case .bkash: "bKash"
-        case .upay: "upay"
-        case .bankTransfer: String(localized: "Bank transfer")
-        case .other: String(localized: "Other")
+                if t.to == me.id {
+                    try settlement.acknowledge(by: me.id)
+                } else {
+                    try settlement.transition(to: .reportedUnverified)
+                }
+                try await app.record(settlement, in: group)
+                saveError = nil
+                withAnimation(Motion.standard(reduceMotion: reduceMotion)) { recorded = t }
+                return true
+        } catch {
+            saveError = String(localized: "The payment wasn't recorded. Try again.", bundle: .appLanguage)
+            return false
         }
     }
 }

@@ -1,52 +1,30 @@
 import SwiftUI
 import TakaDeCore
 
-/// Renders money with the symbol and decimals smaller and muted (DESIGN.md section 3).
+/// Money with a small muted ৳ and decimals beside a large figure (DESIGN.md section 3),
+/// baseline aligned, in the digits the person chose.
 struct AmountText: View {
     let money: Money
-    var font: Font = AppFont.balance
+    var size: AmountSize = .balance
     var color: Color = .ink
-    @AppStorage(DigitStyle.storageKey) private var digits: DigitStyle = .latin
+    var minorColor: Color = .inkMuted
+    var showsZeroFraction = true
+
+    @AppStorage(DigitPreference.storageKey) private var digitPreference: DigitPreference = .automatic
+    @Environment(\.locale) private var locale
 
     var body: some View {
-        let f = MoneyFormatter.format(money, digits: digits)
-        (Text(f.sign + f.symbol + " ").font(font).foregroundStyle(Color.inkMuted)
-            + Text(f.whole).font(font).foregroundStyle(color)
-            + Text(f.fraction).font(font).foregroundStyle(Color.inkMuted))
+        let digits = digitPreference.resolved(for: locale)
+        let bengali = digits == .bengali
+        let f = MoneyFormatter.format(money, digits: digits, showsZeroFraction: showsZeroFraction)
+        let symbol = Text(verbatim: f.sign + f.symbol + "\u{2009}").font(size.minor(bengaliDigits: true)).foregroundStyle(minorColor)
+        let whole = Text(verbatim: f.whole).font(size.main(bengaliDigits: bengali)).tracking(size.tracking).foregroundStyle(color)
+        let fraction = Text(verbatim: f.fraction).font(size.minor(bengaliDigits: bengali)).foregroundStyle(minorColor)
+        Text("\(symbol)\(whole)\(fraction)")
             .monospacedDigit()
-            .contentTransition(.numericText())
+            .contentTransition(.numericText(value: Double(money.minorUnits)))
             .lineLimit(1)
             .minimumScaleFactor(0.5)
-            .accessibilityLabel(Self.spoken(money))
-    }
-
-    /// e.g. "7854 taka 43 poisha", read naturally by VoiceOver in the current locale.
-    static func spoken(_ money: Money) -> String {
-        let taka = String(localized: "taka")
-        let poisha = String(localized: "poisha")
-        let sign = money.isNegative ? String(localized: "minus") + " " : ""
-        let whole = abs(money.majorPart).formatted()
-        return money.minorPart == 0 ? "\(sign)\(whole) \(taka)" : "\(sign)\(whole) \(taka) \(money.minorPart) \(poisha)"
-    }
-}
-
-/// A balance pill that never relies on color alone: it always says owe/owed in words.
-struct BalancePill: View {
-    let net: Money
-
-    var body: some View {
-        let owed = net.minorUnits > 0
-        let settled = net.isZero
-        HStack(spacing: Spacing.xxs) {
-            Text(settled ? LocalizedStringKey("Settled up") : owed ? LocalizedStringKey("You are owed") : LocalizedStringKey("You owe"))
-            if !settled {
-                AmountText(money: net.magnitude, font: AppFont.label, color: owed ? .owed : .owe)
-            }
-        }
-        .font(AppFont.label)
-        .foregroundStyle(settled ? Color.inkMuted : owed ? Color.owed : Color.owe)
-        .padding(.horizontal, Spacing.s)
-        .padding(.vertical, Spacing.xxs + 2)
-        .background(Capsule().fill(settled ? Color.surfaceRaised : owed ? Color.owedTint : Color.oweTint))
+            .accessibilityLabel(Text(SpokenAmount.text(for: money)))
     }
 }

@@ -19,6 +19,9 @@ targets:
   TakaDe:
     type: application
     platform: iOS
+    configFiles:
+      Debug: Config/TakaDe.xcconfig
+      Release: Config/TakaDe.xcconfig
     sources:
       - path: App/Sources
       - path: App/Resources
@@ -35,13 +38,21 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
-        UIAppFonts: [Ranade-Medium.otf, Author-Regular.otf, Author-Medium.otf, Author-Semibold.otf]
+        NSCameraUsageDescription: TakaDe uses the camera to read receipts on this phone. Photos are not saved or uploaded.
+        NSFaceIDUsageDescription: TakaDe uses Face ID to unlock the app when you turn on the lock in Profile. Your face data stays with iOS.
+        # Google OAuth client for "Continue with Google"; empty hides the button (Config/Google.local.xcconfig).
+        TakaDeGoogleClientID: $(TAKADE_GOOGLE_CLIENT_ID)
+        UIAppFonts: [Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, InterDisplay-SemiBold.ttf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: app.takade.ios
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_EMIT_LOC_STRINGS: YES
+      configs:
+        # Sign in with Apple needs a paid developer team, so the entitlement is only on
+        # Release builds. Debug builds signed with a free Apple ID still install on a phone.
+        Release:
+          CODE_SIGN_ENTITLEMENTS: App/TakaDe.entitlements
 schemes:
   TakaDe:
     build:

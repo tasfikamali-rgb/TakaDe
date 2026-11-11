@@ -1,0 +1,18 @@
+// Shared build settings for the TakaDe app target.
+
+// The iOS OAuth client id from the owner's Google Cloud project, e.g.
+// 1234-abcd.apps.googleusercontent.com. Leave empty to hide "Continue with Google".
+// Set it in Config/Google.local.xcconfig (not committed); see Google.local.xcconfig.example.
+TAKADE_GOOGLE_CLIENT_ID =
+
+#include? "Google.local.xcconfig"
+
+// Signing for installs on your own phone. Put these in Config/Signing.local.xcconfig
+// (not committed) so they survive `xcodegen generate`:
+//   DEVELOPMENT_TEAM = ABCDE12345
+//   TAKADE_BUNDLE_SUFFIX = .yourname   (only if a free team can't use app.takade.ios)
+TAKADE_BUNDLE_SUFFIX =
+PRODUCT_BUNDLE_IDENTIFIER = app.takade.ios$(TAKADE_BUNDLE_SUFFIX)
+CODE_SIGN_STYLE = Automatic
+
+#include? "Signing.local.xcconfig"

@@ -9,43 +9,71 @@ import TakaDePersistence
 final class AppModel {
     private(set) var groups: [ExpenseGroup] = []
     private(set) var loadError: String?
+    /// Bumped after every write so dependent views reload.
+    private(set) var revision = 0
     let repository: LedgerRepository
+    /// The same database: the device owner's profile, export and erase.
+    let profiles: ProfileRepository
+    /// The same database: daily meal counts for mess groups.
+    let mess: MessRepository
 
-    init(repository: LedgerRepository) {
-        self.repository = repository
+    init(store: SQLiteLedgerRepository) {
+        repository = store
+        profiles = store
+        mess = store
     }
 
     /// The on-device database, protected by iOS Data Protection until first unlock.
     static func live() -> AppModel {
         do {
             let dir = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                .appendingPathComponent("Ledger", isDirectory: true)
+            // Protect the folder first, so the database and its journal files are created
+            // encrypted (readable once the phone has been unlocked after a restart).
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true,
+                                                    attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
             let url = dir.appendingPathComponent("ledger.sqlite")
+            try Self.moveLegacyDatabase(to: url)
             let repo = try SQLiteLedgerRepository(path: url.path)
-            try? (url as NSURL).setResourceValue(URLFileProtection.completeUntilFirstUserAuthentication, forKey: .fileProtectionKey)
-            return AppModel(repository: repo)
+            try? FileManager.default.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: url.path)
+            return AppModel(store: repo)
         } catch {
-            let model = AppModel(repository: try! SQLiteLedgerRepository())
-            model.loadError = "Your data couldn't be opened. Changes made now won't be saved. (\(error.localizedDescription))"
+            let model = AppModel(store: try! SQLiteLedgerRepository())
+            model.loadError = String(localized: "Your saved data couldn't be opened, so changes made now won't be kept. Restart the app to try again.", bundle: .appLanguage)
             return model
         }
     }
 
     static func preview() -> AppModel {
-        AppModel(repository: try! SQLiteLedgerRepository())
+        AppModel(store: try! SQLiteLedgerRepository())
+    }
+
+    /// Builds before 2026-11-11 kept the file directly in Application Support.
+    private static func moveLegacyDatabase(to url: URL) throws {
+        let legacy = url.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("ledger.sqlite")
+        let files = FileManager.default
+        guard files.fileExists(atPath: legacy.path), !files.fileExists(atPath: url.path) else { return }
+        try files.moveItem(at: legacy, to: url)
     }
 
     func reload() async {
         do {
             groups = try await repository.groups()
+            revision += 1
         } catch {
-            loadError = error.localizedDescription
+            loadError = String(localized: "Your groups couldn't be loaded. Restart the app to try again.", bundle: .appLanguage)
         }
     }
 
-    func createGroup(name: String, myName: String, otherNames: [String]) async throws -> ExpenseGroup {
+    func group(_ id: GroupID) -> ExpenseGroup? {
+        groups.first { $0.id == id }
+    }
+
+    func createGroup(name: String, myName: String, otherNames: [String], kind: GroupKind = .standard) async throws -> ExpenseGroup {
         let me = Member(displayName: myName, isMe: true)
         let others = otherNames.map { Member(displayName: $0) }
-        let group = ExpenseGroup(name: name, members: [me] + others)
+        // In a mess, whoever sets it up on their phone keeps the books.
+        let group = ExpenseGroup(name: name, members: [me] + others, kind: kind, managerID: kind == .mess ? me.id : nil)
         try await repository.save(group, actor: me.id)
         await reload()
         return group
@@ -55,6 +83,66 @@ final class AppModel {
         var updated = group
         updated.members.append(Member(displayName: name))
         try await repository.save(updated, actor: group.me?.id)
+        await reload()
+    }
+
+    // MARK: Mess
+
+    func mealCounts(in group: ExpenseGroup, month: MessMonth) async -> [MealCount] {
+        (try? await mess.mealCounts(in: group.id, month: month)) ?? []
+    }
+
+    func save(_ meal: MealCount, in group: ExpenseGroup) async throws {
+        try await mess.save(meal, in: group.id, actor: group.me?.id)
+        revision += 1
+    }
+
+    func messSummary(for group: ExpenseGroup, month: MessMonth) async throws -> MessMonthSummary {
+        let meals = await mealCounts(in: group, month: month)
+        let expenses = try await repository.expenses(in: group.id, includeDeleted: false)
+        return try MessMonthSummary(month: month, members: group.members.map(\.id), meals: meals, expenses: expenses, currency: group.currency)
+    }
+
+    /// Re-splits the month's bazar expenses by meals eaten. Each is an ordinary, audited edit.
+    func applyMealSplit(_ summary: MessMonthSummary, in group: ExpenseGroup) async throws {
+        guard let rule = summary.mealSplitRule else { return }
+        for expense in summary.bazarExpenses where expense.splitRule != rule {
+            let updated = try Expense(id: expense.id, groupID: expense.groupID, title: expense.title, total: expense.total,
+                                      paidBy: expense.paidBy, splitRule: rule, occurredAt: expense.occurredAt,
+                                      note: expense.note, category: expense.category, version: expense.version + 1)
+            try await repository.save(updated, actor: group.me?.id)
+        }
+        await reload()
+    }
+
+    func setSimplifiesDebts(_ on: Bool, for group: ExpenseGroup) async throws {
+        var updated = group
+        updated.simplifiesDebts = on
+        try await repository.save(updated, actor: group.me?.id)
+        await reload()
+    }
+
+    func save(_ expense: Expense, in group: ExpenseGroup) async throws {
+        try await repository.save(expense, actor: group.me?.id)
+        await reload()
+    }
+
+    func delete(_ expense: Expense, in group: ExpenseGroup) async throws {
+        try await repository.delete(expense.id, actor: group.me?.id)
+        await reload()
+    }
+
+    /// Brings back a soft-deleted expense (the undo after a delete).
+    func restore(_ expense: Expense, in group: ExpenseGroup) async throws {
+        var restored = expense
+        restored.deletedAt = nil
+        restored.version += 1
+        try await repository.save(restored, actor: group.me?.id)
+        await reload()
+    }
+
+    func record(_ settlement: Settlement, in group: ExpenseGroup) async throws {
+        try await repository.save(settlement, actor: group.me?.id)
         await reload()
     }
 
@@ -73,10 +161,14 @@ final class AppModel {
         let settlements = try await repository.settlements(in: group.id)
         return try BalanceCalculator.balances(members: group.members.map(\.id), currency: group.currency, expenses: expenses, settlements: settlements)
     }
-}
 
-extension ExpenseGroup {
-    var me: Member? { members.first(where: \.isMe) }
-    func member(_ id: MemberID) -> Member? { members.first { $0.id == id } }
-    func name(of id: MemberID) -> String { member(id)?.displayName ?? "?" }
+    /// Most recent expenses across every group, newest first.
+    func recentActivity(limit: Int = 50) async -> [ActivityItem] {
+        var items: [ActivityItem] = []
+        for group in groups {
+            let expenses = (try? await repository.expenses(in: group.id, includeDeleted: false)) ?? []
+            items += expenses.map { ActivityItem(group: group, expense: $0) }
+        }
+        return Array(items.sorted { $0.expense.occurredAt > $1.expense.occurredAt }.prefix(limit))
+    }
 }

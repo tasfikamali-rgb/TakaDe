@@ -35,6 +35,15 @@ final class MoneyTests: XCTestCase {
         XCTAssertEqual(MoneyFormatter.format(Money(minorUnits: 100_000), showsZeroFraction: false).plain, "৳\u{00A0}1,000")
     }
 
+    func testLakhAndWesternGrouping() {
+        let crore = Money(minorUnits: 1_23_45_678_00)
+        XCTAssertEqual(MoneyFormatter.format(crore).whole, "1,23,45,678")
+        XCTAssertEqual(MoneyFormatter.format(crore, grouping: .western).whole, "12,345,678")
+        XCTAssertEqual(MoneyFormatter.format(Money(minorUnits: 99_900)).whole, "999")
+        XCTAssertEqual(MoneyFormatter.format(Money(minorUnits: 1_00_000_00)).whole, "1,00,000")
+        XCTAssertEqual(MoneyFormatter.format(Money(minorUnits: 1_00_000_00), digits: .bengali).whole, "১,০০,০০০")
+    }
+
     func testDigitConversionLeavesOtherTextAlone() {
         XCTAssertEqual(Digits.toBengali("Rishan 42"), "Rishan ৪২")
         XCTAssertEqual(Digits.toLatin("রিশান ৪২"), "রিশান 42")

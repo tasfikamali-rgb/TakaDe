@@ -37,6 +37,15 @@ final class BalanceTests: XCTestCase {
         XCTAssertEqual(after.unverifiedSettled[b]?.minorUnits, 500)
     }
 
+    func testAcknowledgedSettlementIsNotCountedAsUnverified() throws {
+        let e = try expense(1000, paidBy: a, among: [a, b])
+        var s = try Settlement(groupID: group, from: b, to: a, amount: Money(minorUnits: 500), method: .cash)
+        try s.acknowledge(by: a)
+        let bal = try BalanceCalculator.balances(members: [a, b], currency: .bdt, expenses: [e], settlements: [s])
+        XCTAssertEqual(bal.net(for: b).minorUnits, 0)
+        XCTAssertNil(bal.unverifiedSettled[b])
+    }
+
     func testUnknownMemberIsAnError() throws {
         let e = try expense(1000, paidBy: a, among: [a, b])
         XCTAssertThrowsError(try BalanceCalculator.balances(members: [a], currency: .bdt, expenses: [e], settlements: []))
@@ -51,5 +60,47 @@ final class BalanceTests: XCTestCase {
         var net = bal.net.mapValues(\.minorUnits)
         for t in transfers { net[t.from]! += t.amount.minorUnits; net[t.to]! -= t.amount.minorUnits }
         XCTAssertTrue(net.values.allSatisfy { $0 == 0 })
+    }
+
+    // MARK: Direct (not simplified)
+
+    func testDirectTransfersPayWhoYouActuallyOwe() throws {
+        // A paid 300 for A, B, C; B paid 300 for A, B, C. Simplified: C pays A 100 and C pays B 100
+        // or similar; direct: C pays A 100, C pays B 100, and A and B cancel out.
+        let es = [try expense(300_00, paidBy: a, among: [a, b, c]), try expense(300_00, paidBy: b, among: [a, b, c])]
+        let bal = try BalanceCalculator.balances(members: [a, b, c], currency: .bdt, expenses: es, settlements: [])
+        let direct = BalanceCalculator.transfers(bal, simplify: false)
+        XCTAssertEqual(Set(direct), [
+            SuggestedTransfer(from: c, to: a, amount: Money(minorUnits: 100_00)),
+            SuggestedTransfer(from: c, to: b, amount: Money(minorUnits: 100_00)),
+        ])
+    }
+
+    func testDirectTransfersMatchNetBalances() throws {
+        let es = [
+            try expense(900_00, paidBy: a, among: [a, b, c]),
+            try expense(601_00, paidBy: b, among: [a, c]),
+            try Expense(groupID: group, title: "Taxi", total: Money(minorUnits: 451_00),
+                        paidBy: [a: Money(minorUnits: 200_00), c: Money(minorUnits: 251_00)], splitRule: .equal([a, b, c])),
+        ]
+        var s = try Settlement(groupID: group, from: b, to: a, amount: Money(minorUnits: 50_00), method: .cash)
+        try s.transition(to: .reportedUnverified)
+        let bal = try BalanceCalculator.balances(members: [a, b, c], currency: .bdt, expenses: es, settlements: [s])
+        var net = bal.net.mapValues(\.minorUnits)
+        for t in bal.directTransfers { net[t.from]! += t.amount.minorUnits; net[t.to]! -= t.amount.minorUnits }
+        XCTAssertTrue(net.values.allSatisfy { $0 == 0 }, "\(net)")
+        XCTAssertTrue(bal.directTransfers.allSatisfy { $0.amount.minorUnits > 0 && $0.from != $0.to })
+    }
+
+    func testOldGroupSnapshotDecodesWithSimplifyOn() throws {
+        let group = ExpenseGroup(name: "Trip", members: [Member(displayName: "A")], simplifiesDebts: false, kind: .mess, managerID: a)
+        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(group)) as! [String: Any]
+        json.removeValue(forKey: "simplifiesDebts")
+        json.removeValue(forKey: "kind")
+        json.removeValue(forKey: "managerID")
+        let old = try JSONDecoder().decode(ExpenseGroup.self, from: JSONSerialization.data(withJSONObject: json))
+        XCTAssertTrue(old.simplifiesDebts)
+        XCTAssertEqual(old.kind, .standard)
+        XCTAssertNil(old.managerID)
     }
 }

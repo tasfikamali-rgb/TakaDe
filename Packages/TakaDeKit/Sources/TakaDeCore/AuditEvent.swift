@@ -2,7 +2,7 @@ import Foundation
 
 /// One append-only entry in a group's history. Who/when/what for every change.
 public struct AuditEvent: Hashable, Codable, Sendable, Identifiable {
-    public enum Entity: String, Codable, Sendable { case group, member, expense, settlement }
+    public enum Entity: String, Codable, Sendable { case group, member, expense, settlement, meal }
     public enum Action: String, Codable, Sendable { case created, edited, deleted, restored, statusChanged = "status_changed" }
     /// Where the change came from. Only `.local` exists today.
     public enum Source: String, Codable, Sendable { case local }

@@ -65,6 +65,57 @@ enum Schema {
                 BEGIN SELECT RAISE(ABORT, 'audit_event is append-only'); END;
                 """)
         }
+
+        // Release 1 local profile (docs/adr/0011-on-device-sign-in.md). Still nothing leaves the device.
+        migrator.registerMigration("v2_local_profile") { db in
+            try db.create(table: "local_profile") { t in
+                t.primaryKey("id", .text)
+                t.column("display_name", .text).notNull()
+                t.column("locale", .text)
+                t.column("digit_style", .text)
+                // The linked Apple or Google sign-in. Tokens are never stored here (Keychain).
+                t.column("provider", .text).check { ["apple", "google"].contains($0) }
+                t.column("provider_user_id", .text)
+                t.column("email", .text)
+                t.column("created_at", .datetime).notNull()
+            }
+            try db.alter(table: "member") { t in
+                t.add(column: "profile_id", .text).references("local_profile", onDelete: .setNull)
+            }
+            try db.create(table: "payment_handle") { t in
+                t.primaryKey("id", .text)
+                t.column("member_id", .text).notNull().indexed()
+                    .references("member", onDelete: .cascade)
+                t.column("rail", .text).notNull()
+                    .check { ["bkash", "nagad", "rocket", "upay", "bank"].contains($0) }
+                t.column("handle", .text).notNull()
+                t.column("label", .text)
+                t.column("created_at", .datetime).notNull()
+            }
+        }
+
+        // Per-group settings. Existing groups keep simplified debts on.
+        migrator.registerMigration("v3_group_settings") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "simplify_debts", .boolean).notNull().defaults(to: true)
+            }
+        }
+
+        // Mess groups: a manager and daily meal counts (docs/adr/0015-mess-mode.md).
+        migrator.registerMigration("v4_mess") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "kind", .text).notNull().defaults(to: "standard")
+                t.add(column: "manager_id", .text)
+            }
+            try db.create(table: "meal_count") { t in
+                t.column("group_id", .text).notNull().references("expense_group", onDelete: .cascade)
+                t.column("member_id", .text).notNull().references("member", onDelete: .cascade)
+                t.column("day", .text).notNull()            // "2026-11-05", no time zone
+                t.column("half_meals", .integer).notNull().check { $0 >= 0 && $0 <= 40 }
+                t.column("updated_at", .datetime).notNull()
+                t.primaryKey(["group_id", "member_id", "day"])
+            }
+        }
         return migrator
     }
 }

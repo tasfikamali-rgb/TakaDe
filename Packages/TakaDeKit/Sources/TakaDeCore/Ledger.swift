@@ -22,14 +22,44 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
     public var members: [Member]
     public let createdAt: Date
     public var archivedAt: Date?
+    /// On: suggest the fewest payments, combining debts across people. Off: each person
+    /// pays the people they actually owe. On by default.
+    public var simplifiesDebts: Bool
+    /// A trip or flat (standard), or a mess with daily meal counts.
+    public var kind: GroupKind
+    /// Who keeps a mess's books: meals, bazar and deposits. Nil for standard groups.
+    public var managerID: MemberID?
 
-    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil) {
+    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil) {
         self.id = id
         self.name = name
         self.currency = currency
         self.members = members
         self.createdAt = createdAt
         self.archivedAt = archivedAt
+        self.simplifiesDebts = simplifiesDebts
+        self.kind = kind
+        self.managerID = managerID
+    }
+
+    public var isMess: Bool { kind == .mess }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID
+    }
+
+    /// Older snapshots have no `simplifiesDebts`; they decode with it on.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(GroupID.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        currency = try c.decode(Currency.self, forKey: .currency)
+        members = try c.decode([Member].self, forKey: .members)
+        createdAt = try c.decode(Date.self, forKey: .createdAt)
+        archivedAt = try c.decodeIfPresent(Date.self, forKey: .archivedAt)
+        simplifiesDebts = try c.decodeIfPresent(Bool.self, forKey: .simplifiesDebts) ?? true
+        kind = try c.decodeIfPresent(GroupKind.self, forKey: .kind) ?? .standard
+        managerID = try c.decodeIfPresent(MemberID.self, forKey: .managerID)
     }
 }
 
@@ -47,12 +77,14 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
     public var allocation: Allocation
     public var occurredAt: Date
     public var note: String?
+    /// Optional; older expenses have none.
+    public var category: ExpenseCategory?
     /// Incremented on each edit. Edits are recorded in the audit log.
     public var version: Int
     /// Soft delete. Deleted expenses stop affecting balances but stay in history.
     public var deletedAt: Date?
 
-    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, version: Int = 1, deletedAt: Date? = nil) throws {
+    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, category: ExpenseCategory? = nil, version: Int = 1, deletedAt: Date? = nil) throws {
         self.id = id
         self.groupID = groupID
         self.title = title
@@ -62,6 +94,7 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
         self.allocation = try SplitCalculator.allocate(total, by: splitRule)
         self.occurredAt = occurredAt
         self.note = note
+        self.category = category
         self.version = version
         self.deletedAt = deletedAt
         try validate()
@@ -87,4 +120,5 @@ public enum LedgerError: Error, Equatable, Sendable {
     case settlementToSelf
     case nonPositiveSettlement
     case illegalStatusTransition(from: SettlementStatus, to: SettlementStatus)
+    case onlyRecipientCanAcknowledge
 }
