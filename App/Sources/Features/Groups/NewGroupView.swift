@@ -11,6 +11,7 @@ struct NewGroupView: View {
     @State private var kind: GroupKind = .standard
     @State private var others: [DraftName] = [DraftName()]
     @State private var error: String?
+    @State private var pickingContacts = false
     @FocusState private var focus: Field?
 
     private enum Field: Hashable { case group, me, other(UUID) }
@@ -61,6 +62,8 @@ struct NewGroupView: View {
                             .returnMovesOn($person.text) { focusAfter(person.id) }
                     }
                     Button("Add another person", systemImage: "plus", action: addRow)
+                    Button("Choose from Contacts", systemImage: "person.crop.circle.badge.plus") { pickingContacts = true }
+                        .background(ContactPicker(isPresented: $pickingContacts, onPick: addContacts))
                 } header: {
                     Text("Who else is in it")
                 } footer: {
@@ -107,6 +110,19 @@ struct NewGroupView: View {
     }
 
     private func addRow() { others.append(DraftName()) }
+
+    /// Fills empty rows first, then adds rows. Names already typed are left alone.
+    private func addContacts(_ names: [String]) {
+        for name in names {
+            if let empty = others.firstIndex(where: { $0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+                others[empty].text = name
+            } else {
+                var row = DraftName()
+                row.text = name
+                others.append(row)
+            }
+        }
+    }
 
     /// Return in the last filled name adds a row, so a group can be typed without the mouse
     /// or a tap; Return in an empty last row closes the keyboard.

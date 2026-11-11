@@ -12,6 +12,7 @@ struct GroupDetailContent: View {
     @State private var showingAddExpense = false
     @State private var showingSettle = false
     @State private var showingAddMember = false
+    @State private var pickingContacts = false
     @State private var newMemberName = ""
     @State private var duplicateMember: String?
     @State private var paymentMember: Member?
@@ -30,12 +31,14 @@ struct GroupDetailContent: View {
                     onOpen: open,
                     onDelete: delete,
                     onAddMember: askForMember,
+                    onAddFromContacts: { pickingContacts = true },
                     onOpenMember: openMember)
             }
             .frame(maxWidth: .infinity)
         }
         .background(alignment: .top) { Color.lilac.frame(height: 480).ignoresSafeArea() }
         .background(Color.canvas)
+        .background(ContactPicker(isPresented: $pickingContacts, onPick: addContacts))
         .navigationTitle(Text(verbatim: group.name))
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color.lilac, for: .navigationBar)
@@ -162,6 +165,32 @@ struct GroupDetailContent: View {
                 errorMessage = nil
             } catch {
                 errorMessage = String(localized: "\(name) wasn't added. Try again.", bundle: .appLanguage)
+            }
+        }
+    }
+
+    /// Adds everyone picked. Someone already in the group, by the same name ignoring case
+    /// and spaces, is left out and named in a note, so a double tap doesn't add them twice.
+    private func addContacts(_ names: [String]) {
+        let existing = Set(group.members.map { $0.displayName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+        var seen = existing
+        var skipped: [String] = []
+        var toAdd: [String] = []
+        for name in names {
+            let key = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            if seen.contains(key) { skipped.append(name) } else { seen.insert(key); toAdd.append(name) }
+        }
+        Task {
+            do {
+                try await app.addMembers(named: toAdd, to: group)
+            } catch {
+                errorMessage = String(localized: "\(toAdd.formatted(.list(type: .and))) wasn't added. Try again.", bundle: .appLanguage)
+                return
+            }
+            if !skipped.isEmpty {
+                errorMessage = String(localized: "\(skipped.formatted(.list(type: .and))) is already in this group.", bundle: .appLanguage)
+            } else {
+                errorMessage = nil
             }
         }
     }

@@ -5,12 +5,18 @@ struct MemberBalancesCard: View {
     let group: ExpenseGroup
     let balances: GroupBalances
     let onAddMember: () -> Void
+    let onAddFromContacts: () -> Void
     /// Opens the person's bKash, Nagad, Rocket, upay or bank numbers.
     let onOpenMember: (Member) -> Void
 
     var body: some View {
         SectionCard(title: "Balances") {
-            Button("Add a person", systemImage: "person.badge.plus", action: onAddMember)
+            Menu {
+                Button("Type a name", systemImage: "character.cursor.ibeam", action: onAddMember)
+                Button("Choose from Contacts", systemImage: "person.crop.circle", action: onAddFromContacts)
+            } label: {
+                Label("Add a person", systemImage: "person.badge.plus")
+            }
                 .labelStyle(.iconOnly)
                 .font(.body.weight(.medium))
                 .foregroundStyle(Color.ink)

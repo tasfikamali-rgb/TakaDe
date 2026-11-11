@@ -80,10 +80,39 @@ final class AppModel {
     }
 
     func addMember(named name: String, to group: ExpenseGroup) async throws {
-        var updated = group
-        updated.members.append(Member(displayName: name))
+        try await addMembers(named: [name], to: group)
+    }
+
+    /// Adds several people in one save, starting from the latest copy of the group so an
+    /// earlier add isn't overwritten.
+    func addMembers(named names: [String], to group: ExpenseGroup) async throws {
+        guard !names.isEmpty else { return }
+        var updated = self.group(group.id) ?? group
+        updated.members.append(contentsOf: names.map { Member(displayName: $0) })
         try await repository.save(updated, actor: group.me?.id)
         await reload()
+    }
+
+    // MARK: Monthly repeats
+
+    @ObservationIgnored private var addingRepeats = false
+
+    /// Adds this month's copy of each repeating expense once its day has come. Safe to call
+    /// often: months that already have a copy are skipped.
+    func addDueRepeats() async {
+        // Launch and coming back to the app can both call this; one run at a time, so a
+        // month's copy is never added twice.
+        guard !addingRepeats else { return }
+        addingRepeats = true
+        defer { addingRepeats = false }
+        var added = false
+        for group in groups where group.archivedAt == nil {
+            guard let expenses = try? await repository.expenses(in: group.id, includeDeleted: true) else { continue }
+            for copy in MonthlyRepeat.dueCopies(of: expenses) {
+                if (try? await repository.save(copy, actor: nil)) != nil { added = true }
+            }
+        }
+        if added { await reload() }
     }
 
     // MARK: Mess
@@ -109,7 +138,8 @@ final class AppModel {
         for expense in summary.bazarExpenses where expense.splitRule != rule {
             let updated = try Expense(id: expense.id, groupID: expense.groupID, title: expense.title, total: expense.total,
                                       paidBy: expense.paidBy, splitRule: rule, occurredAt: expense.occurredAt,
-                                      note: expense.note, category: expense.category, version: expense.version + 1)
+                                      note: expense.note, category: expense.category, version: expense.version + 1,
+                                      repeatsMonthly: expense.repeatsMonthly, repeatOf: expense.repeatOf)
             try await repository.save(updated, actor: group.me?.id)
         }
         await reload()

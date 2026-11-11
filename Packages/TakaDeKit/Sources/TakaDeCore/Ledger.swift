@@ -83,8 +83,12 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
     public var version: Int
     /// Soft delete. Deleted expenses stop affecting balances but stay in history.
     public var deletedAt: Date?
+    /// When on, a copy is added each month on the same day, like rent or the internet bill.
+    public var repeatsMonthly: Bool
+    /// For a monthly copy: the expense it was copied from.
+    public var repeatOf: ExpenseID?
 
-    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, category: ExpenseCategory? = nil, version: Int = 1, deletedAt: Date? = nil) throws {
+    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, category: ExpenseCategory? = nil, version: Int = 1, deletedAt: Date? = nil, repeatsMonthly: Bool = false, repeatOf: ExpenseID? = nil) throws {
         self.id = id
         self.groupID = groupID
         self.title = title
@@ -97,7 +101,32 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
         self.category = category
         self.version = version
         self.deletedAt = deletedAt
+        self.repeatsMonthly = repeatsMonthly
+        self.repeatOf = repeatOf
         try validate()
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, groupID, title, total, paidBy, splitRule, allocation, occurredAt, note, category, version, deletedAt, repeatsMonthly, repeatOf
+    }
+
+    /// Expenses saved before monthly repeats decode as not repeating.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(ExpenseID.self, forKey: .id)
+        groupID = try c.decode(GroupID.self, forKey: .groupID)
+        title = try c.decode(String.self, forKey: .title)
+        total = try c.decode(Money.self, forKey: .total)
+        paidBy = try c.decode([MemberID: Money].self, forKey: .paidBy)
+        splitRule = try c.decode(SplitRule.self, forKey: .splitRule)
+        allocation = try c.decode(Allocation.self, forKey: .allocation)
+        occurredAt = try c.decode(Date.self, forKey: .occurredAt)
+        note = try c.decodeIfPresent(String.self, forKey: .note)
+        category = try c.decodeIfPresent(ExpenseCategory.self, forKey: .category)
+        version = try c.decode(Int.self, forKey: .version)
+        deletedAt = try c.decodeIfPresent(Date.self, forKey: .deletedAt)
+        repeatsMonthly = try c.decodeIfPresent(Bool.self, forKey: .repeatsMonthly) ?? false
+        repeatOf = try c.decodeIfPresent(ExpenseID.self, forKey: .repeatOf)
     }
 
     public func validate() throws {
