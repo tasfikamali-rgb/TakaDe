@@ -37,7 +37,8 @@ needs disclosure and a processor review). **Decided 2026-11-11:** on-device (ADR
 **Decided 2026-11-11:** iPhone with layouts that adapt to any width (iPad, split view, foldables), then Android, then home-screen widgets.
 
 ## 6. Brand
-Product name spelling (TakaDe), logo and app icon. The icon slot is currently empty.
+Product name spelling (TakaDe), logo and app icon.
+- **Decided 2026-11-11:** logo and app icon are the split ৳ mark (ADR 17, files in `docs/brand/`).
 - **Decided 2026-11-11:** Apple and Google sign-in in release 1, optional, kept on the device only (ADR 11).
 - **Owner action:** Google OAuth iOS client id in `Config/Google.local.xcconfig`; paid Apple Developer Program for Sign in with Apple.
 - **Decided 2026-11-11:** members can store an optional bKash, Nagad, Rocket, upay or bank number for others to copy when settling. Built: tap a person on the group screen to add numbers; Settle up shows them with Copy.
@@ -50,6 +51,5 @@ Product name spelling (TakaDe), logo and app icon. The icon slot is currently em
 - **Export compliance:** whether the app uses non-exempt encryption. Today it only uses the
   operating system's encryption, which is usually exempt, but the owner (with advice if
   needed) should confirm before we set `ITSAppUsesNonExemptEncryption`.
-- **App icon** 1024×1024 (see section 6). CI flags it as a release blocker.
 - **Privacy answers:** the App Store privacy label and Play Data safety form must match
   `App/Resources/PrivacyInfo.xcprivacy` ("no data collected") while the app stays local-only.

@@ -5,6 +5,8 @@ struct TakaDeApp: App {
     @State private var model: AppModel
     @State private var account: AccountModel
     @State private var lock = AppLock()
+    /// Shown once per cold launch; see LaunchSplash.
+    @State private var showsSplash = true
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
@@ -40,6 +42,11 @@ struct TakaDeApp: App {
                 }
                 .onChange(of: appearance, initial: true) { old, new in
                     new.apply(animated: old != new)
+                }
+                .overlay {
+                    if showsSplash {
+                        LaunchSplash { showsSplash = false }
+                    }
                 }
         }
     }
