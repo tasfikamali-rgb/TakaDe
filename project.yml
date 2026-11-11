@@ -53,6 +53,19 @@ targets:
         # Release builds. Debug builds signed with a free Apple ID still install on a phone.
         Release:
           CODE_SIGN_ENTITLEMENTS: App/TakaDe.entitlements
+  # UI tests: accessibility audit and launch checks. See docs/testing.md.
+  TakaDeUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: App/UITests
+    dependencies:
+      - target: TakaDe
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.takade.ios.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
 schemes:
   TakaDe:
     build:
@@ -60,3 +73,5 @@ schemes:
         TakaDe: all
     test:
       gatherCoverageData: true
+      targets:
+        - TakaDeUITests

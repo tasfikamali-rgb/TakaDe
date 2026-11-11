@@ -12,4 +12,5 @@ Config/Google.local.xcconfig
 App/Info.plist
 build/
 screenshots-local/
+maestro-results/
 Config/Signing.local.xcconfig

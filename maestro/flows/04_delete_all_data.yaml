@@ -1,0 +1,34 @@
+# "Delete all my data" removes groups, profile and settings from the phone and
+# returns to first-launch onboarding. (App Store 5.1.1(v) and the Play data
+# deletion policy expect a working in-app deletion path.)
+appId: app.takade.ios
+name: Delete all my data
+tags:
+  - privacy
+---
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/onboarding.yaml
+- tapOn: "Create a group"
+- tapOn: "Group name"
+- inputText: "Trip"
+- tapOn: "Name"
+- inputText: "Rishan"
+- tapOn: "Create"
+- extendedWaitUntil:
+    visible: "Settle up"
+    timeout: 10000
+- tapOn: "Profile"
+- scrollUntilVisible:
+    element: "Delete all my data"
+    direction: DOWN
+- takeScreenshot: ${OUT}/11-your-data
+- tapOn: "Delete all my data"
+- tapOn: "Delete everything"
+# Back to first launch, and the group is gone.
+- extendedWaitUntil:
+    visible: "English"
+    timeout: 10000
+- runFlow: ../subflows/onboarding.yaml
+- assertVisible: "No groups yet"
+- assertNotVisible: "Trip"
