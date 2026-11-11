@@ -35,7 +35,7 @@ needs disclosure and a processor review). **Decided 2026-11-11:** on-device (ADR
 
 ## 6. Brand
 Product name spelling (TakaDe), logo and app icon.
-- **Decided 2026-11-11:** logo and app icon are the split ৳ mark (ADR 16, files in `docs/brand/`).
+- **Decided 2026-11-11:** logo and app icon are the split ৳ mark (ADR 17, files in `docs/brand/`).
 - **Decided 2026-11-11:** Apple and Google sign-in in release 1, optional, kept on the device only (ADR 11).
 - **Owner action:** Google OAuth iOS client id in `Config/Google.local.xcconfig`; paid Apple Developer Program for Sign in with Apple.
 - **Decided 2026-11-11:** members can store an optional bKash, Nagad, Rocket, upay or bank number for others to copy when settling. Built: tap a person on the group screen to add numbers; Settle up shows them with Copy.
