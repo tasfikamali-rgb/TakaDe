@@ -27,7 +27,13 @@ final class SupabaseAuth {
         case notSignedIn
         case couldNotStart
         case lastSignInMethod
+        /// The server's sign-up hook refused a throwaway ("10-minute") email address.
+        case disposableEmail
         case server(status: Int, code: String?)
+
+        /// The marker the server puts in its message when it refuses a throwaway address
+        /// (supabase/migrations/*_block_disposable_emails.sql).
+        static let disposableEmailMarker = "disposable_email_not_allowed"
     }
 
     let config: SupabaseConfig
@@ -198,7 +204,17 @@ final class SupabaseAuth {
             if !session.start() { continuation.resume(throwing: Failure.couldNotStart) }
         }
         webSession = nil
-        let items = URLComponents(url: callback, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        let components = URLComponents(url: callback, resolvingAgainstBaseURL: false)
+        var items = components?.queryItems ?? []
+        // Errors can come back in the fragment ("#error=...&error_description=...").
+        if let fragment = components?.fragment {
+            var parsed = URLComponents()
+            parsed.query = fragment
+            items += parsed.queryItems ?? []
+        }
+        if items.contains(where: { $0.name == "error_description" && ($0.value ?? "").contains(Failure.disposableEmailMarker) }) {
+            throw Failure.disposableEmail
+        }
         guard let code = items.first(where: { $0.name == "code" })?.value else { throw Failure.badResponse }
         return code
     }
@@ -261,6 +277,8 @@ final class SupabaseAuth {
         guard let http = response as? HTTPURLResponse else { throw Failure.badResponse }
         let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
         guard (200..<300).contains(http.statusCode) else {
+            let message = [json["msg"], json["message"], json["error_description"]].compactMap { $0 as? String }.joined(separator: " ")
+            if message.contains(Failure.disposableEmailMarker) { throw Failure.disposableEmail }
             throw Failure.server(status: http.statusCode, code: (json["error_code"] as? String) ?? (json["error"] as? String))
         }
         return json

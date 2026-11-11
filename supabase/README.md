@@ -23,4 +23,12 @@ region; the host is in `Config/TakaDe.xcconfig`). Nothing is deployed yet. Remai
      so personal and work accounts both work.
    - Turn on **Allow manual linking**, so people can link more sign-ins from the Account tab.
 4. **Functions:** `supabase functions deploy delete-account`.
-5. Tell the coding thread, which then checks every flow on a phone.
+5. **Block throwaway emails** (see docs/adr/0018-block-disposable-emails.md):
+   - In the SQL Editor, run `migrations/20261111000000_block_disposable_emails.sql`, then
+     `seed/disposable_email_domains.sql` (about 10,000 domains). Both are safe to run again.
+   - Authentication > Hooks > **Before User Created**: add a Postgres hook, schema `public`,
+     function `hook_before_user_created`, and turn it on.
+   - Check: creating an account with a `@mailinator.com` address fails; a Gmail one works.
+   - To refresh the list: `python3 scripts/update-disposable-domains.py`, commit both
+     generated files, and run the seed SQL again.
+6. Tell the coding thread, which then checks every flow on a phone.

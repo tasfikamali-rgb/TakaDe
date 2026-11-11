@@ -6444,6 +6444,23 @@
           }
         }
       }
+    },
+    "Temporary email addresses can't be used with TakaDe. Use an email you'll keep, so you can always sign back in.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অস্থায়ী ইমেইল ঠিকানা দিয়ে TakaDe ব্যবহার করা যায় না। এমন একটি ইমেইল দিন যা আপনি রাখবেন, যাতে সবসময় আবার সাইন ইন করতে পারেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temporary email addresses can't be used with TakaDe. Use an email you'll keep, so you can always sign back in."
+          }
+        }
+      }
     }
   }
 }
