@@ -13,6 +13,7 @@ struct OnboardingView: View {
     // Survive the rebuild that a language change triggers.
     @AppStorage("onboardingStep") private var stepRaw = Step.welcome.rawValue
     @AppStorage(HomeRegion.storageKey) private var region = HomeRegion.suggested
+    @State private var regionQuery = ""
     @Environment(\.locale) private var locale
     @AppStorage("onboardingMode") private var modeRaw = Mode.guest.rawValue
     @AppStorage(AccountModel.nameKey) private var savedName = ""
@@ -104,40 +105,46 @@ struct OnboardingView: View {
 
     // MARK: Steps
 
+    /// The chosen country sits at the top with Continue, so Continue never scrolls away;
+    /// every UN member is listed below with a search box. Tapping one moves it to the top.
     private var regionStep: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
-            ForEach(HomeRegion.choices, id: \.self) { code in
-                Button { region = code } label: {
-                    HStack(spacing: Spacing.s) {
-                        Text(verbatim: HomeRegion.flag(code))
-                            .font(.title2)
-                            .accessibilityHidden(true)
-                        regionName(code).font(AppFont.headline)
-                        Spacer()
-                        Image(systemName: region == code ? "checkmark.circle.fill" : "circle")
-                            .font(.title3)
-                            .accessibilityHidden(true)
-                    }
-                    .foregroundStyle(Color.ink)
-                    .padding(.horizontal, Spacing.m)
-                    .frame(minHeight: 56)
-                    .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
-                    .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
-                        .stroke(Color.ink, lineWidth: region == code ? 2 : 0))
-                }
-                .buttonStyle(PressScaleButtonStyle())
-                .accessibilityAddTraits(region == code ? .isSelected : [])
-            }
+            regionRow(region, selected: true)
             Text("This suggests your language. It stays on this phone.")
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)
-            Spacer(minLength: Spacing.l)
             Button("Continue") {
                 suggestLanguage()
                 go(to: .language)
             }
             .buttonStyle(PillButtonStyle())
+            .padding(.top, Spacing.xs)
+            HStack(spacing: Spacing.xs) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(Color.inkMuted)
+                    .accessibilityHidden(true)
+                TextField("Search countries", text: $regionQuery,
+                          prompt: Text("Search countries").foregroundStyle(Color.inkMuted))
+                    .font(AppFont.body)
+                    .autocorrectionDisabled()
+                    .submitLabel(.search)
+            }
+            .padding(.horizontal, Spacing.m)
+            .frame(minHeight: 48)
+            .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+            .padding(.top, Spacing.m)
+            LazyVStack(spacing: Spacing.xs) {
+                ForEach(regionList, id: \.self) { code in
+                    regionRow(code, selected: false)
+                }
+            }
+            if regionList.isEmpty {
+                Text("No country matches that")
+                    .font(AppFont.body)
+                    .foregroundStyle(Color.inkMuted)
+                    .frame(maxWidth: .infinity, minHeight: 56)
+            }
             Button("Back") { go(to: .welcome) }
                 .font(AppFont.label)
                 .foregroundStyle(Color.inkMuted)
@@ -145,9 +152,44 @@ struct OnboardingView: View {
         }
     }
 
+    private var regionList: [String] {
+        HomeRegion.ordered(in: locale).filter { $0 != region && HomeRegion.matches($0, query: regionQuery, in: locale) }
+    }
+
+    private func regionRow(_ code: String, selected: Bool) -> some View {
+        Button {
+            region = code
+            regionQuery = ""
+        } label: {
+            HStack(spacing: Spacing.s) {
+                Text(verbatim: HomeRegion.flag(code))
+                    .font(.title2)
+                    .accessibilityHidden(true)
+                regionName(code)
+                    .font(selected ? AppFont.headline : AppFont.bodyEmphasis)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                if selected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title3)
+                        .accessibilityHidden(true)
+                }
+            }
+            .foregroundStyle(Color.ink)
+            .padding(.horizontal, Spacing.m)
+            .padding(.vertical, Spacing.xs)
+            .frame(minHeight: selected ? 60 : 52)
+            .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+            .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
+                .stroke(Color.ink, lineWidth: selected ? 2 : 0))
+        }
+        .buttonStyle(PressScaleButtonStyle())
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
     private func regionName(_ code: String) -> Text {
         if code == HomeRegion.elsewhere { return Text("Somewhere else") }
-        return Text(verbatim: locale.localizedString(forRegionCode: code) ?? code)
+        return Text(verbatim: HomeRegion.name(code, in: locale))
     }
 
     private var languageStep: some View {

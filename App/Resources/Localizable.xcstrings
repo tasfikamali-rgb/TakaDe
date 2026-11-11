@@ -6666,6 +6666,40 @@
           }
         }
       }
+    },
+    "Search countries": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দেশ খুঁজুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search countries"
+          }
+        }
+      }
+    },
+    "No country matches that": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই নামে কোনো দেশ পাওয়া যায়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No country matches that"
+          }
+        }
+      }
     }
   }
 }
