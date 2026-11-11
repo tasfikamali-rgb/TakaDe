@@ -14,10 +14,13 @@ final class AppModel {
     let repository: LedgerRepository
     /// The same database: the device owner's profile, export and erase.
     let profiles: ProfileRepository
+    /// The same database: daily meal counts for mess groups.
+    let mess: MessRepository
 
     init(store: SQLiteLedgerRepository) {
         repository = store
         profiles = store
+        mess = store
     }
 
     /// The on-device database, protected by iOS Data Protection until first unlock.
@@ -66,10 +69,11 @@ final class AppModel {
         groups.first { $0.id == id }
     }
 
-    func createGroup(name: String, myName: String, otherNames: [String]) async throws -> ExpenseGroup {
+    func createGroup(name: String, myName: String, otherNames: [String], kind: GroupKind = .standard) async throws -> ExpenseGroup {
         let me = Member(displayName: myName, isMe: true)
         let others = otherNames.map { Member(displayName: $0) }
-        let group = ExpenseGroup(name: name, members: [me] + others)
+        // In a mess, whoever sets it up on their phone keeps the books.
+        let group = ExpenseGroup(name: name, members: [me] + others, kind: kind, managerID: kind == .mess ? me.id : nil)
         try await repository.save(group, actor: me.id)
         await reload()
         return group
@@ -79,6 +83,35 @@ final class AppModel {
         var updated = group
         updated.members.append(Member(displayName: name))
         try await repository.save(updated, actor: group.me?.id)
+        await reload()
+    }
+
+    // MARK: Mess
+
+    func mealCounts(in group: ExpenseGroup, month: MessMonth) async -> [MealCount] {
+        (try? await mess.mealCounts(in: group.id, month: month)) ?? []
+    }
+
+    func save(_ meal: MealCount, in group: ExpenseGroup) async throws {
+        try await mess.save(meal, in: group.id, actor: group.me?.id)
+        revision += 1
+    }
+
+    func messSummary(for group: ExpenseGroup, month: MessMonth) async throws -> MessMonthSummary {
+        let meals = await mealCounts(in: group, month: month)
+        let expenses = try await repository.expenses(in: group.id, includeDeleted: false)
+        return try MessMonthSummary(month: month, members: group.members.map(\.id), meals: meals, expenses: expenses, currency: group.currency)
+    }
+
+    /// Re-splits the month's bazar expenses by meals eaten. Each is an ordinary, audited edit.
+    func applyMealSplit(_ summary: MessMonthSummary, in group: ExpenseGroup) async throws {
+        guard let rule = summary.mealSplitRule else { return }
+        for expense in summary.bazarExpenses where expense.splitRule != rule {
+            let updated = try Expense(id: expense.id, groupID: expense.groupID, title: expense.title, total: expense.total,
+                                      paidBy: expense.paidBy, splitRule: rule, occurredAt: expense.occurredAt,
+                                      note: expense.note, category: expense.category, version: expense.version + 1)
+            try await repository.save(updated, actor: group.me?.id)
+        }
         await reload()
     }
 
