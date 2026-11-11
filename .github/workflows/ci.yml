@@ -58,8 +58,6 @@ jobs:
         with:
           path: build/SourcePackages
           key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
-      - name: Fetch fonts (Ranade, Author; not committed for licence reasons)
-        run: scripts/fetch-fonts.sh
       - name: Install XcodeGen and generate project
         run: brew install xcodegen && xcodegen generate --quiet
       - name: Boot simulator
