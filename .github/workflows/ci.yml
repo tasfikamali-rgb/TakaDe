@@ -44,6 +44,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 scripts/ci/store_check.py
+      - name: Adaptive layout (iPhone Duo / iPad HIG)
+        run: python3 scripts/ci/adaptive_check.py
 
   app:
     name: Build app, store check, accessibility audit

@@ -96,3 +96,71 @@ jobs:
           name: screenshots-${{ steps.sim.outputs.slug }}
           path: maestro-results
           retention-days: 14
+
+  iphone-duo:
+    # Apple's iPhone Duo (HIG page added Sept 2026). Needs a newer Xcode than the
+    # rest of CI; the job looks for the simulator and reports clearly when the
+    # runner doesn't have it, rather than pretending it was tested.
+    name: iPhone Duo (if the runner has it)
+    needs: build
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select newest Xcode
+        run: |
+          xcode=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+      - name: Find iPhone Duo simulator
+        id: duo
+        run: |
+          udid=$(scripts/ci/boot-simulator.sh "iPhone Duo" 2>/dev/null || true)
+          if [ -z "$udid" ]; then
+            type=$(xcrun simctl list devicetypes | grep -i "iPhone Duo" | head -1 | sed -E 's/.*\((com\.apple[^)]*)\).*/\1/')
+            runtime=$(xcrun simctl list runtimes -j | python3 -c 'import json,sys; r=[x for x in json.load(sys.stdin)["runtimes"] if x["isAvailable"] and x["platform"]=="iOS"]; print(r[-1]["identifier"] if r else "")')
+            if [ -n "$type" ] && [ -n "$runtime" ]; then
+              xcrun simctl create "iPhone Duo" "$type" "$runtime" >/dev/null
+              udid=$(scripts/ci/boot-simulator.sh "iPhone Duo")
+            fi
+          fi
+          if [ -z "$udid" ]; then
+            echo "::warning title=iPhone Duo NOT tested::This runner's Xcode has no iPhone Duo simulator. Device types available:"
+            xcrun simctl list devicetypes | grep -i iphone | tail -8
+            echo "### iPhone Duo: NOT TESTED" >> "$GITHUB_STEP_SUMMARY"
+            echo "The GitHub runner's Xcode ($(xcodebuild -version | head -1)) has no iPhone Duo simulator." >> "$GITHUB_STEP_SUMMARY"
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/download-artifact@v4
+        if: steps.duo.outputs.available == 'true'
+        with:
+          name: TakaDe-simulator-app
+          path: build
+      - name: Install Maestro and app
+        if: steps.duo.outputs.available == 'true'
+        run: |
+          tar -xzf build/TakaDe.app.tgz -C build
+          xcrun simctl install "${{ steps.duo.outputs.udid }}" build/TakaDe.app
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Flows on iPhone Duo (default pose), light and dark
+        if: steps.duo.outputs.available == 'true'
+        run: |
+          for mode in light dark; do
+            xcrun simctl ui "${{ steps.duo.outputs.udid }}" appearance $mode
+            out="maestro-results/iphone-duo-$mode"; mkdir -p "$out"
+            maestro --device "${{ steps.duo.outputs.udid }}" test -e OUT="$out" \
+              --format junit --output "$out/report.xml" maestro/flows
+          done
+          echo "### iPhone Duo: tested in its default simulator pose" >> "$GITHUB_STEP_SUMMARY"
+          echo "Folded/unfolded poses are switched in Xcode's Device Hub; there's no documented command-line switch yet, so the other pose is checked by hand." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload screenshots
+        if: steps.duo.outputs.available == 'true' && (success() || failure())
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-iphone-duo
+          path: maestro-results
+          retention-days: 14
