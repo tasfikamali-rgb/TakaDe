@@ -40,7 +40,7 @@ struct SwipeToConfirm: View {
         .accessibilityLabel(Text(verbatim: title))
         .accessibilityAddTraits(.isButton)
         .accessibilityHint(Text("Double-tap to confirm"))
-        .accessibilityAction(perform: commit)
+        .accessibilityAction { commit() }
     }
 
     private var drag: some Gesture {
