@@ -1,0 +1,26 @@
+// swift-tools-version: 5.10
+import PackageDescription
+
+let package = Package(
+    name: "TakaDeKit",
+    defaultLocalization: "en",
+    platforms: [.iOS(.v17), .macOS(.v14)],
+    products: [
+        .library(name: "TakaDeCore", targets: ["TakaDeCore"]),
+        .library(name: "TakaDePersistence", targets: ["TakaDePersistence"]),
+    ],
+    dependencies: [
+        // See docs/adr/0003-grdb-for-local-sqlite.md
+        .package(url: "https://github.com/groue/GRDB.swift.git", exact: "6.29.3"),
+    ],
+    targets: [
+        // Pure domain logic. No dependencies, no I/O, no UI.
+        .target(name: "TakaDeCore"),
+        .target(
+            name: "TakaDePersistence",
+            dependencies: ["TakaDeCore", .product(name: "GRDB", package: "GRDB.swift")]
+        ),
+        .testTarget(name: "TakaDeCoreTests", dependencies: ["TakaDeCore"]),
+        .testTarget(name: "TakaDePersistenceTests", dependencies: ["TakaDeCore", "TakaDePersistence"]),
+    ]
+)

@@ -1,0 +1,1007 @@
+{
+  "sourceLanguage": "en",
+  "version": "1.0",
+  "strings": {
+    "%@ added an expense": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ একটি খরচ যোগ করেছেন"
+          }
+        }
+      }
+    },
+    "%@ changed the group": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ গ্রুপে পরিবর্তন করেছেন"
+          }
+        }
+      }
+    },
+    "%@ created the group": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ গ্রুপটি তৈরি করেছেন"
+          }
+        }
+      }
+    },
+    "%@ deleted an expense": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ একটি খরচ মুছেছেন"
+          }
+        }
+      }
+    },
+    "%@ edited an expense": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ একটি খরচ সম্পাদনা করেছেন"
+          }
+        }
+      }
+    },
+    "%@ made a change": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ একটি পরিবর্তন করেছেন"
+          }
+        }
+      }
+    },
+    "%@ paid %@": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ দিয়েছেন %2$@-কে"
+          }
+        }
+      }
+    },
+    "%@ pays you": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ আপনাকে দেবেন"
+          }
+        }
+      }
+    },
+    "%@ recorded a payment": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ একটি পেমেন্ট লিখেছেন"
+          }
+        }
+      }
+    },
+    "%@ still needs to be assigned.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখনো %@ ভাগ করা বাকি।"
+          }
+        }
+      }
+    },
+    "%@: %lld": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@: %2$lld"
+          }
+        }
+      }
+    },
+    "%lld people": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld জন"
+          }
+        }
+      }
+    },
+    "Add": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যোগ করুন"
+          }
+        }
+      }
+    },
+    "Add a person": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "একজন যোগ করুন"
+          }
+        }
+      }
+    },
+    "Add another person": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আরেকজন যোগ করুন"
+          }
+        }
+      }
+    },
+    "Add expense": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খরচ যোগ করুন"
+          }
+        }
+      }
+    },
+    "Amount in taka": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "টাকার পরিমাণ"
+          }
+        }
+      }
+    },
+    "Balances": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যালান্স"
+          }
+        }
+      }
+    },
+    "Bank transfer": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যাংক ট্রান্সফার"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাতিল"
+          }
+        }
+      }
+    },
+    "Cash": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নগদ"
+          }
+        }
+      }
+    },
+    "Check the amounts.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরিমাণগুলো দেখে নিন।"
+          }
+        }
+      }
+    },
+    "Confirmed by the provider": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রোভাইডার নিশ্চিত করেছে"
+          }
+        }
+      }
+    },
+    "Create": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তৈরি করুন"
+          }
+        }
+      }
+    },
+    "Create a group for a trip, a flat or a dinner, then add what each person paid.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভ্রমণ, বাসা বা খাওয়াদাওয়ার জন্য একটি গ্রুপ খুলুন, তারপর কে কত দিয়েছে যোগ করুন।"
+          }
+        }
+      }
+    },
+    "Delete": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুছুন"
+          }
+        }
+      }
+    },
+    "Enter an amount above zero.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শূন্যের বেশি পরিমাণ লিখুন।"
+          }
+        }
+      }
+    },
+    "Equally": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সমানভাবে"
+          }
+        }
+      }
+    },
+    "Everything is stored only on this phone. Nothing is uploaded, and there's no account yet.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সবকিছু শুধু এই ফোনেই থাকে। কিছুই আপলোড হয় না, আর এখনো কোনো অ্যাকাউন্ট নেই।"
+          }
+        }
+      }
+    },
+    "Exact amounts": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নির্দিষ্ট পরিমাণ"
+          }
+        }
+      }
+    },
+    "Expenses": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খরচ"
+          }
+        }
+      }
+    },
+    "Failed": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যর্থ"
+          }
+        }
+      }
+    },
+    "Group name, like Cox's Bazar trip": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপের নাম, যেমন কক্সবাজার ট্রিপ"
+          }
+        }
+      }
+    },
+    "Group not found": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ পাওয়া যায়নি"
+          }
+        }
+      }
+    },
+    "Groups": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ"
+          }
+        }
+      }
+    },
+    "History": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ইতিহাস"
+          }
+        }
+      }
+    },
+    "Home": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "হোম"
+          }
+        }
+      }
+    },
+    "Includes payments reported in the app but not verified:": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অ্যাপে জানানো কিন্তু যাচাই না করা পেমেন্টসহ:"
+          }
+        }
+      }
+    },
+    "Language": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভাষা"
+          }
+        }
+      }
+    },
+    "Leftover poisha go to the first people in the list, so the total always matches.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বাড়তি পয়সা তালিকার প্রথম দিকের জনদের ভাগে যায়, যাতে মোট সবসময় মেলে।"
+          }
+        }
+      }
+    },
+    "Name": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম"
+          }
+        }
+      }
+    },
+    "Names are kept exactly as you type them.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম ঠিক যেভাবে লিখবেন সেভাবেই থাকবে।"
+          }
+        }
+      }
+    },
+    "New group": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নতুন গ্রুপ"
+          }
+        }
+      }
+    },
+    "No groups yet": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখনো কোনো গ্রুপ নেই"
+          }
+        }
+      }
+    },
+    "Not started": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুরু হয়নি"
+          }
+        }
+      }
+    },
+    "Nothing added yet.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখনো কিছু যোগ করা হয়নি।"
+          }
+        }
+      }
+    },
+    "Numbers": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সংখ্যা"
+          }
+        }
+      }
+    },
+    "Opened the payment app. Not confirmed.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পেমেন্ট অ্যাপ খোলা হয়েছে। নিশ্চিত হয়নি।"
+          }
+        }
+      }
+    },
+    "Other": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্যান্য"
+          }
+        }
+      }
+    },
+    "Paid by": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কে দিয়েছেন"
+          }
+        }
+      }
+    },
+    "Paid by %@": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দিয়েছেন %@"
+          }
+        }
+      }
+    },
+    "Paid with": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যেভাবে দিয়েছেন"
+          }
+        }
+      }
+    },
+    "Payments": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পেমেন্ট"
+          }
+        }
+      }
+    },
+    "Percent": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শতাংশ"
+          }
+        }
+      }
+    },
+    "Percentages need to add up to 100.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শতাংশের যোগফল ১০০ হতে হবে।"
+          }
+        }
+      }
+    },
+    "Pick at least one person.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্তত একজন বেছে নিন।"
+          }
+        }
+      }
+    },
+    "Profile": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রোফাইল"
+          }
+        }
+      }
+    },
+    "Record %@ as paid": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ পরিশোধিত হিসেবে লিখুন"
+          }
+        }
+      }
+    },
+    "Reported in TakaDe. Not verified with the provider.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "টাকাদে-তে জানানো হয়েছে। প্রোভাইডারের সাথে যাচাই হয়নি।"
+          }
+        }
+      }
+    },
+    "Reversed": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ফেরত হয়েছে"
+          }
+        }
+      }
+    },
+    "Same as device": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ডিভাইসের মতো"
+          }
+        }
+      }
+    },
+    "Save": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সংরক্ষণ"
+          }
+        }
+      }
+    },
+    "Selected": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নির্বাচিত"
+          }
+        }
+      }
+    },
+    "Settle up": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "হিসাব মেটান"
+          }
+        }
+      }
+    },
+    "Settled up": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "হিসাব মিটেছে"
+          }
+        }
+      }
+    },
+    "Shares": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভাগ"
+          }
+        }
+      }
+    },
+    "Someone": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কেউ একজন"
+          }
+        }
+      }
+    },
+    "Split": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ভাগ করুন"
+          }
+        }
+      }
+    },
+    "Suggested payments": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রস্তাবিত পেমেন্ট"
+          }
+        }
+      }
+    },
+    "TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here so the balance updates.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "টাকাদে টাকা পাঠায় না। নগদ, বিকাশ বা ব্যাংকে যেভাবে দেন সেভাবে দিন, তারপর এখানে লিখে রাখুন যাতে ব্যালান্স হালনাগাদ হয়।"
+          }
+        }
+      }
+    },
+    "The amounts are %@ more than the total.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরিমাণগুলো মোটের চেয়ে %@ বেশি।"
+          }
+        }
+      }
+    },
+    "The expense wasn't saved. Try again.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খরচটি সংরক্ষণ হয়নি। আবার চেষ্টা করুন।"
+          }
+        }
+      }
+    },
+    "The group wasn't saved. Try again.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপটি সংরক্ষণ হয়নি। আবার চেষ্টা করুন।"
+          }
+        }
+      }
+    },
+    "The payment wasn't recorded. Try again.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পেমেন্টটি লেখা হয়নি। আবার চেষ্টা করুন।"
+          }
+        }
+      }
+    },
+    "This is saved as reported by you. It isn't checked with bKash, upay or any bank.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি আপনার জানানো হিসেবে সংরক্ষিত হবে। বিকাশ, উপায় বা কোনো ব্যাংকের সাথে যাচাই করা হয় না।"
+          }
+        }
+      }
+    },
+    "Transaction ID (optional)": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ট্রানজ্যাকশন আইডি (ঐচ্ছিক)"
+          }
+        }
+      }
+    },
+    "Waiting for confirmation": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নিশ্চিতকরণের অপেক্ষায়"
+          }
+        }
+      }
+    },
+    "What was it for?": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কিসের জন্য?"
+          }
+        }
+      }
+    },
+    "Who else is in it": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আর কে কে আছে"
+          }
+        }
+      }
+    },
+    "You": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি"
+          }
+        }
+      }
+    },
+    "You are owed": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি পাবেন"
+          }
+        }
+      }
+    },
+    "You are owed in total": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সব মিলিয়ে আপনি পাবেন"
+          }
+        }
+      }
+    },
+    "You owe": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার দেনা"
+          }
+        }
+      }
+    },
+    "You owe in total": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সব মিলিয়ে আপনার দেনা"
+          }
+        }
+      }
+    },
+    "You pay %@": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি %@-কে দেবেন"
+          }
+        }
+      }
+    },
+    "You're settled up in this group.": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে আপনার হিসাব মিটে গেছে।"
+          }
+        }
+      }
+    },
+    "Your data": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার তথ্য"
+          }
+        }
+      }
+    },
+    "Your name": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার নাম"
+          }
+        }
+      }
+    },
+    "minus": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ঋণাত্মক"
+          }
+        }
+      }
+    },
+    "poisha": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পয়সা"
+          }
+        }
+      }
+    },
+    "taka": {
+      "comment": "Machine-drafted Bengali; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "টাকা"
+          }
+        }
+      }
+    }
+  }
+}
