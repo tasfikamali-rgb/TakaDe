@@ -1,15 +1,17 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(AccountModel.self) private var account
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(DigitPreference.storageKey) private var digits: DigitPreference = .automatic
-    @AppStorage("myDisplayName") private var myName = ""
+    @AppStorage(AccountModel.nameKey) private var myName = ""
 
     var body: some View {
         Form {
             Section {
                 TextField("Your name", text: $myName)
                     .textContentType(.name)
+                    .onSubmit(saveName)
             } header: {
                 Text("Your name")
             } footer: {
@@ -32,17 +34,23 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.segmented)
             }
-            Section("Your data") {
-                Text("Everything stays on this phone. Nothing is uploaded and there's no account.")
-                    .font(AppFont.body)
-                    .foregroundStyle(Color.inkMuted)
-            }
+            AccountSection()
+            YourDataSection()
         }
+        .onDisappear(perform: saveName)
         .readableWidth()
         .navigationTitle("Profile")
+    }
+
+    private func saveName() {
+        let name = myName
+        Task { try? await account.rename(to: name) }
     }
 }
 
 #Preview {
-    NavigationStack { SettingsView() }
+    let app = AppModel.preview()
+    return NavigationStack { SettingsView() }
+        .environment(app)
+        .environment(AccountModel(store: app.profiles, google: nil))
 }

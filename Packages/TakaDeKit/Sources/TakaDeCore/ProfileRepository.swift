@@ -1,0 +1,42 @@
+import Foundation
+
+/// Storage for the device owner's profile and payment details, and the whole-ledger
+/// export and erase paths.
+public protocol ProfileRepository: Sendable {
+    func profile() async throws -> LocalProfile?
+    /// Saves the profile and links every "me" member to it.
+    func save(_ profile: LocalProfile) async throws
+
+    func paymentHandles(for member: MemberID) async throws -> [PaymentHandle]
+    func save(_ handle: PaymentHandle) async throws
+    func deletePaymentHandle(_ id: UUID) async throws
+
+    /// Everything stored on this device, for "Export my data".
+    func export() async throws -> LedgerExport
+    /// Removes every row, history included, and compacts the file so deleted data
+    /// doesn't linger in free pages. For "Delete all my data".
+    func eraseEverything() async throws
+}
+
+/// A full copy of the device's data, written to a file the user chooses where to send.
+public struct LedgerExport: Codable, Sendable {
+    public struct GroupData: Codable, Sendable {
+        public let group: ExpenseGroup
+        public let expenses: [Expense]
+        public let settlements: [Settlement]
+        public let history: [AuditEvent]
+        public let paymentHandles: [PaymentHandle]
+    }
+
+    public let formatVersion: Int
+    public let exportedAt: Date
+    public let profile: LocalProfile?
+    public let groups: [GroupData]
+
+    public init(exportedAt: Date = Date(), profile: LocalProfile?, groups: [GroupData]) {
+        formatVersion = 1
+        self.exportedAt = exportedAt
+        self.profile = profile
+        self.groups = groups
+    }
+}

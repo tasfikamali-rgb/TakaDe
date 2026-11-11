@@ -32,6 +32,9 @@ needs disclosure and a processor review). **Decided 2026-11-11:** on-device (ADR
 
 ## 6. Brand
 Product name spelling (TakaDe), logo and app icon. The icon slot is currently empty.
+- **Decided 2026-11-11:** Apple and Google sign-in in release 1, optional, kept on the device only (ADR 11).
+- **Owner action:** Google OAuth iOS client id in `Config/Google.local.xcconfig`; paid Apple Developer Program for Sign in with Apple.
+- **Open:** store members' bKash, Nagad, Rocket or upay numbers so others can copy them when settling (schema ready, no UI yet).
 
 ## 7. Store accounts and release checks (blocks: testing on real phones, publishing)
 - **Apple Developer Program** (US$99/year) for TestFlight and the App Store, and

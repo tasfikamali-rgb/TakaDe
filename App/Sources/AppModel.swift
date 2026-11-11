@@ -12,28 +12,45 @@ final class AppModel {
     /// Bumped after every write so dependent views reload.
     private(set) var revision = 0
     let repository: LedgerRepository
+    /// The same database: the device owner's profile, export and erase.
+    let profiles: ProfileRepository
 
-    init(repository: LedgerRepository) {
-        self.repository = repository
+    init(store: SQLiteLedgerRepository) {
+        repository = store
+        profiles = store
     }
 
     /// The on-device database, protected by iOS Data Protection until first unlock.
     static func live() -> AppModel {
         do {
             let dir = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                .appendingPathComponent("Ledger", isDirectory: true)
+            // Protect the folder first, so the database and its journal files are created
+            // encrypted (readable once the phone has been unlocked after a restart).
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true,
+                                                    attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
             let url = dir.appendingPathComponent("ledger.sqlite")
+            try Self.moveLegacyDatabase(to: url)
             let repo = try SQLiteLedgerRepository(path: url.path)
-            try? (url as NSURL).setResourceValue(URLFileProtection.completeUntilFirstUserAuthentication, forKey: .fileProtectionKey)
-            return AppModel(repository: repo)
+            try? FileManager.default.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: url.path)
+            return AppModel(store: repo)
         } catch {
-            let model = AppModel(repository: try! SQLiteLedgerRepository())
+            let model = AppModel(store: try! SQLiteLedgerRepository())
             model.loadError = String(localized: "Your saved data couldn't be opened, so changes made now won't be kept. Restart the app to try again.", bundle: .appLanguage)
             return model
         }
     }
 
     static func preview() -> AppModel {
-        AppModel(repository: try! SQLiteLedgerRepository())
+        AppModel(store: try! SQLiteLedgerRepository())
+    }
+
+    /// Builds before 2026-11-11 kept the file directly in Application Support.
+    private static func moveLegacyDatabase(to url: URL) throws {
+        let legacy = url.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("ledger.sqlite")
+        let files = FileManager.default
+        guard files.fileExists(atPath: legacy.path), !files.fileExists(atPath: url.path) else { return }
+        try files.moveItem(at: legacy, to: url)
     }
 
     func reload() async {

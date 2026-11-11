@@ -19,6 +19,9 @@ targets:
   TakaDe:
     type: application
     platform: iOS
+    configFiles:
+      Debug: Config/TakaDe.xcconfig
+      Release: Config/TakaDe.xcconfig
     sources:
       - path: App/Sources
       - path: App/Resources
@@ -36,6 +39,8 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: TakaDe uses the camera to read receipts on this phone. Photos are not saved or uploaded.
+        # Google OAuth client for "Continue with Google"; empty hides the button (Config/Google.local.xcconfig).
+        TakaDeGoogleClientID: $(TAKADE_GOOGLE_CLIENT_ID)
         UIAppFonts: [Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, InterDisplay-SemiBold.ttf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf]
     settings:
       base:
@@ -43,6 +48,11 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_EMIT_LOC_STRINGS: YES
+      configs:
+        # Sign in with Apple needs a paid developer team, so the entitlement is only on
+        # Release builds. Debug builds signed with a free Apple ID still install on a phone.
+        Release:
+          CODE_SIGN_ENTITLEMENTS: App/TakaDe.entitlements
   # UI tests: accessibility audit and launch checks. See docs/testing.md.
   TakaDeUITests:
     type: bundle.ui-testing

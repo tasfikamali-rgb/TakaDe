@@ -65,6 +65,34 @@ enum Schema {
                 BEGIN SELECT RAISE(ABORT, 'audit_event is append-only'); END;
                 """)
         }
+
+        // Release 1 local profile (docs/adr/0011-on-device-sign-in.md). Still nothing leaves the device.
+        migrator.registerMigration("v2_local_profile") { db in
+            try db.create(table: "local_profile") { t in
+                t.primaryKey("id", .text)
+                t.column("display_name", .text).notNull()
+                t.column("locale", .text)
+                t.column("digit_style", .text)
+                // The linked Apple or Google sign-in. Tokens are never stored here (Keychain).
+                t.column("provider", .text).check { ["apple", "google"].contains($0) }
+                t.column("provider_user_id", .text)
+                t.column("email", .text)
+                t.column("created_at", .datetime).notNull()
+            }
+            try db.alter(table: "member") { t in
+                t.add(column: "profile_id", .text).references("local_profile", onDelete: .setNull)
+            }
+            try db.create(table: "payment_handle") { t in
+                t.primaryKey("id", .text)
+                t.column("member_id", .text).notNull().indexed()
+                    .references("member", onDelete: .cascade)
+                t.column("rail", .text).notNull()
+                    .check { ["bkash", "nagad", "rocket", "upay", "bank"].contains($0) }
+                t.column("handle", .text).notNull()
+                t.column("label", .text)
+                t.column("created_at", .datetime).notNull()
+            }
+        }
         return migrator
     }
 }

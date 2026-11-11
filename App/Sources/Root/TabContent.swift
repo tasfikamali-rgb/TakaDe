@@ -2,7 +2,6 @@ import SwiftUI
 
 struct TabContent: View {
     @Environment(AppChrome.self) private var chrome
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     let tab: AppTab
 
     var body: some View {
@@ -11,7 +10,7 @@ struct TabContent: View {
             .safeAreaPadding(.bottom, reservesBar ? NotchTabBar.reservedHeight : 0)
     }
 
-    private var reservesBar: Bool { horizontalSizeClass != .regular && !chrome.hidesTabBar }
+    private var reservesBar: Bool { chrome.showsNotchBar && !chrome.hidesTabBar }
 
     @ViewBuilder private var content: some View {
         switch tab {

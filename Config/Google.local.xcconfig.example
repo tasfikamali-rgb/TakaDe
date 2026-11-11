@@ -1,0 +1,4 @@
+// Copy to Config/Google.local.xcconfig and fill in. Not committed.
+// Google Cloud console > APIs & Services > Credentials > Create OAuth client ID > iOS,
+// bundle id app.takade.ios. No client secret is used or needed.
+TAKADE_GOOGLE_CLIENT_ID = 1234567890-example.apps.googleusercontent.com

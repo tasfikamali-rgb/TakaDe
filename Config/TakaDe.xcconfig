@@ -1,0 +1,8 @@
+// Shared build settings for the TakaDe app target.
+
+// The iOS OAuth client id from the owner's Google Cloud project, e.g.
+// 1234-abcd.apps.googleusercontent.com. Leave empty to hide "Continue with Google".
+// Set it in Config/Google.local.xcconfig (not committed); see Google.local.xcconfig.example.
+TAKADE_GOOGLE_CLIENT_ID =
+
+#include? "Google.local.xcconfig"

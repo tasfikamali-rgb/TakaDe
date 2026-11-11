@@ -6,6 +6,8 @@ import TakaDeCore
 /// iOS Data Protection (see docs/adr/0003-grdb-for-local-sqlite.md).
 public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable {
     private let db: DatabaseQueue
+    var reader: DatabaseQueue { db }
+    var writer: DatabaseQueue { db }
     private let encoder: JSONEncoder = {
         let e = JSONEncoder()
         e.outputFormatting = [.sortedKeys]
@@ -61,11 +63,14 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                 """, arguments: [group.id.description, group.name, group.currency.code, group.currency.minorUnitDigits, group.createdAt, group.archivedAt])
             // Members: upsert listed members. Removing a member who has entries is not allowed
             // in v1, so members are never deleted here.
+            let profileID = try String.fetchOne(db, sql: "SELECT id FROM local_profile LIMIT 1")
             for (position, member) in group.members.enumerated() {
                 try db.execute(sql: """
-                    INSERT INTO member (id, group_id, display_name, is_me, position) VALUES (?, ?, ?, ?, ?)
-                    ON CONFLICT(id) DO UPDATE SET display_name = excluded.display_name, is_me = excluded.is_me, position = excluded.position
-                    """, arguments: [member.id.description, group.id.description, member.displayName, member.isMe, position])
+                    INSERT INTO member (id, group_id, display_name, is_me, position, profile_id) VALUES (?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(id) DO UPDATE SET display_name = excluded.display_name, is_me = excluded.is_me,
+                        position = excluded.position, profile_id = excluded.profile_id
+                    """, arguments: [member.id.description, group.id.description, member.displayName, member.isMe, position,
+                                     member.isMe ? profileID : nil])
             }
             try Self.audit(db, AuditEvent(groupID: group.id, entity: .group, entityID: group.id.rawValue, action: exists ? .edited : .created, actor: actor, snapshot: snapshot))
         }
