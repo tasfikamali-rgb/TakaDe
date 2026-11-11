@@ -41,6 +41,7 @@ struct SettleUpView: View {
             .safeAreaInset(edge: .bottom) {
                 if let selected {
                     SwipeToConfirm(title: swipeTitle(selected), onConfirm: record)
+                        .id(selected)
                         .padding(.horizontal, Spacing.screenMargin)
                         .padding(.bottom, Spacing.xs)
                         .readableWidth()
@@ -50,7 +51,7 @@ struct SettleUpView: View {
         .overlay {
             if let recorded {
                 SuccessOverlay(amount: recorded.amount, message: successMessage(recorded), onClose: cancel)
-                    .transition(reduceMotion ? .opacity : .scale(scale: 0.2, anchor: .bottomLeading).combined(with: .opacity))
+                    .transition(reduceMotion ? .opacity : .scale(scale: 0.2, anchor: .bottomTrailing).combined(with: .opacity))
             }
         }
         .onAppear(perform: preselect)
@@ -68,22 +69,21 @@ struct SettleUpView: View {
     private func swipeTitle(_ t: SuggestedTransfer) -> String {
         let amount = MoneyFormatter.format(t.amount).plain
         return t.from == group.me?.id
-            ? String(localized: "Swipe to record \(amount) paid")
-            : String(localized: "Swipe to mark \(amount) received")
+            ? String(localized: "Swipe to record \(amount) paid", bundle: .appLanguage)
+            : String(localized: "Swipe to mark \(amount) received", bundle: .appLanguage)
     }
 
     private func successMessage(_ t: SuggestedTransfer) -> String {
         t.from == group.me?.id
-            ? String(localized: "Recorded as paid to \(group.storedName(of: t.to))")
-            : String(localized: "Marked received from \(group.storedName(of: t.from))")
+            ? String(localized: "Recorded as paid to \(group.storedName(of: t.to))", bundle: .appLanguage)
+            : String(localized: "Marked received from \(group.storedName(of: t.from))", bundle: .appLanguage)
     }
 
     private func cancel() { dismiss() }
 
-    private func record() {
-        guard let t = selected, let me = group.me else { return }
-        Task {
-            do {
+    private func record() async -> Bool {
+        guard let t = selected, let me = group.me else { return false }
+        do {
                 var settlement = try Settlement(
                     groupID: group.id, from: t.from, to: t.to, amount: t.amount, method: method,
                     userReference: reference.isEmpty ? nil : reference)
@@ -93,10 +93,12 @@ struct SettleUpView: View {
                     try settlement.transition(to: .reportedUnverified)
                 }
                 try await app.record(settlement, in: group)
+                saveError = nil
                 withAnimation(Motion.standard(reduceMotion: reduceMotion)) { recorded = t }
-            } catch {
-                saveError = String(localized: "The payment wasn't recorded. Try again.")
-            }
+                return true
+        } catch {
+            saveError = String(localized: "The payment wasn't recorded. Try again.", bundle: .appLanguage)
+            return false
         }
     }
 }

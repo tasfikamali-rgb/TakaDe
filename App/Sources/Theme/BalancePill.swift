@@ -4,12 +4,14 @@ import TakaDeCore
 /// A tinted pill that always says owe or owed in words, never color alone.
 struct BalancePill: View {
     let net: Money
+    /// False when the pill describes someone else, so it says "Owes" not "You owe".
+    var isMe = true
 
     var body: some View {
         HStack(spacing: Spacing.xxs) {
-            Text(state.label)
+            Text(isMe ? state.label : state.otherLabel)
             if !net.isZero {
-                AmountText(money: net.magnitude, font: AppFont.label, color: state.color)
+                AmountText(money: net.magnitude, size: .label, color: state.color)
             }
         }
         .font(AppFont.label)

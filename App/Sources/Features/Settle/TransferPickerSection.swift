@@ -17,7 +17,7 @@ struct TransferPickerSection: View {
                         Text(verbatim: describe(transfer))
                             .foregroundStyle(Color.ink)
                         Spacer()
-                        AmountText(money: transfer.amount, font: AppFont.bodyEmphasis)
+                        AmountText(money: transfer.amount, size: .bodyEmphasis)
                         Image(systemName: "checkmark")
                             .foregroundStyle(Color.ink)
                             .opacity(selected == transfer ? 1 : 0)
@@ -32,7 +32,7 @@ struct TransferPickerSection: View {
 
     private func describe(_ t: SuggestedTransfer) -> String {
         t.from == group.me?.id
-            ? String(localized: "You pay \(group.storedName(of: t.to))")
-            : String(localized: "\(group.storedName(of: t.from)) pays you")
+            ? String(localized: "You pay \(group.storedName(of: t.to))", bundle: .appLanguage)
+            : String(localized: "\(group.storedName(of: t.from)) pays you", bundle: .appLanguage)
     }
 }

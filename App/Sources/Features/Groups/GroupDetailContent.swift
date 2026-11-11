@@ -11,9 +11,14 @@ struct GroupDetailContent: View {
     @State private var showingSettle = false
     @State private var showingAddMember = false
     @State private var newMemberName = ""
+    @State private var recentlyDeleted: Expense?
+    @State private var errorMessage: String?
 
     var body: some View {
         List {
+            if let errorMessage {
+                Section { Text(verbatim: errorMessage).foregroundStyle(Color.owe) }
+            }
             if let balances = model.balances {
                 MemberBalancesSection(group: group, balances: balances)
             }
@@ -49,6 +54,18 @@ struct GroupDetailContent: View {
                     .readableWidth()
             }
         }
+        .overlay(alignment: .bottom) {
+            if let recentlyDeleted {
+                UndoBanner(message: String(localized: "Deleted \(recentlyDeleted.title)", bundle: .appLanguage), onUndo: undoDelete)
+                    .padding(.horizontal, Spacing.screenMargin)
+                    .padding(.bottom, Spacing.huge + Spacing.xl)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .task(id: recentlyDeleted.id) {
+                        try? await Task.sleep(for: .seconds(5))
+                        withAnimation(Motion.standard) { self.recentlyDeleted = nil }
+                    }
+            }
+        }
         .sheet(isPresented: $showingAddExpense) {
             AddExpenseView(group: group)
         }
@@ -73,10 +90,37 @@ struct GroupDetailContent: View {
         let name = newMemberName.trimmingCharacters(in: .whitespaces)
         newMemberName = ""
         guard !name.isEmpty else { return }
-        Task { try? await app.addMember(named: name, to: group) }
+        Task {
+            do {
+                try await app.addMember(named: name, to: group)
+                errorMessage = nil
+            } catch {
+                errorMessage = String(localized: "\(name) wasn't added. Try again.", bundle: .appLanguage)
+            }
+        }
     }
 
     private func delete(_ expense: Expense) {
-        Task { try? await app.delete(expense, in: group) }
+        Task {
+            do {
+                try await app.delete(expense, in: group)
+                errorMessage = nil
+                withAnimation(Motion.standard) { recentlyDeleted = expense }
+            } catch {
+                errorMessage = String(localized: "The expense wasn't deleted. Try again.", bundle: .appLanguage)
+            }
+        }
+    }
+
+    private func undoDelete() {
+        guard let expense = recentlyDeleted else { return }
+        withAnimation(Motion.standard) { recentlyDeleted = nil }
+        Task {
+            do {
+                try await app.restore(expense, in: group)
+            } catch {
+                errorMessage = String(localized: "The expense couldn't be brought back. Add it again.", bundle: .appLanguage)
+            }
+        }
     }
 }

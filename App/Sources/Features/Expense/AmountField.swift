@@ -10,7 +10,7 @@ struct AmountField: View {
         Button(action: onTap) {
             HStack {
                 if let total = draft.total {
-                    AmountText(money: total, font: AppFont.title)
+                    AmountText(money: total, size: .title)
                 } else {
                     Text("Amount")
                         .font(AppFont.title)

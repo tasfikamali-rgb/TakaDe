@@ -4,6 +4,7 @@ import SwiftUI
 struct NotchTabBar: View {
     @Binding var selection: AppTab
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
     @State private var width: CGFloat = 0
 
     private let height: CGFloat = 64
@@ -18,7 +19,8 @@ struct NotchTabBar: View {
         ZStack(alignment: .topLeading) {
             NotchBarShape(notchX: centerX)
                 .fill(Color.header)
-                .shadow(color: .black.opacity(0.18), radius: 20, y: 8)
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0 : 0.18), radius: 20, y: 8)
+                .overlay(NotchBarShape(notchX: centerX).stroke(Color.onHeader.opacity(colorScheme == .dark ? 0.12 : 0), lineWidth: 1))
 
             Circle()
                 .fill(Color.lime)

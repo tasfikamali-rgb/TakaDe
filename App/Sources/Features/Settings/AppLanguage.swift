@@ -20,7 +20,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     /// Each language is shown in its own script so anyone can find theirs.
     var nativeName: String {
         switch self {
-        case .system: String(localized: "Same as phone")
+        case .system: String(localized: "Same as phone", bundle: .appLanguage)
         case .english: "English"
         case .bengali: "বাংলা"
         }

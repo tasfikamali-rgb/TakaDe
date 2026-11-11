@@ -93,6 +93,17 @@ final class ExpenseDraft {
         return allocation.shares[id]
     }
 
+    /// True when an equal split can't divide evenly, so a few people pay one poisha more.
+    var hasRoundingRemainder: Bool {
+        guard method == .equal, let total, !included.isEmpty else { return false }
+        return total.minorUnits % Int64(included.count) != 0
+    }
+
+    /// True once anything has been typed, so a swipe-down doesn't throw it away.
+    var hasContent: Bool {
+        !trimmedTitle.isEmpty || !amountExpression.isEmpty
+    }
+
     var canSave: Bool {
         guard !trimmedTitle.isEmpty, case .success = preview else { return false }
         return true

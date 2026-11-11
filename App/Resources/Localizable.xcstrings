@@ -167,17 +167,6 @@
         }
       }
     },
-    "%@ · %lld shares": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "%1$@ · %2$lld অংশ"
-          }
-        }
-      }
-    },
     "%lld people": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -1527,6 +1516,204 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "ঋণাত্মক"
+          }
+        }
+      }
+    },
+    "You're all settled up": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার সব হিসাব মিটে গেছে"
+          }
+        }
+      }
+    },
+    "Spent together": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "একসাথে খরচ"
+          }
+        }
+      }
+    },
+    "%lld people · %lld expenses": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld জন · %2$lld খরচ"
+          }
+        }
+      }
+    },
+    "Which group?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কোন গ্রুপ?"
+          }
+        }
+      }
+    },
+    "Gets back": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ফেরত পাবেন"
+          }
+        }
+      }
+    },
+    "Owes": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দেনা"
+          }
+        }
+      }
+    },
+    "Undo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ফিরিয়ে আনুন"
+          }
+        }
+      }
+    },
+    "Deleted %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ মুছে ফেলা হয়েছে"
+          }
+        }
+      }
+    },
+    "%@ wasn't added. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ যোগ হয়নি। আবার চেষ্টা করুন।"
+          }
+        }
+      }
+    },
+    "The expense wasn't deleted. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খরচটি মোছা হয়নি। আবার চেষ্টা করুন।"
+          }
+        }
+      }
+    },
+    "The expense couldn't be brought back. Add it again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খরচটি ফিরিয়ে আনা যায়নি। আবার যোগ করুন।"
+          }
+        }
+      }
+    },
+    "Split costs with friends and see who pays whom": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধুদের সাথে খরচ ভাগ করুন, দেখুন কে কাকে দেবে"
+          }
+        }
+      }
+    },
+    "%@ left to assign": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আরো %@ ভাগ করা বাকি"
+          }
+        }
+      }
+    },
+    "Hold to clear": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পুরোটা মুছতে চেপে ধরুন"
+          }
+        }
+      }
+    },
+    "your share": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার ভাগ"
+          }
+        }
+      }
+    },
+    "Used when you create a group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ খোলার সময় ব্যবহার হয়"
+          }
+        }
+      }
+    },
+    "Receipt photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদের ছবি"
+          }
+        }
+      }
+    },
+    "%@ · ^[%lld share](inflect: true)": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$lld অংশ"
           }
         }
       }

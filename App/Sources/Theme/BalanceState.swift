@@ -16,6 +16,22 @@ enum BalanceState {
         }
     }
 
+    var otherLabel: LocalizedStringKey {
+        switch self {
+        case .owed: "Gets back"
+        case .owes: "Owes"
+        case .settled: "Settled up"
+        }
+    }
+
+    var totalLabel: LocalizedStringKey {
+        switch self {
+        case .owed: "You are owed in total"
+        case .owes: "You owe in total"
+        case .settled: "You're all settled up"
+        }
+    }
+
     var color: Color {
         switch self {
         case .owed: .owed

@@ -27,7 +27,7 @@ final class AppModel {
             return AppModel(repository: repo)
         } catch {
             let model = AppModel(repository: try! SQLiteLedgerRepository())
-            model.loadError = String(localized: "Your saved data couldn't be opened, so changes made now won't be kept. Restart the app to try again.")
+            model.loadError = String(localized: "Your saved data couldn't be opened, so changes made now won't be kept. Restart the app to try again.", bundle: .appLanguage)
             return model
         }
     }
@@ -41,7 +41,7 @@ final class AppModel {
             groups = try await repository.groups()
             revision += 1
         } catch {
-            loadError = String(localized: "Your groups couldn't be loaded. Restart the app to try again.")
+            loadError = String(localized: "Your groups couldn't be loaded. Restart the app to try again.", bundle: .appLanguage)
         }
     }
 
@@ -72,6 +72,15 @@ final class AppModel {
 
     func delete(_ expense: Expense, in group: ExpenseGroup) async throws {
         try await repository.delete(expense.id, actor: group.me?.id)
+        await reload()
+    }
+
+    /// Brings back a soft-deleted expense (the undo after a delete).
+    func restore(_ expense: Expense, in group: ExpenseGroup) async throws {
+        var restored = expense
+        restored.deletedAt = nil
+        restored.version += 1
+        try await repository.save(restored, actor: group.me?.id)
         await reload()
     }
 
