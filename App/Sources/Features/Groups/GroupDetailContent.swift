@@ -38,7 +38,7 @@ struct GroupDetailContent: View {
         }
         .background(alignment: .top) { Color.lilac.frame(height: 480).ignoresSafeArea() }
         .background(Color.canvas)
-        .background(ContactPicker(isPresented: $pickingContacts, onPick: addContacts))
+        .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
         .navigationTitle(Text(verbatim: group.name))
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color.lilac, for: .navigationBar)

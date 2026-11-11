@@ -6751,6 +6751,142 @@
           }
         }
       }
+    },
+    "Add %lld": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld জন যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %lld"
+          }
+        }
+      }
+    },
+    "No contacts with a name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামসহ কোনো কন্ট্যাক্ট নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No contacts with a name"
+          }
+        }
+      }
+    },
+    "No one matches that": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই নামে কাউকে পাওয়া যায়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one matches that"
+          }
+        }
+      }
+    },
+    "Search contacts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কন্ট্যাক্ট খুঁজুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search contacts"
+          }
+        }
+      }
+    },
+    "TakaDe can't see your contacts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আপনার কন্ট্যাক্ট দেখতে পাচ্ছে না"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe can't see your contacts"
+          }
+        }
+      }
+    },
+    "Allow Contacts in Settings to search them here, or pick people with Apple's picker.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখানে খুঁজতে সেটিংসে কন্ট্যাক্টের অনুমতি দিন, অথবা Apple-এর পিকার দিয়ে মানুষ বাছাই করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Contacts in Settings to search them here, or pick people with Apple's picker."
+          }
+        }
+      }
+    },
+    "Use Apple's picker": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apple-এর পিকার ব্যবহার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Apple's picker"
+          }
+        }
+      }
+    },
+    "Open Settings": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সেটিংস খুলুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        }
+      }
     }
   }
 }

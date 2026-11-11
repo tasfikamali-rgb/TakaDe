@@ -73,7 +73,7 @@ struct NewGroupView: View {
                     }
                     Button("Add another person", systemImage: "plus", action: addRow)
                     Button("Choose from Contacts", systemImage: "person.crop.circle.badge.plus") { pickingContacts = true }
-                        .background(ContactPicker(isPresented: $pickingContacts, onPick: addContacts))
+                        .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
                 } header: {
                     Text("Who else is in it")
                         .foregroundStyle(Color.inkMuted)
