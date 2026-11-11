@@ -5,9 +5,7 @@ appId: app.takade.ios
     visible: "English"
     timeout: 20000
 - tapOn: "English"
-- takeScreenshot: ${OUT}/00a-onboarding-language
 - tapOn: "Continue"
-- takeScreenshot: ${OUT}/00b-onboarding-account
 - tapOn: "Continue without account"
 - tapOn: "Your name"
 - inputText: "Sabit"

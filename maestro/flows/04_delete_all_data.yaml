@@ -22,7 +22,6 @@ tags:
 - scrollUntilVisible:
     element: "Delete all my data"
     direction: DOWN
-- takeScreenshot: ${OUT}/11-your-data
 - tapOn: "Delete all my data"
 - tapOn: "Delete everything"
 # Back to first launch, and the group is gone.

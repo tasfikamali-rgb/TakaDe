@@ -23,7 +23,6 @@ tags:
 - setOrientation: LANDSCAPE_LEFT
 - assertVisible: "Flat"
 - assertVisible: "Add expense"
-- takeScreenshot: ${OUT}/10-group-landscape
 - setOrientation: PORTRAIT
 - assertVisible: "Flat"
 - assertVisible: "Add expense"

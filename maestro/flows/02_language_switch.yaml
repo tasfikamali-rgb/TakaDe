@@ -9,14 +9,12 @@ tags:
     clearState: true
 - runFlow: ../subflows/onboarding.yaml
 - tapOn: "Profile"
-- takeScreenshot: ${OUT}/08-profile-en
 - scrollUntilVisible:
     element: "বাংলা"
     direction: DOWN
 - tapOn: "বাংলা"
 # The selector must change the UI without a restart. "Profile" should be gone.
 - assertNotVisible: "Profile"
-- takeScreenshot: ${OUT}/09-profile-bn
 - scrollUntilVisible:
     element: "English"
     direction: UP

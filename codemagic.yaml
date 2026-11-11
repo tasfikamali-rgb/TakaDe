@@ -83,5 +83,5 @@ workflows:
           [ -f build/a11y-failed ] && { echo "Accessibility audit failed (see above)."; status=1; }
           exit $status
     artifacts:
-      - maestro-results/**
+      - maestro-results/**  # failure debug output only
       - build/UITests.xcresult
