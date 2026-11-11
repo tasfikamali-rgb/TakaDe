@@ -205,10 +205,16 @@ private struct IdentityRow: View {
 
     var body: some View {
         HStack(spacing: Spacing.s) {
-            Image(systemName: provider.systemImage)
-                .frame(width: 28)
-                .foregroundStyle(Color.ink)
-                .accessibilityHidden(true)
+            Group {
+                if provider == .google {
+                    // Google's own "G", never redrawn or recoloured (branding guidelines).
+                    Image("GoogleG").resizable().renderingMode(.original).frame(width: 20, height: 20)
+                } else {
+                    Image(systemName: provider.systemImage).foregroundStyle(Color.ink)
+                }
+            }
+            .frame(width: 28)
+            .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(provider.label).font(AppFont.bodyEmphasis)
                 if let email {
@@ -233,7 +239,7 @@ extension SignInProvider {
     var systemImage: String {
         switch self {
         case .apple: "apple.logo"
-        case .google: "g.circle"
+        case .google: "globe"  // Not shown: IdentityRow uses the GoogleG asset.
         case .microsoft: "square.grid.2x2"
         case .email: "envelope"
         }

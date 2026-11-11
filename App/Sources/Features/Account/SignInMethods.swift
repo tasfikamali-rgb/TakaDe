@@ -62,7 +62,7 @@ struct SignInMethods: View {
             .frame(height: 52)
             .clipShape(Capsule())
         case .google:
-            MethodButton(title: "Continue with Google", systemImage: "g.circle") { run { try await signIn(.google) } }
+            GoogleSignInButton { run { try await signIn(.google) } }
         case .microsoft:
             MethodButton(title: "Continue with Microsoft", systemImage: "square.grid.2x2") { run { try await signIn(.microsoft) } }
         case .email:
@@ -164,5 +164,40 @@ enum SignInErrorText {
         default:
             String(localized: "Signing in didn't finish. Try again.", bundle: .appLanguage)
         }
+    }
+}
+
+/// "Continue with Google" as Google's sign-in branding guidelines describe it: the
+/// unmodified multicolour "G" (asset GoogleG, from Google's sign-in assets), never recoloured
+/// or redrawn, on a white button with a grey outline in light mode and on #131314 with a
+/// lighter outline in dark mode. Only the corner shape matches the Apple button above it,
+/// which the guidelines allow (pill).
+struct GoogleSignInButton: View {
+    @Environment(\.colorScheme) private var colorScheme
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image("GoogleG")
+                    .resizable()
+                    .renderingMode(.original)
+                    .frame(width: 20, height: 20)
+                    .accessibilityHidden(true)
+                Text("Continue with Google")
+                    .font(.system(.body, weight: .medium))
+                    .foregroundStyle(colorScheme == .dark ? Color(red: 0xE3 / 255, green: 0xE3 / 255, blue: 0xE3 / 255)
+                                                          : Color(red: 0x1F / 255, green: 0x1F / 255, blue: 0x1F / 255))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .padding(.horizontal, Spacing.m)
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .background(Capsule().fill(colorScheme == .dark ? Color(red: 0x13 / 255, green: 0x13 / 255, blue: 0x14 / 255) : .white))
+            .overlay(Capsule().stroke(colorScheme == .dark ? Color(red: 0x8E / 255, green: 0x91 / 255, blue: 0x8F / 255)
+                                                           : Color(red: 0x74 / 255, green: 0x77 / 255, blue: 0x75 / 255), lineWidth: 1))
+            .contentShape(Capsule())
+        }
+        .buttonStyle(PressScaleButtonStyle())
     }
 }
