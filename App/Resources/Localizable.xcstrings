@@ -6700,6 +6700,57 @@
           }
         }
       }
+    },
+    "Names can only have letters, spaces, hyphens, apostrophes and dots. No emoji, numbers or symbols.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামে শুধু অক্ষর, স্পেস, হাইফেন, অ্যাপোস্ট্রফি আর ডট থাকতে পারে। ইমোজি, সংখ্যা বা চিহ্ন নয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Names can only have letters, spaces, hyphens, apostrophes and dots. No emoji, numbers or symbols."
+          }
+        }
+      }
+    },
+    "Keep names to %lld characters or fewer.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম %lld অক্ষরের মধ্যে রাখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep names to %lld characters or fewer."
+          }
+        }
+      }
+    },
+    "%@ wasn't added. Names can't have emoji, numbers or symbols. Add them with Type a name.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ যোগ হয়নি। নামে ইমোজি, সংখ্যা বা চিহ্ন থাকতে পারে না। নাম লিখুন দিয়ে যোগ করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wasn't added. Names can't have emoji, numbers or symbols. Add them with Type a name."
+          }
+        }
+      }
     }
   }
 }

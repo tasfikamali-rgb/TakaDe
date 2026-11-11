@@ -29,8 +29,11 @@ struct AccountView: View {
                 Text("Your name")
                     .foregroundStyle(Color.inkMuted)
             } footer: {
-                Text("This is how you appear in new groups, exactly as you type it")
-                    .foregroundStyle(Color.inkMuted)
+                VStack(alignment: .leading, spacing: Spacing.xxs) {
+                    NameRuleText(myName)
+                    Text("This is how you appear in new groups, exactly as you type it")
+                        .foregroundStyle(Color.inkMuted)
+                }
             }
             if account.isSignedIn {
                 signedInSections

@@ -246,7 +246,7 @@ final class AccountModel {
 
     func rename(to name: String) async throws {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard var profile, !trimmed.isEmpty, trimmed != profile.displayName else { return }
+        guard var profile, PersonName.isValid(trimmed), trimmed != profile.displayName else { return }
         profile.displayName = trimmed
         try await save(profile)
         if let supabase, supabase.session != nil, profile.accountID != nil {

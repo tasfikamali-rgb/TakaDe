@@ -148,6 +148,11 @@ struct GroupDetailContent: View {
     private func checkNewMember() {
         let name = newMemberName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { newMemberName = ""; return }
+        if let problem = NameRule.message(for: name) {
+            errorMessage = problem
+            newMemberName = ""
+            return
+        }
         let taken = group.members.contains {
             $0.displayName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name.lowercased()
         }
@@ -176,7 +181,9 @@ struct GroupDetailContent: View {
         var seen = existing
         var skipped: [String] = []
         var toAdd: [String] = []
-        for name in names {
+        // Contact names with emoji or symbols are left out; they can be typed by hand.
+        let notNames = names.filter { !PersonName.isValid($0) }
+        for name in names where PersonName.isValid(name) {
             let key = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             if seen.contains(key) { skipped.append(name) } else { seen.insert(key); toAdd.append(name) }
         }
@@ -189,6 +196,8 @@ struct GroupDetailContent: View {
             }
             if !skipped.isEmpty {
                 errorMessage = String(localized: "\(skipped.formatted(.list(type: .and))) is already in this group.", bundle: .appLanguage)
+            } else if !notNames.isEmpty {
+                errorMessage = String(localized: "\(notNames.formatted(.list(type: .and))) wasn't added. Names can't have emoji, numbers or symbols. Add them with Type a name.", bundle: .appLanguage)
             } else {
                 errorMessage = nil
             }

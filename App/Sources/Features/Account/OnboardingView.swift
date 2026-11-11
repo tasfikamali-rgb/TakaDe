@@ -285,6 +285,8 @@ struct OnboardingView: View {
                 .padding(Spacing.m)
                 .frame(minHeight: 56)
                 .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+            NameRuleText(name)
+                .font(AppFont.caption)
             Text("This is how you appear in groups, exactly as you type it")
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
@@ -295,7 +297,7 @@ struct OnboardingView: View {
             Spacer(minLength: Spacing.l)
             Button(asksForMethod ? LocalizedStringKey("Continue") : LocalizedStringKey("Start splitting"), action: nameDone)
                 .buttonStyle(PillButtonStyle())
-                .disabled(trimmedName.isEmpty || saving)
+                .disabled(!PersonName.isValid(trimmedName) || saving)
             Button("Back", action: backToWelcome)
                 .font(AppFont.label)
                 .foregroundStyle(Color.inkMuted)
@@ -333,7 +335,7 @@ struct OnboardingView: View {
     }
 
     private func nameDone() {
-        guard !trimmedName.isEmpty else { return }
+        guard PersonName.isValid(trimmedName) else { return }
         if asksForMethod { go(to: .method) } else { finish() }
     }
 
@@ -374,7 +376,7 @@ struct OnboardingView: View {
     }
 
     private func finish() {
-        guard !trimmedName.isEmpty, !saving else { return }
+        guard PersonName.isValid(trimmedName), !saving else { return }
         saving = true
         Task {
             do {

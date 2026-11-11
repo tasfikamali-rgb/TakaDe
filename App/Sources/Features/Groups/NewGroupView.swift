@@ -58,8 +58,11 @@ struct NewGroupView: View {
                         .submitLabel(.next)
                         .returnMovesOn($myName) { focus = others.first.map { Field.other($0.id) } }
                 } footer: {
-                    Text("Names are kept exactly as you type them")
-                        .foregroundStyle(Color.inkMuted)
+                    VStack(alignment: .leading, spacing: Spacing.xxs) {
+                        NameRuleText(myName)
+                        Text("Names are kept exactly as you type them")
+                            .foregroundStyle(Color.inkMuted)
+                    }
                 }
                 Section {
                     ForEach($others) { $person in
@@ -76,6 +79,7 @@ struct NewGroupView: View {
                         .foregroundStyle(Color.inkMuted)
                 } footer: {
                     Group {
+                        NameRuleText(names: cleanedOthers)
                         if let duplicate = duplicateName {
                             Text("Two people are called \(duplicate). Add something to tell them apart, like an initial.")
                         }
@@ -118,6 +122,8 @@ struct NewGroupView: View {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && !myName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && !cleanedOthers.isEmpty
+            && PersonName.isValid(myName)
+            && cleanedOthers.allSatisfy(PersonName.isValid)
     }
 
     private func addRow() { others.append(DraftName()) }
