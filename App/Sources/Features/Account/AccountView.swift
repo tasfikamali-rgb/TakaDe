@@ -48,10 +48,10 @@ struct AccountView: View {
         .navigationTitle("Account")
         .refreshable { await account.refreshAccount() }
         .sheet(item: $flow) { mode in
-            AccountFlowSheet(mode: mode) { flow = nil }
+            AccountFlowSheet(mode: mode) { flow = nil }.rebuildsOnDynamicType()
         }
         .sheet(isPresented: $addingMethod) {
-            AccountFlowSheet(mode: .link) { addingMethod = false }
+            AccountFlowSheet(mode: .link) { addingMethod = false }.rebuildsOnDynamicType()
         }
         .confirmationDialog("Delete your account?", isPresented: $confirmingDelete, titleVisibility: .visible) {
             Button("Delete account, keep my groups", role: .destructive) { deleteAccount(eraseData: false) }

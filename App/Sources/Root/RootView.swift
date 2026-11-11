@@ -69,7 +69,7 @@ struct RootView: View {
         .animation(Motion.standard, value: chrome.hidesTabBar)
         .environment(chrome)
         .fullScreenCover(isPresented: Binding(get: { account.needsOnboarding }, set: { _ in })) {
-            OnboardingView()
+            OnboardingView().rebuildsOnDynamicType()
         }
         .overlay(alignment: .top) {
             if let error = model.loadError {

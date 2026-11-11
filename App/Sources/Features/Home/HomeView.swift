@@ -52,7 +52,7 @@ struct HomeView: View {
             syncPath(selection)
             updateChrome()
         }
-        .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open) }
+        .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open).rebuildsOnDynamicType() }
     }
 
     /// Inside a group on a phone, the group's own "Settle up" takes the bottom edge.
