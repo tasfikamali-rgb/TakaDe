@@ -12,3 +12,4 @@ Config/Google.local.xcconfig
 App/Info.plist
 build/
 screenshots-local/
+Config/Signing.local.xcconfig
