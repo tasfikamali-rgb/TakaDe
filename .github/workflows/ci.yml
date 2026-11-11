@@ -1,26 +1,92 @@
 name: CI
 
+# Fast checks on every push. Jobs run in parallel; a new push cancels the
+# previous run for the same branch. See docs/testing.md.
+
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_INSTALL_CLEANUP: "1"
 
 jobs:
-  test:
+  core-tests:
+    name: Ledger and storage tests
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
-      - name: Ledger and storage tests
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: Packages/TakaDeKit/.build
+          key: spm-core-${{ runner.os }}-xcode16.4-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}-${{ hashFiles('Packages/TakaDeKit/Sources/**', 'Packages/TakaDeKit/Tests/**') }}
+          restore-keys: |
+            spm-core-${{ runner.os }}-xcode16.4-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}-
+      - name: swift test
         working-directory: Packages/TakaDeKit
-        run: swift test
-      - name: Generate Xcode project
-        run: brew install xcodegen && xcodegen generate
-      - name: Build app for simulator
+        run: swift test --parallel
+
+  store-check-source:
+    name: App Store readiness (source)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/ci/store_check.py
+
+  app:
+    name: Build app, store check, accessibility audit
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
+      - name: Install XcodeGen and generate project
+        run: brew install xcodegen && xcodegen generate --quiet
+      - name: Boot simulator
+        id: sim
+        run: echo "udid=$(scripts/ci/boot-simulator.sh 'iPhone 16')" >> "$GITHUB_OUTPUT"
+      - name: Build app and UI tests
         run: |
-          xcodebuild build \
+          xcodebuild build-for-testing \
             -project TakaDe.xcodeproj -scheme TakaDe \
-            -destination 'generic/platform=iOS Simulator' \
-            -quiet CODE_SIGNING_ALLOWED=NO
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            -clonedSourcePackagesDirPath build/SourcePackages \
+            -quiet
+      - name: App Store readiness (built app)
+        run: |
+          app=$(find build/DerivedData/Build/Products -maxdepth 2 -name TakaDe.app -path '*iphonesimulator*' | head -1)
+          python3 scripts/ci/store_check.py --app "$app"
+      - name: Accessibility audit and launch tests
+        run: |
+          xcodebuild test-without-building \
+            -project TakaDe.xcodeproj -scheme TakaDe \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            -resultBundlePath build/UITests.xcresult \
+            -quiet
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: build/UITests.xcresult
+          retention-days: 7

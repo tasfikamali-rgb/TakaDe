@@ -1,0 +1,74 @@
+# Testing TakaDe
+
+You don't need a simulator on your Mac to see the app working. Every pull request runs
+the checks below on GitHub's Mac machines, in parallel, and posts screenshots.
+
+## What runs on every pull request
+
+| Check | Workflow / job | What it catches |
+|---|---|---|
+| Ledger and storage tests | `CI` / Ledger and storage tests | Money maths, splits, rounding, balances, settlement states, SQLite |
+| Store readiness (source) | `CI` / App Store readiness | Privacy manifest, permission strings, icon, iPad orientations, Bengali coverage (runs on Linux in seconds) |
+| Build + store readiness (app) | `CI` / Build app… | The same checks against the *built* app, e.g. the manifest really is bundled |
+| Accessibility audit | `CI` / Build app… | Apple's own audit on the main screens: contrast, labels, touch-target size, Dynamic Type, clipped text; launch at the largest text size and in Bengali |
+| UI flows + screenshots | `UI flows and screenshots` | Creates a group, adds an expense with the keypad, opens settle up, switches language; on iPhone 16 and iPad Pro 13-inch, light and dark |
+
+### Getting the screenshots
+
+Open the pull request → **Checks** → *UI flows and screenshots* → **Summary** → scroll to
+**Artifacts** → download `screenshots-iphone-16` or `screenshots-ipad-pro-13-inch`.
+
+### Speed
+
+- Jobs run side by side instead of one after another.
+- Swift packages are cached between runs.
+- A new push cancels the run that was still going for the same branch.
+- Store checks on source run on Linux, which starts much faster than macOS.
+
+GitHub bills macOS minutes at 10× Linux minutes on private repositories. If the free
+allowance runs low, the UI-flows workflow can be limited to `workflow_dispatch` (run by hand).
+
+## Trying it on your own iPhone, today, with no download
+
+Xcode can install straight onto an iPhone over a cable using a free Apple ID; no
+simulator is needed:
+
+1. `brew install xcodegen && xcodegen generate`, then open `TakaDe.xcodeproj`.
+2. Plug in the iPhone, trust the Mac, and turn on **Developer Mode** on the phone
+   (Settings → Privacy & Security).
+3. In Xcode: TakaDe target → Signing & Capabilities → Team → add your Apple ID.
+   Change the bundle ID if Xcode says it's taken.
+4. Pick the iPhone at the top and press Run.
+
+Free signing expires after 7 days; just run again.
+
+## Later, needs accounts (see decisions-needed.md, section 7)
+
+- **TestFlight** (Apple Developer Program): send builds to your and testers' phones
+  without a cable. A GitHub Action can upload on every merge to `main`.
+- **Google Play internal testing + pre-launch report** (Play Console): every upload is
+  automatically installed and crawled on a range of real Android phones, with crash,
+  accessibility and security reports. This is the closest thing to "will Play accept it".
+- **Firebase Test Lab / BrowserStack** if we need specific real devices (foldables, older
+  Androids) beyond what emulators give us. Paid beyond small free tiers.
+
+The Maestro flows in `maestro/` are written to run on Android too once that app exists,
+so the same journeys gate both platforms.
+
+## Before submitting to the stores
+
+Automated checks reduce rejections; they don't guarantee approval. Things only a person
+can do, re-checked at submission time against Apple's and Google's current rules:
+
+- [ ] App icon and store screenshots (the CI screenshots are a starting point).
+- [ ] App Store privacy label and Play Data safety form match the privacy manifest.
+- [ ] Export compliance answer (decisions-needed.md §7).
+- [ ] Bengali strings reviewed by a native speaker (the store check counts what's left).
+- [ ] Privacy policy URL (required by both stores, needs counsel-reviewed text).
+- [ ] Review notes explaining that TakaDe records who owes whom and does not move money;
+      "settled" is reported by people, not verified by bKash/upay.
+- [ ] Test on at least one real iPhone and one lower-end Android phone.
+- [ ] Run `scripts/ci/store_check.py --app <built app> --release`; it must pass.
+
+Android-specific checks (target API level, 16 KB page size, Data safety, the Play
+pre-launch report) get added when the Android app is started.

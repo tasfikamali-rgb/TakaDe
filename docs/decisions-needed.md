@@ -31,3 +31,14 @@ needs disclosure and a processor review). **Decided 2026-11-11:** on-device (ADR
 
 ## 6. Brand
 Product name spelling (TakaDe), logo and app icon. The icon slot is currently empty.
+
+## 7. Store accounts and release checks (blocks: testing on real phones, publishing)
+- **Apple Developer Program** (US$99/year) for TestFlight and the App Store, and
+  **Google Play Console** (US$25 once) for internal testing, the pre-launch report and Play.
+  Decide whose name/entity owns them; it shows on the store listing.
+- **Export compliance:** whether the app uses non-exempt encryption. Today it only uses the
+  operating system's encryption, which is usually exempt, but the owner (with advice if
+  needed) should confirm before we set `ITSAppUsesNonExemptEncryption`.
+- **App icon** 1024×1024 (see section 6). CI flags it as a release blocker.
+- **Privacy answers:** the App Store privacy label and Play Data safety form must match
+  `App/Resources/PrivacyInfo.xcprivacy` ("no data collected") while the app stays local-only.

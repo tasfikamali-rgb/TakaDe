@@ -1,0 +1,20 @@
+# The in-app language selector switches the interface to Bengali.
+appId: app.takade.ios
+name: Switch to Bengali
+tags:
+  - smoke
+  - localization
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "No groups yet"
+    timeout: 20000
+- tapOn: "Profile"
+- takeScreenshot: ${OUT}/08-profile-en
+- tapOn: "বাংলা"
+# The selector must change the UI without a restart. "Profile" should be gone.
+- assertNotVisible: "Profile"
+- takeScreenshot: ${OUT}/09-profile-bn
+- tapOn: "English"
+- assertVisible: "Profile"

@@ -1,0 +1,98 @@
+name: UI flows and screenshots
+
+# Drives the real app with Maestro on an iPhone and an iPad simulator, in light
+# and dark mode, and uploads the screenshots. Download them from the run page
+# (Artifacts) instead of installing a simulator locally. See docs/testing.md.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ui-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_INSTALL_CLEANUP: "1"
+
+jobs:
+  build:
+    name: Build simulator app
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
+      - run: scripts/ci/build-sim-app.sh
+      # Tar keeps the executable bit, which upload-artifact drops.
+      - run: tar -czf build/TakaDe.app.tgz -C build TakaDe.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TakaDe-simulator-app
+          path: build/TakaDe.app.tgz
+          retention-days: 7
+
+  flows:
+    name: Maestro on ${{ matrix.device }}
+    needs: build
+    runs-on: macos-15
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ["iPhone 16", "iPad Pro 13-inch"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+      - uses: actions/download-artifact@v4
+        with:
+          name: TakaDe-simulator-app
+          path: build
+      - run: tar -xzf build/TakaDe.app.tgz -C build
+      - name: Install Maestro
+        run: |
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Boot simulator and install app
+        id: sim
+        run: |
+          udid=$(scripts/ci/boot-simulator.sh "${{ matrix.device }}")
+          xcrun simctl install "$udid" build/TakaDe.app
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          echo "slug=$(echo '${{ matrix.device }}' | tr ' A-Z' '-a-z')" >> "$GITHUB_OUTPUT"
+      - name: Flows in light mode
+        run: |
+          maestro --version
+          xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance light
+          out="maestro-results/${{ steps.sim.outputs.slug }}-light"
+          mkdir -p "$out"
+          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" \
+            --format junit --output "$out/report.xml" maestro/flows
+      - name: Flows in dark mode
+        if: success() || failure()
+        run: |
+          xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance dark
+          out="maestro-results/${{ steps.sim.outputs.slug }}-dark"
+          mkdir -p "$out"
+          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" \
+            --format junit --output "$out/report.xml" maestro/flows
+      - name: Collect Maestro debug output
+        if: failure()
+        run: cp -R "$HOME/.maestro/tests" maestro-results/debug 2>/dev/null || true
+      - name: Upload screenshots
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ steps.sim.outputs.slug }}
+          path: maestro-results
+          retention-days: 14

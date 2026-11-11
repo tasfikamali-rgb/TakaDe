@@ -13,3 +13,4 @@ App/Resources/Fonts/*.otf
 App/Info.plist
 build/
 screenshots-local/
+maestro-results/
