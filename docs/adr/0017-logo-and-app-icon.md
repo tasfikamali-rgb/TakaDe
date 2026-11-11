@@ -10,7 +10,7 @@ The app icon slot was empty, which blocks App Store upload. The brand uses one a
 - iOS app icon is one 1024×1024 universal image with light, dark and tinted appearances in `AppIcon.appiconset`. Light: ink on lime. Dark: lime on `#0B0B0B`. Tinted: white on black.
 - The logo is "৳akade": the split ৳ replaces the t, followed by "akade" in Inter Display Bold (Sabit's pick from four wordmarks). Sabit asked for an edgier, more unique logo; italic, sparkle, halftone and glow ideas from the references were dropped as template looks.
 - Android adaptive, monochrome and legacy launcher icons and the Google Play 512 px icon are prepared in `docs/brand/android/` for the Kotlin app.
-- On a cold launch the launch screen shows the whole ৳, and a short splash cuts it into the logo before fading to the app (Reduce Motion: fade only).
+- On a cold launch the launch screen shows the whole ৳, and a short splash cuts it into the logo before fading to the app (Reduce Motion: fade only). The splash also plays each time the app comes back from the background (Sabit, 2026-11-11), but not after Control Center or a notification pull.
 - Source SVGs live in `docs/brand/`, with usage rules in its README.
 
 ## Consequences

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Plays once on a cold launch. It starts exactly like the static launch screen (the whole
+/// Plays on a cold launch and each time the app comes back from the background (TakaDeApp). It starts exactly like the static launch screen (the whole
 /// taka sign on `launchBackground`, 96 pt, centred on the screen), cuts the sign in two with
 /// a light tap, then fades away to the app. About 0.9 s; the app loads underneath meanwhile.
 /// With Reduce Motion on, the cut is skipped and the screen just fades.
