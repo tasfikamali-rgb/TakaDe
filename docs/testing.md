@@ -97,6 +97,7 @@ can do, re-checked at submission time against Apple's and Google's current rules
       "settled" is reported by people, not verified by bKash/upay.
 - [ ] Test on at least one real iPhone and one lower-end Android phone.
 - [ ] Run `scripts/ci/store_check.py --app <built app> --release`; it must pass.
+- [ ] Make the GitHub repo private again (it was made public for free CI minutes on 2026-11-11).
 
 Android-specific checks (target API level, 16 KB page size, Data safety, the Play
 pre-launch report) get added when the Android app is started.
