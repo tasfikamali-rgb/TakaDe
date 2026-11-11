@@ -34,7 +34,9 @@ final class GoogleSignInService {
     /// Throws `CancellationError` if the person closes the sheet. `nonce` (the SHA-256 of a
     /// raw nonce) goes into the ID token, so the sign-in service can check the token was
     /// made for this request.
-    func signIn(nonce: String? = nil) async throws -> Identity {
+    /// `includeProfile` false asks Google for the email only, so no name or picture reaches
+    /// the sign-in service in the ID token.
+    func signIn(nonce: String? = nil, includeProfile: Bool = true) async throws -> Identity {
         let verifier = Self.randomURLSafe(32)
         let challenge = Self.base64URL(Data(SHA256.hash(data: Data(verifier.utf8))))
         let state = Self.randomURLSafe(16)
@@ -44,7 +46,7 @@ final class GoogleSignInService {
             .init(name: "client_id", value: config.clientID),
             .init(name: "redirect_uri", value: config.redirectURI),
             .init(name: "response_type", value: "code"),
-            .init(name: "scope", value: "openid email profile"),
+            .init(name: "scope", value: includeProfile ? "openid email profile" : "openid email"),
             .init(name: "code_challenge", value: challenge),
             .init(name: "code_challenge_method", value: "S256"),
             .init(name: "state", value: state),

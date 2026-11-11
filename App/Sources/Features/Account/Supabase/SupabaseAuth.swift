@@ -45,9 +45,9 @@ final class SupabaseAuth {
     /// Sends a 6-digit code. When signing in (`create == false`) no account is made, and the
     /// caller shows the same message either way, so nobody learns whether an email has an
     /// account.
-    func sendEmailCode(to email: String, create: Bool, name: String?) async throws {
-        var body: [String: Any] = ["email": email, "create_user": create]
-        if let name, create { body["data"] = ["name": name] }
+    /// No name goes with it: the name stays on the phone (Sabit, 2026-11-11).
+    func sendEmailCode(to email: String, create: Bool) async throws {
+        let body: [String: Any] = ["email": email, "create_user": create]
         do {
             _ = try await post("otp", body: body)
         } catch Failure.server(let status, _) where !create && (400...422).contains(status) {
@@ -74,14 +74,10 @@ final class SupabaseAuth {
         return (raw, hashed)
     }
 
-    func signInWithApple(idToken: String, rawNonce: String, name: String?) async throws -> AuthUser {
+    /// Apple's name, when it shares one, stays on the phone; it isn't sent here.
+    func signInWithApple(idToken: String, rawNonce: String) async throws -> AuthUser {
         let json = try await post("token?grant_type=id_token", body: ["provider": "apple", "id_token": idToken, "nonce": rawNonce])
-        var user = try adopt(json)
-        // Apple shares the name only the first time; keep it on the account.
-        if let name, user.name == nil {
-            user = (try? await updateUser(["data": ["name": name]])) ?? user
-        }
-        return user
+        return try adopt(json)
     }
 
     /// Links an Apple sign-in to the account that's signed in now.
@@ -142,9 +138,12 @@ final class SupabaseAuth {
         return user
     }
 
-    /// Keeps the person's name on the account, so another phone shows it after signing in.
-    func setName(_ name: String) async throws -> AuthUser {
-        try await updateUser(["data": ["name": name]])
+    /// The account keeps no name or picture (Sabit, 2026-11-11): names stay on the phone
+    /// and in the groups. Clears what earlier versions, or Google's profile, put there.
+    nonisolated static let personalMetadataKeys = ["name", "full_name", "picture", "avatar_url"]
+
+    func clearPersonalMetadata() async throws -> AuthUser {
+        try await updateUser(["data": Dictionary(uniqueKeysWithValues: Self.personalMetadataKeys.map { ($0, NSNull()) })])
     }
 
     /// Adds an email address to the account. A code goes to the new address; confirm it
@@ -294,8 +293,10 @@ final class SupabaseAuth {
             return AuthUser.Identity(identityID: item["identity_id"] as? String ?? item["id"] as? String, id: providerID,
                                      provider: provider, email: data["email"] as? String, createdAt: date(item["created_at"]))
         }
+        let hasPersonal = personalMetadataKeys.contains { (metadata[$0] as? String)?.isEmpty == false }
         return AuthUser(id: id, email: json["email"] as? String, name: name?.isEmpty == false ? name : nil,
-                        createdAt: date(json["created_at"]), lastSignInAt: date(json["last_sign_in_at"]), identities: identities)
+                        createdAt: date(json["created_at"]), lastSignInAt: date(json["last_sign_in_at"]), identities: identities,
+                        hasPersonalMetadata: hasPersonal)
     }
 
     /// Supabase writes times like 2026-11-11T22:08:44.123456Z; the fraction is dropped.

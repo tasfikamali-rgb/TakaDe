@@ -42,6 +42,9 @@ struct AuthUser: Codable, Sendable {
     let createdAt: Date?
     let lastSignInAt: Date?
     let identities: [Identity]
+    /// The account still has a name or picture in its metadata, from before TakaDe stopped
+    /// sending them (2026-11-11). Optional so sessions saved earlier still decode.
+    var hasPersonalMetadata: Bool?
 
     /// True when this sign-in just made the account, so "Sign in" can say no account was
     /// found and ask for a name.

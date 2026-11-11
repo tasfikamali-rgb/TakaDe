@@ -89,8 +89,11 @@ final class AccountModel {
         else { throw SupabaseAuth.Failure.badResponse }
         let name = credential.fullName.map { PersonNameComponentsFormatter.localizedString(from: $0, style: .default, options: []) }
             .flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : $0 }
-        let user = try await supabase.signInWithApple(idToken: token, rawNonce: rawNonce, name: name)
-        return try await adopt(user)
+        let user = try await supabase.signInWithApple(idToken: token, rawNonce: rawNonce)
+        var outcome = try await adopt(user)
+        // Apple shares the name only the first time; it's used here, on the phone only.
+        if outcome.name == nil { outcome.name = name }
+        return outcome
     }
 
     /// Google or Microsoft through the browser sheet. Google uses the app's own client and
@@ -98,7 +101,7 @@ final class AccountModel {
     func signIn(with provider: SignInProvider) async throws -> SignInOutcome {
         if let supabase, provider == .google, let google {
             let nonce = SupabaseAuth.makeNonce()
-            let identity = try await google.signIn(nonce: nonce.hashed)
+            let identity = try await google.signIn(nonce: nonce.hashed, includeProfile: false)
             return try await adopt(supabase.signInWithGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
         }
         if let supabase, let oauth = SupabaseAuth.Provider(provider) {
@@ -110,9 +113,9 @@ final class AccountModel {
         return SignInOutcome(name: identity.name, isNew: false)
     }
 
-    func sendEmailCode(to email: String, creating: Bool, name: String?) async throws {
+    func sendEmailCode(to email: String, creating: Bool) async throws {
         guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
-        try await supabase.sendEmailCode(to: email, create: creating, name: name)
+        try await supabase.sendEmailCode(to: email, create: creating)
     }
 
     func verifyEmailCode(_ code: String, email: String) async throws -> SignInOutcome {
@@ -124,7 +127,7 @@ final class AccountModel {
     func link(_ provider: SignInProvider) async throws {
         if let supabase, provider == .google, let google {
             let nonce = SupabaseAuth.makeNonce()
-            let identity = try await google.signIn(nonce: nonce.hashed)
+            let identity = try await google.signIn(nonce: nonce.hashed, includeProfile: false)
             _ = try await adopt(supabase.linkGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
             return
         }
@@ -172,13 +175,15 @@ final class AccountModel {
             profile.accountEmail = user.email
             profile.account = nil
             try await save(profile)
-            // A new account made from the Account tab takes the name already on this phone.
-            if user.name == nil { _ = try? await supabase?.setName(profile.displayName) }
         } else {
             pendingUser = user
         }
         try await store.replaceAccountIdentities(identities)
         self.identities = identities
+        // Names and pictures stay off the server; clear any an older version left there.
+        if user.hasPersonalMetadata == true, let supabase {
+            Task { _ = try? await supabase.clearPersonalMetadata() }
+        }
         return SignInOutcome(name: user.name, isNew: user.isNew)
     }
 
@@ -239,10 +244,6 @@ final class AccountModel {
         try await save(profile)
         pendingLinked = nil
         pendingUser = nil
-        // Keep the name on the account too, so another phone shows it after signing in.
-        if let supabase, supabase.session != nil, profile.accountID != nil {
-            _ = try? await supabase.setName(name)
-        }
     }
 
     /// Drops a sign-in made during first launch, when the person goes back.
@@ -261,9 +262,6 @@ final class AccountModel {
         guard var profile, PersonName.isValid(trimmed), trimmed != profile.displayName else { return }
         profile.displayName = trimmed
         try await save(profile)
-        if let supabase, supabase.session != nil, profile.accountID != nil {
-            _ = try? await supabase.setName(trimmed)
-        }
     }
 
     /// Forgets the sign-in on this phone. Groups and the name stay.

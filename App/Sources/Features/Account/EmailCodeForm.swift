@@ -100,7 +100,7 @@ struct EmailCodeForm: View {
                 if mode == .link {
                     try await account.addEmail(address)
                 } else {
-                    try await account.sendEmailCode(to: address, creating: mode == .create, name: name)
+                    try await account.sendEmailCode(to: address, creating: mode == .create)
                 }
                 sentTo = address
                 code = ""
