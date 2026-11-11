@@ -115,6 +115,7 @@ final class AppLock {
         else { return }
         let window = UIWindow(windowScene: scene)
         window.windowLevel = .alert + 1
+        window.overrideUserInterfaceStyle = AppAppearance.stored.interfaceStyle
         let host = UIHostingController(rootView: AppLockScreen(lock: self))
         host.view.backgroundColor = .clear
         window.rootViewController = host

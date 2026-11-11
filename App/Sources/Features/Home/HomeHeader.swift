@@ -10,6 +10,10 @@ struct HomeHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
+            HStack {
+                Spacer()
+                QuickSettingsMenu()
+            }
             if hasGroups {
             HStack {
                 Text(BalanceState(total).totalLabel)
@@ -35,7 +39,7 @@ struct HomeHeader: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Spacing.screenMargin)
-        .padding(.top, Spacing.xxl)
+        .padding(.top, Spacing.xs)
         .padding(.bottom, Spacing.huge + Radius.sheet)
         .background(Color.header)
     }
