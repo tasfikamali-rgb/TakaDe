@@ -5,6 +5,7 @@ import SwiftUI
 /// an unfolded phone) the system tab bar returns so the platform can adapt it.
 struct RootView: View {
     @Environment(AppModel.self) private var model
+    @Environment(AccountModel.self) private var account
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var tab: AppTab = .home
@@ -42,6 +43,9 @@ struct RootView: View {
         }
         .animation(Motion.standard, value: chrome.hidesTabBar)
         .environment(chrome)
+        .fullScreenCover(isPresented: Binding(get: { account.needsOnboarding }, set: { _ in })) {
+            OnboardingView()
+        }
         .overlay(alignment: .top) {
             if let error = model.loadError {
                 ErrorBanner(message: error)
@@ -51,5 +55,6 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView().environment(AppModel.preview())
+    let app = AppModel.preview()
+    return RootView().environment(app).environment(AccountModel(store: app.profiles, google: nil))
 }
