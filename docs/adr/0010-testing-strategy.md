@@ -1,4 +1,4 @@
-# 9. Testing that doesn't need a local simulator
+# 10. Testing that doesn't need a local simulator
 
 Status: Accepted (2026-11-11)
 

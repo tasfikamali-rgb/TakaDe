@@ -230,6 +230,21 @@ def check_strings(r: Report) -> None:
         r.ok("All strings have reviewed Bengali.")
 
 
+def check_font_files(info: dict, r: Report) -> None:
+    """Fonts listed in UIAppFonts must exist under App/Resources/Fonts.
+
+    Ranade and Author are fetched by scripts/fetch-fonts.sh (not committed, licence),
+    so on a fresh checkout they are a release blocker; the built-app check turns a
+    missing font into an error because CI fetches them before building.
+    """
+    fonts_dir = RESOURCES / "Fonts"
+    missing = [f for f in info.get("UIAppFonts", []) if not list(fonts_dir.rglob(Path(f).name))]
+    if missing:
+        r.blocker("Fonts not in App/Resources/Fonts: " + ", ".join(missing) + " (run scripts/fetch-fonts.sh).")
+    elif info.get("UIAppFonts"):
+        r.ok("All UIAppFonts files present in App/Resources/Fonts.")
+
+
 def check_built_app(app: Path, src: str, r: Report) -> None:
     info_path = app / "Info.plist"
     if not info_path.exists():
@@ -244,8 +259,9 @@ def check_built_app(app: Path, src: str, r: Report) -> None:
     else:
         r.ok("Privacy manifest is bundled in the app.")
     for font in info.get("UIAppFonts", []):
-        if not list(app.rglob(font)):
-            r.blocker(f"UIAppFonts lists {font} but it is not in the app (run scripts/fetch-fonts.sh).")
+        if not list(app.rglob(Path(font).name)):
+            r.error(f"UIAppFonts lists {font} but it is not in the built app (run scripts/fetch-fonts.sh "
+                    "before building; the app would silently fall back to the system font).")
     if not list(app.rglob("bn.lproj")):
         r.error("No bn.lproj in the built app, so Bengali strings were not compiled in.")
 
@@ -266,6 +282,7 @@ def main() -> int:
     else:
         info = info_from_project_yml()
         check_info(info, r)
+        check_font_files(info, r)
         check_usage_strings(src, info, r, "project.yml")
 
     gh = os.environ.get("GITHUB_ACTIONS") == "true"

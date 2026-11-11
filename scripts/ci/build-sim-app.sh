@@ -2,6 +2,7 @@
 # Builds TakaDe.app for the iOS Simulator into build/TakaDe.app.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
+[ -f App/Resources/Fonts/Ranade-Medium.otf ] || scripts/fetch-fonts.sh
 command -v xcodegen >/dev/null || HOMEBREW_NO_AUTO_UPDATE=1 brew install xcodegen
 xcodegen generate --quiet
 xcodebuild build \
