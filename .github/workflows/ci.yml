@@ -85,6 +85,11 @@ jobs:
             -derivedDataPath build/DerivedData \
             -resultBundlePath build/UITests.xcresult \
             -quiet
+      - name: Show UI test failures
+        if: failure()
+        run: |
+          xcrun xcresulttool get test-results summary --path build/UITests.xcresult --compact \
+            | python3 scripts/ci/xcresult_failures.py
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
