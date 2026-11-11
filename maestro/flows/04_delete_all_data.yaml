@@ -18,6 +18,12 @@ tags:
 - extendedWaitUntil:
     visible: "Add expense"
     timeout: 10000
+# The tab bar hides inside a group on iPhone, so go back to the list first.
+- runFlow:
+    when:
+      visible: "Back"
+    commands:
+      - tapOn: "Back"
 - tapOn: "Account"
 - scrollUntilVisible:
     element: "Delete all my data"

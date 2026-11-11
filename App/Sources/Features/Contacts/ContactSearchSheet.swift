@@ -44,9 +44,11 @@ struct ContactSearchSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 if state == .ready {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button(selected.isEmpty ? Text("Add") : Text("Add \(selected.count)")) {
+                        Button {
                             onPick(selected)
                             dismiss()
+                        } label: {
+                            selected.isEmpty ? Text("Add") : Text("Add \(selected.count)")
                         }
                         .disabled(selected.isEmpty)
                     }

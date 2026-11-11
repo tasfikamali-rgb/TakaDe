@@ -7,10 +7,10 @@
 
   No tracking. Groups, expenses, payments and receipts stay on the device; receipt
   text is read on the device.
-  Accounts (ADR 0016): with a TakaDe account, the email address, the name the person
-  types and the account's user id are held by TakaDe's sign-in service (Supabase), linked
-  to the person, for account management (App Functionality). Sign-in tokens stay in the
-  Keychain. Without an account, nothing is collected.
+  Accounts (ADR 0016): with a TakaDe account, the email address and the account's user id
+  are held by TakaDe's sign-in service (Supabase), linked to the person, for account
+  management (App Functionality). The name and photo stay on the phone. Sign-in tokens stay
+  in the Keychain. Without an account, nothing is collected.
   If sync, analytics or crash reporting is added, update NSPrivacyCollectedDataTypes and
   the App Store privacy label together.
 -->
