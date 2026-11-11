@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Profile > Your data: what's stored where, export everything, delete everything.
+/// Account > Your data: what's stored where, export everything, delete everything.
 struct YourDataSection: View {
     @Environment(AccountModel.self) private var account
     @Environment(AppModel.self) private var app
@@ -10,7 +10,7 @@ struct YourDataSection: View {
 
     var body: some View {
         Section {
-            Text("Everything stays on this phone, in an encrypted file that unlocks after you first unlock your phone. Nothing is uploaded.")
+            Text("Your groups, expenses and payments stay on this phone, in an encrypted file that unlocks after you first unlock your phone. They're never uploaded.")
                 .font(AppFont.body)
                 .foregroundStyle(Color.inkMuted)
             if let exportURL {

@@ -92,7 +92,7 @@ Take the specific idea from each reference, not the whole look. These are the pa
 | `surface` | `#FFFFFF` | Sheets, cards, keypad keys |
 | `ink` | `#161616` | Primary text |
 | `header` | `#FFFFFF` | Wallet header, nav bar, swipe track. Light in light mode: dark surfaces belong to dark mode only (Sabit, 2026-11-11) |
-| `inkMuted` | `#8A8A8A` | Secondary text, "Available" labels, decimals |
+| `inkMuted` | `#5E5E5E` | Secondary text (5.7:1 on canvas, so it passes WCAG AA for small text), "Available" labels, decimals |
 | `lime` | `#4BE83A` | Active tab circle, success screen, settle up. Never for body text |
 | `lilac` | `#DAD7EE` | Optional soft header tint for group screens |
 | `owed` | `#1F9D55` | "You are owed" amounts (readable green, lime is too light for text) |

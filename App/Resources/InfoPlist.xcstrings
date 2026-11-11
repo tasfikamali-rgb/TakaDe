@@ -44,13 +44,13 @@
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "প্রোফাইলে লক চালু করলে অ্যাপ খুলতে TakaDe Face ID ব্যবহার করে। আপনার মুখের তথ্য iOS-এর কাছেই থাকে।"
+            "value": "সেটিংসে লক চালু করলে অ্যাপ খুলতে TakaDe Face ID ব্যবহার করে। আপনার মুখের তথ্য iOS-এর কাছেই থাকে।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "TakaDe uses Face ID to unlock the app when you turn on the lock in Profile. Your face data stays with iOS."
+            "value": "TakaDe uses Face ID to unlock the app when you turn on the lock in Settings. Your face data stays with iOS."
           }
         }
       }

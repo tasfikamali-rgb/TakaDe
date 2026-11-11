@@ -22,7 +22,17 @@ struct HomeView: View {
                         if let selection {
                             GroupDetailView(groupID: selection)
                         } else {
-                            ContentUnavailableView("Pick a group", systemImage: "person.3", description: Text("Or create one for a trip, a flat or a dinner"))
+                            // With the sidebar collapsed (iPad portrait), this is all a new
+                            // person sees, so it carries its own Create button.
+                            ContentUnavailableView {
+                                Label("Pick a group", systemImage: "person.3")
+                            } description: {
+                                Text("Or create one for a trip, a flat or a dinner")
+                            } actions: {
+                                Button("Create a group", action: showNewGroup)
+                                    .buttonStyle(PillButtonStyle())
+                                    .frame(maxWidth: 320)
+                            }
                         }
                     }
                 }

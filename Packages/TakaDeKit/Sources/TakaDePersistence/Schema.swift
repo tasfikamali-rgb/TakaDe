@@ -116,6 +116,26 @@ enum Schema {
                 t.primaryKey(["group_id", "member_id", "day"])
             }
         }
+        // TakaDe accounts on the sign-in service (docs/adr/0016-accounts-on-supabase.md). The
+        // phone keeps the account id, its email and which sign-ins are linked; tokens stay
+        // in the Keychain. The old provider check allowed only Apple and Google, so the
+        // linked-on-device columns are left as they are and new providers live in
+        // account_identity.
+        migrator.registerMigration("v5_account_identity") { db in
+            try db.alter(table: "local_profile") { t in
+                t.add(column: "account_id", .text)
+                t.add(column: "account_email", .text)
+            }
+            try db.create(table: "account_identity") { t in
+                t.primaryKey("id", .text)
+                t.column("provider", .text).notNull()
+                    .check { ["apple", "google", "microsoft", "email"].contains($0) }
+                t.column("provider_user_id", .text).notNull()
+                t.column("email", .text)
+                t.column("linked_at", .datetime).notNull()
+                t.uniqueKey(["provider", "provider_user_id"])
+            }
+        }
         return migrator
     }
 }

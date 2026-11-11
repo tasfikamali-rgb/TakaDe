@@ -3,7 +3,7 @@ import Observation
 import SwiftUI
 import UIKit
 
-/// Optional Face ID, Touch ID or passcode lock (Profile > Lock). Off by default.
+/// Optional Face ID, Touch ID or passcode lock (Settings > Lock). Off by default.
 ///
 /// When it's on, the ledger is covered whenever TakaDe isn't in front, so the app
 /// switcher shows the cover instead of balances, and it locks once TakaDe goes to the
