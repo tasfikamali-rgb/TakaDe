@@ -2,10 +2,11 @@ import SwiftUI
 
 /// Drag the thumb right to confirm (DESIGN.md section 4.5). Tracks 1:1, rubber-bands past
 /// the end, springs back below 70% unless the flick's projected end crosses it. VoiceOver
-/// users double-tap to confirm instead.
+/// users double-tap to confirm instead. `onConfirm` returns false if the action failed,
+/// and the thumb springs back so the person can try again.
 struct SwipeToConfirm: View {
     let title: String
-    let onConfirm: () -> Void
+    let onConfirm: () async -> Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var offset: CGFloat = 0
@@ -23,8 +24,12 @@ struct SwipeToConfirm: View {
             Text(verbatim: title)
                 .font(AppFont.bodyEmphasis)
                 .foregroundStyle(Color.canvas.opacity(1 - Double(min(offset / maxOffset, 1)) * 0.8))
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .padding(.leading, thumb)
+                .padding(.leading, thumb + inset)
+                .padding(.trailing, Spacing.m)
             Circle()
                 .fill(Color.lime)
                 .overlay(Image(systemName: confirmed ? "checkmark" : "arrow.right").font(.headline).foregroundStyle(Color.onLime))
@@ -33,7 +38,7 @@ struct SwipeToConfirm: View {
                 .offset(x: offset)
                 .gesture(drag)
         }
-        .frame(height: height)
+        .frame(minHeight: height)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { trackWidth = $0 }
         .sensoryFeedback(.success, trigger: confirmed)
         .accessibilityElement(children: .ignore)
@@ -66,10 +71,17 @@ struct SwipeToConfirm: View {
             offset = maxOffset
             confirmed = true
         }
-        onConfirm()
+        Task {
+            if await !onConfirm() {
+                withAnimation(Motion.momentum(reduceMotion: reduceMotion)) {
+                    offset = 0
+                    confirmed = false
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    SwipeToConfirm(title: "Swipe to record ৳ 450.00 paid", onConfirm: {}).padding()
+    SwipeToConfirm(title: "Swipe to record ৳ 450.00 paid", onConfirm: { true }).padding()
 }

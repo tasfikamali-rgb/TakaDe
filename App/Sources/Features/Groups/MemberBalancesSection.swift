@@ -12,13 +12,13 @@ struct MemberBalancesSection: View {
                     Text(verbatim: group.displayName(of: member.id))
                         .font(AppFont.body)
                     Spacer()
-                    BalancePill(net: balances.net(for: member.id))
+                    BalancePill(net: balances.net(for: member.id), isMe: member.isMe)
                 }
             }
             if let me = group.me, let unverified = balances.unverifiedSettled[me.id], !unverified.isZero {
                 HStack(spacing: Spacing.xxs) {
                     Text("Includes payments you recorded that no provider has verified:")
-                    AmountText(money: unverified, font: AppFont.caption, color: .inkMuted)
+                    AmountText(money: unverified, size: .caption, color: .inkMuted)
                 }
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)

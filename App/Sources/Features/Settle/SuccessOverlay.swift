@@ -13,7 +13,7 @@ struct SuccessOverlay: View {
                 Image(systemName: "checkmark")
                     .font(.system(size: 56, weight: .semibold))
                     .accessibilityHidden(true)
-                AmountText(money: amount, font: AppFont.balance, color: .onLime)
+                AmountText(money: amount, size: .balance, color: .onLime, minorColor: .onLime.opacity(0.6))
                 Text(verbatim: message)
                     .font(AppFont.headline)
                     .multilineTextAlignment(.center)

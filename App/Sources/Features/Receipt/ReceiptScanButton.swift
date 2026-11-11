@@ -10,6 +10,7 @@ struct ReceiptScanButton: View {
     @State private var showingCamera = false
     @State private var photo: PhotosPickerItem?
     @State private var suggestion: ReceiptSuggestion?
+    @State private var image: CGImage?
     @State private var isReading = false
     @State private var error: String?
 
@@ -33,7 +34,7 @@ struct ReceiptScanButton: View {
             DocumentScanner(onFinish: scanned, onCancel: closeCamera).ignoresSafeArea()
         }
         .sheet(item: $suggestion) { s in
-            ReceiptReviewView(suggestion: s, onUse: onReviewed)
+            ReceiptReviewView(suggestion: s, image: image, onUse: onReviewed)
         }
         .onChange(of: photo) { _, item in
             guard let item else { return }
@@ -53,7 +54,7 @@ struct ReceiptScanButton: View {
         defer { photo = nil }
         guard let data = try? await item.loadTransferable(type: Data.self),
               let image = UIImage(data: data)?.cgImage else {
-            error = String(localized: "That photo couldn't be opened. Try another one.")
+            error = String(localized: "That photo couldn't be opened. Try another one.", bundle: .appLanguage)
             return
         }
         await recognize([image])
@@ -65,14 +66,15 @@ struct ReceiptScanButton: View {
         do {
             let lines = try await ReceiptTextRecognizer.lines(in: images)
             let result = ReceiptParser.parse(lines: lines)
+            image = images.first
             if result.total == nil {
-                error = String(localized: "No amount found. Try a sharper, flatter photo, or type it in.")
+                error = String(localized: "No amount found. Try a sharper, flatter photo, or type it in.", bundle: .appLanguage)
             } else {
                 error = nil
                 suggestion = result
             }
         } catch {
-            self.error = String(localized: "The receipt couldn't be read. Type the amount instead.")
+            self.error = String(localized: "The receipt couldn't be read. Type the amount instead.", bundle: .appLanguage)
         }
     }
 }

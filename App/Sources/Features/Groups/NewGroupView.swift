@@ -69,7 +69,7 @@ struct NewGroupView: View {
                 dismiss()
                 onCreated(group.id)
             } catch {
-                self.error = String(localized: "The group wasn't saved. Try again.")
+                self.error = String(localized: "The group wasn't saved. Try again.", bundle: .appLanguage)
             }
         }
     }

@@ -4,6 +4,7 @@ import TakaDeCore
 /// OCR is a suggestion. The person checks every field before it fills the expense.
 struct ReceiptReviewView: View {
     let suggestion: ReceiptSuggestion
+    let image: CGImage?
     let onUse: (_ merchant: String?, _ total: Money?, _ date: Date?) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -12,8 +13,9 @@ struct ReceiptReviewView: View {
     @State private var date: Date
     @State private var includesDate: Bool
 
-    init(suggestion: ReceiptSuggestion, onUse: @escaping (String?, Money?, Date?) -> Void) {
+    init(suggestion: ReceiptSuggestion, image: CGImage?, onUse: @escaping (String?, Money?, Date?) -> Void) {
         self.suggestion = suggestion
+        self.image = image
         self.onUse = onUse
         _merchant = State(initialValue: suggestion.merchant ?? "")
         _total = State(initialValue: suggestion.total)
@@ -31,13 +33,24 @@ struct ReceiptReviewView: View {
                         .font(AppFont.body)
                         .foregroundStyle(Color.inkMuted)
                 }
+                if let image {
+                    Section {
+                        Image(decorative: image, scale: 1)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxHeight: 280)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.key, style: .continuous))
+                            .accessibilityLabel(Text("Receipt photo"))
+                    }
+                }
                 Section("Shop") {
                     TextField("Shop name", text: $merchant)
                 }
                 Section("Total") {
                     Picker("Total", selection: $total) {
                         ForEach(suggestion.candidateAmounts.prefix(8), id: \.self) { amount in
-                            AmountText(money: amount, font: AppFont.body).tag(Optional(amount))
+                            AmountText(money: amount, size: .body).tag(Optional(amount))
                         }
                     }
                     .pickerStyle(.inline)

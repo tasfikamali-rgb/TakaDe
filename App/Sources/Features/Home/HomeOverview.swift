@@ -7,11 +7,12 @@ struct HomeOverview: View {
     @Binding var selection: GroupID?
     let onNewGroup: () -> Void
     @State private var total: Money = .zero()
+    @State private var showingGroupPicker = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                HomeHeader(total: total, onNewGroup: onNewGroup)
+                HomeHeader(total: total, hasGroups: !model.groups.isEmpty, onAddExpense: addExpense, onNewGroup: onNewGroup)
                 GroupListSheet(groups: model.groups, selection: $selection, onNewGroup: onNewGroup)
             }
         }
@@ -20,6 +21,9 @@ struct HomeOverview: View {
         }
         .background(Color.canvas)
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showingGroupPicker) { GroupPickerSheet(groups: model.groups) }
         .task(id: model.revision) { total = await model.myTotal() }
     }
+
+    private func addExpense() { showingGroupPicker = true }
 }

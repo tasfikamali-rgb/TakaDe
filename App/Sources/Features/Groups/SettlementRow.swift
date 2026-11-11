@@ -11,7 +11,7 @@ struct SettlementRow: View {
                 Text("\(group.displayName(of: settlement.from)) paid \(group.displayName(of: settlement.to))")
                     .font(AppFont.body)
                 Spacer()
-                AmountText(money: settlement.amount, font: AppFont.body)
+                AmountText(money: settlement.amount, size: .body)
             }
             Text("\(settlement.method.label) · \(settlement.status.explanation)")
                 .font(AppFont.caption)

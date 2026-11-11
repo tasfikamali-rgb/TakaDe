@@ -1,12 +1,13 @@
 import SwiftUI
 import TakaDeCore
 
-/// Renders money with the symbol and decimals smaller and muted (DESIGN.md section 3),
-/// in the digit style the person chose.
+/// Money with a small muted ৳ and decimals beside a large figure (DESIGN.md section 3),
+/// baseline aligned, in the digits the person chose.
 struct AmountText: View {
     let money: Money
-    var font: Font = AppFont.balance
+    var size: AmountSize = .balance
     var color: Color = .ink
+    var minorColor: Color = .inkMuted
     var showsZeroFraction = true
 
     @AppStorage(DigitPreference.storageKey) private var digitPreference: DigitPreference = .automatic
@@ -14,8 +15,10 @@ struct AmountText: View {
 
     var body: some View {
         let f = MoneyFormatter.format(money, digits: digitPreference.resolved(for: locale), showsZeroFraction: showsZeroFraction)
-        Text("\(Text(verbatim: f.sign + f.symbol + "\u{2009}").foregroundStyle(Color.inkMuted))\(Text(verbatim: f.whole).foregroundStyle(color))\(Text(verbatim: f.fraction).foregroundStyle(Color.inkMuted))")
-            .font(font)
+        let symbol = Text(verbatim: f.sign + f.symbol + "\u{2009}").font(size.minor).foregroundStyle(minorColor)
+        let whole = Text(verbatim: f.whole).font(size.main).tracking(size.tracking).foregroundStyle(color)
+        let fraction = Text(verbatim: f.fraction).font(size.minor).foregroundStyle(minorColor)
+        Text("\(symbol)\(whole)\(fraction)")
             .monospacedDigit()
             .contentTransition(.numericText(value: Double(money.minorUnits)))
             .lineLimit(1)

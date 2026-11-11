@@ -8,6 +8,8 @@ struct TakaDeApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                // Rebuild the tree on a language change so every string re-resolves.
+                .id(language)
                 .environment(model)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task { await model.reload() }

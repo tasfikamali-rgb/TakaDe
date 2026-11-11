@@ -50,6 +50,7 @@ struct AddExpenseView: View {
                     .presentationDetents([.large])
             }
             .onAppear(perform: openKeypadIfEmpty)
+            .interactiveDismissDisabled(draft.hasContent)
         }
     }
 
@@ -67,7 +68,7 @@ struct AddExpenseView: View {
                 try await app.save(try draft.makeExpense(), in: draft.group)
                 dismiss()
             } catch {
-                saveError = String(localized: "The expense wasn't saved. Check the amounts and try again.")
+                saveError = String(localized: "The expense wasn't saved. Check the amounts and try again.", bundle: .appLanguage)
             }
         }
     }

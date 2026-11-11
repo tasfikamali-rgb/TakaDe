@@ -15,7 +15,7 @@ struct KeypadDisplay: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
             }
-            AmountText(money: result ?? .zero(), font: AppFont.keypad, color: result == nil ? .inkMuted : .ink)
+            AmountText(money: result ?? .zero(), size: .keypad, color: result == nil ? .inkMuted : .ink)
                 .animation(Motion.standard, value: result)
         }
         .frame(maxWidth: .infinity)

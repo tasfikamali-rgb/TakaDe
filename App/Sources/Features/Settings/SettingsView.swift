@@ -3,9 +3,18 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(DigitPreference.storageKey) private var digits: DigitPreference = .automatic
+    @AppStorage("myDisplayName") private var myName = ""
 
     var body: some View {
         Form {
+            Section {
+                TextField("Your name", text: $myName)
+                    .textContentType(.name)
+            } header: {
+                Text("Your name")
+            } footer: {
+                Text("Used when you create a group")
+            }
             Section("Language") {
                 Picker("Language", selection: $language) {
                     ForEach(AppLanguage.allCases) { option in

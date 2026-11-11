@@ -31,11 +31,11 @@ struct SplitMemberRow: View {
                 Text(verbatim: "%").foregroundStyle(Color.inkMuted)
             case .shares:
                 Stepper(value: $draft[sharesFor: member.id], in: 0...99) {
-                    Text("\(name) · \(draft[sharesFor: member.id]) shares")
+                    Text("\(name) · ^[\(draft[sharesFor: member.id]) share](inflect: true)")
                 }
             }
             if draft.method != .exact, let share = draft.share(for: member.id), !share.isZero {
-                AmountText(money: share, font: AppFont.label, color: .inkMuted)
+                AmountText(money: share, size: .label, color: .inkMuted)
                     .frame(minWidth: 72, alignment: .trailing)
             }
         }
