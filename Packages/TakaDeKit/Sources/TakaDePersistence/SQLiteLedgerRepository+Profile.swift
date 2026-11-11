@@ -55,7 +55,7 @@ extension SQLiteLedgerRepository: ProfileRepository {
         for group in try await self.groups() {
             var handles: [PaymentHandle] = []
             for member in group.members { handles += try await paymentHandles(for: member.id) }
-            groups.append(.init(group: group,
+            groups.append(LedgerExport.GroupData(group: group,
                                 expenses: try await expenses(in: group.id, includeDeleted: true),
                                 settlements: try await settlements(in: group.id),
                                 history: try await history(of: group.id),
