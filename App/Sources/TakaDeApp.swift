@@ -4,6 +4,8 @@ import SwiftUI
 struct TakaDeApp: App {
     @State private var model: AppModel
     @State private var account: AccountModel
+    @State private var lock = AppLock()
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
 
     init() {
@@ -19,10 +21,14 @@ struct TakaDeApp: App {
                 .id(language)
                 .environment(model)
                 .environment(account)
+                .environment(lock)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
                     await account.load()
                     await model.reload()
+                }
+                .onChange(of: scenePhase, initial: true) { _, phase in
+                    lock.scenePhaseChanged(to: phase)
                 }
         }
     }

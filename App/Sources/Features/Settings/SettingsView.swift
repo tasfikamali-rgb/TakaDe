@@ -35,6 +35,7 @@ struct SettingsView: View {
                 .pickerStyle(.segmented)
             }
             AccountSection()
+            AppLockSection()
             YourDataSection()
         }
         .onDisappear(perform: saveName)
@@ -53,4 +54,5 @@ struct SettingsView: View {
     return NavigationStack { SettingsView() }
         .environment(app)
         .environment(AccountModel(store: app.profiles, google: nil))
+        .environment(AppLock())
 }
