@@ -76,3 +76,10 @@ can do, re-checked at submission time against Apple's and Google's current rules
 
 Android-specific checks (target API level, 16 KB page size, Data safety, the Play
 pre-launch report) get added when the Android app is started.
+
+## Maestro Cloud (optional, faster)
+
+The same flows can run on Maestro Cloud's iPhones and Android phones in parallel.
+To turn it on, create a Maestro Cloud project and add two repository secrets
+(GitHub → Settings → Secrets and variables → Actions): `MAESTRO_CLOUD_API_KEY` and
+`MAESTRO_CLOUD_PROJECT_ID`. The `Maestro Cloud` job skips itself until both exist.

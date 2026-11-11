@@ -164,3 +164,34 @@ jobs:
           name: screenshots-iphone-duo
           path: maestro-results
           retention-days: 14
+
+  maestro-cloud:
+    # Optional: runs the same flows on Maestro Cloud's device fleet in parallel.
+    # Does nothing until the owner adds the MAESTRO_CLOUD_API_KEY and
+    # MAESTRO_CLOUD_PROJECT_ID repository secrets (see docs/testing.md).
+    name: Maestro Cloud (when configured)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MAESTRO_CLOUD_API_KEY: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+    steps:
+      - name: Skip when not configured
+        if: env.MAESTRO_CLOUD_API_KEY == ''
+        run: echo "Maestro Cloud isn't set up yet (no MAESTRO_CLOUD_API_KEY secret)." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@v4
+        if: env.MAESTRO_CLOUD_API_KEY != ''
+      - uses: actions/download-artifact@v4
+        if: env.MAESTRO_CLOUD_API_KEY != ''
+        with:
+          name: TakaDe-simulator-app
+          path: build
+      - if: env.MAESTRO_CLOUD_API_KEY != ''
+        run: tar -xzf build/TakaDe.app.tgz -C build
+      - uses: mobile-dev-inc/action-maestro-cloud@v1
+        if: env.MAESTRO_CLOUD_API_KEY != ''
+        with:
+          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          project-id: ${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}
+          app-file: build/TakaDe.app
+          workspace: maestro
