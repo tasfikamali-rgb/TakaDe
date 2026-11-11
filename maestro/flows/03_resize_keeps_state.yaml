@@ -1,6 +1,7 @@
 # HIG (iPhone Duo, iPad, split view): "Keep functionality and the state of
 # elements the same between displays." Rotating changes the width the same way
-# folding does, so the open group and its data must survive it.
+# folding does, so the open group and its data must survive it. A new group has
+# no debts, so it shows "Add expense" (not "Settle up").
 appId: app.takade.ios
 name: Rotate keeps the open group
 tags:
@@ -17,12 +18,12 @@ tags:
 - inputText: "Rishan"
 - tapOn: "Create"
 - extendedWaitUntil:
-    visible: "Settle up"
+    visible: "Add expense"
     timeout: 10000
 - setOrientation: LANDSCAPE_LEFT
 - assertVisible: "Flat"
-- assertVisible: "Settle up"
+- assertVisible: "Add expense"
 - takeScreenshot: ${OUT}/10-group-landscape
 - setOrientation: PORTRAIT
 - assertVisible: "Flat"
-- assertVisible: "Settle up"
+- assertVisible: "Add expense"

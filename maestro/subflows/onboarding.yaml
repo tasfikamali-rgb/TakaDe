@@ -19,6 +19,13 @@ appId: app.takade.ios
       visible: "Start splitting"
     commands:
       - tapOn: "Start splitting"
+# iPad in portrait opens on the empty detail ("Pick a group") with the group list
+# in a collapsed sidebar. Open it so the same steps work on phone and tablet.
+- runFlow:
+    when:
+      visible: "Show Sidebar"
+    commands:
+      - tapOn: "Show Sidebar"
 - extendedWaitUntil:
     visible: "No groups yet"
     timeout: 10000
