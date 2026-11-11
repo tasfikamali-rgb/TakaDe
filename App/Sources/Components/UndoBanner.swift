@@ -9,7 +9,7 @@ struct UndoBanner: View {
         HStack(spacing: Spacing.s) {
             Text(verbatim: message)
                 .font(AppFont.label)
-                .foregroundStyle(Color.canvas)
+                .foregroundStyle(Color.onHeader)
                 .lineLimit(2)
             Spacer(minLength: Spacing.s)
             Button("Undo", action: onUndo)
@@ -18,7 +18,7 @@ struct UndoBanner: View {
                 .frame(minHeight: 44)
         }
         .padding(.horizontal, Spacing.m)
-        .background(Capsule().fill(Color.ink))
+        .background(Capsule().fill(Color.header))
         .accessibilityElement(children: .contain)
     }
 }

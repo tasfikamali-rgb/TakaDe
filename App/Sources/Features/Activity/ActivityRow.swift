@@ -26,6 +26,9 @@ struct ActivityRow: View {
                         .foregroundStyle(Color.inkMuted)
                 } else {
                     AmountText(money: item.expense.total, size: .headline)
+                    Text("total")
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.inkMuted)
                 }
             }
         }

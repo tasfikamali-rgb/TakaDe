@@ -35,7 +35,9 @@ enum AmountSize {
     }
 
     var minor: Font {
-        let size = (points * (isDisplay ? 0.45 : 0.75)).rounded()
+        // Below 16pt the minor part stays full size so it never drops under ~12pt.
+        let ratio: CGFloat = isDisplay ? 0.45 : (points >= 16 ? 0.75 : 1)
+        let size = (points * ratio).rounded()
         return isDisplay ? AppFont.ranade(size, relativeTo: style) : AppFont.author(size, .medium, relativeTo: style)
     }
 
