@@ -20,6 +20,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  MAESTRO_DRIVER_STARTUP_TIMEOUT: "240000"
+  MAESTRO_CLI_NO_ANALYTICS: "1"
   HOMEBREW_NO_AUTO_UPDATE: "1"
   HOMEBREW_NO_INSTALL_CLEANUP: "1"
 
@@ -142,7 +144,17 @@ jobs:
             --format junit --output "$out/report.xml" maestro/flows
       - name: Collect Maestro debug output
         if: failure()
-        run: cp -R "$HOME/.maestro/tests" maestro-results/debug 2>/dev/null || true
+        run: |
+          cp -R "$HOME/.maestro/tests" maestro-results/debug 2>/dev/null || true
+          # What was on screen when it stopped: visible texts and labels.
+          maestro --device "${{ steps.sim.outputs.udid }}" hierarchy 2>/dev/null \
+            | python3 -c 'import json,sys
+          def walk(n):
+              a = n.get("attributes", {})
+              t = a.get("text") or a.get("accessibilityText") or a.get("hintText")
+              if t: print("  -", t[:80])
+              for c in n.get("children", []): walk(c)
+          walk(json.load(sys.stdin))' || true
       - name: Upload screenshots
         if: success() || failure()
         uses: actions/upload-artifact@v4
