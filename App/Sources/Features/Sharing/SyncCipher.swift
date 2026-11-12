@@ -25,7 +25,8 @@ enum SyncCipher {
         guard text.hasPrefix(prefix), let combined = Data(base64Encoded: String(text.dropFirst(prefix.count))) else { throw Failure.malformed }
         let box = try AES.GCM.SealedBox(combined: combined)
         let packed = try AES.GCM.open(box, using: key, authenticating: context(groupID, changeID))
-        let json = try (packed as NSData).decompressed(using: .zlib) as Data
+        // Members' phones are untrusted: a small upload must not inflate into a huge one.
+        let json = try BoundedInflate.inflate(packed, limit: SyncLimits.maxChangeBytes)
         let change = try decoder.decode(SyncChange.self, from: json)
         guard change.id == changeID, change.groupID == groupID else { throw Failure.mismatch }
         return change

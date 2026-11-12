@@ -1,6 +1,7 @@
 import CoreGraphics
 import Foundation
 import ImageIO
+import TakaDeCore
 import UniformTypeIdentifiers
 
 /// Receipt photos on this phone: small grayscale JPEGs in the protected Ledger folder,
@@ -39,9 +40,28 @@ enum ReceiptPhotos {
         url(for: id).flatMap { try? Data(contentsOf: $0) }
     }
 
+    /// Decodes at most `longEdge` pixels on the long side, so a photo from another phone with
+    /// huge dimensions can't use up the phone's memory.
     static func image(for id: UUID) -> CGImage? {
-        guard let data = data(for: id), let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
-        return CGImageSourceCreateImageAtIndex(source, 0, nil)
+        guard let data = data(for: id), isAcceptable(data),
+              let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceThumbnailMaxPixelSize: Int(longEdge),
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+        ]
+        return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
+    }
+
+    /// A photo from another phone is kept only if it's a single JPEG of a sensible size.
+    static func isAcceptable(_ data: Data) -> Bool {
+        guard data.count <= 400_000, let source = CGImageSourceCreateWithData(data as CFData, nil),
+              CGImageSourceGetType(source) as String? == UTType.jpeg.identifier, CGImageSourceGetCount(source) == 1,
+              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let width = properties[kCGImagePropertyPixelWidth] as? Int, let height = properties[kCGImagePropertyPixelHeight] as? Int
+        else { return false }
+        return (1...SyncLimits.maxReceiptPixels).contains(width) && (1...SyncLimits.maxReceiptPixels).contains(height)
     }
 
     static func delete(_ id: UUID) {

@@ -145,10 +145,12 @@ extension SQLiteLedgerRepository: SyncRepository {
                     let own = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM sync_outbox WHERE change_id = ?)",
                                                 arguments: [item.change.id.uuidString]) ?? false
                     // Each change in its own savepoint: a rejected one leaves no partial writes.
+                    var applied: AppliedChange?
                     try db.inSavepoint {
-                        try Self.applyOne(item.change, in: group, logs: !own, db: db)
+                        applied = try Self.applyOne(item.change, in: group, logs: !own, db: db)
                         return .commit
                     }
+                    if !own, let applied { result.fromOthers.append(applied) }
                     if own {
                         try db.execute(sql: "DELETE FROM sync_outbox WHERE change_id = ?", arguments: [item.change.id.uuidString])
                     }
@@ -166,13 +168,19 @@ extension SQLiteLedgerRepository: SyncRepository {
         }
     }
 
-    private static func applyOne(_ change: SyncChange, in group: GroupID, logs: Bool, db: Database) throws {
+    /// Applies one change. Returns the expense or payment when one was written, for
+    /// notifications; group settings and meal counts return nil.
+    private static func applyOne(_ change: SyncChange, in group: GroupID, logs: Bool, db: Database) throws -> AppliedChange? {
         guard change.groupID == group else { throw SyncApplyError.wrongGroup }
         switch change.entity {
-        case .group: try applyGroup(change.body, in: group, logs: logs, db: db)
-        case .expense: try applyExpense(change.body, in: group, logs: logs, db: db)
-        case .settlement: try applySettlement(change.body, in: group, logs: logs, db: db)
-        case .meal: try applyMeal(change.body, in: group, logs: logs, db: db)
+        case .group:
+            try applyGroup(change.body, in: group, logs: logs, db: db)
+            return nil
+        case .expense: return try applyExpense(change.body, in: group, logs: logs, db: db)
+        case .settlement: return try applySettlement(change.body, in: group, logs: logs, db: db)
+        case .meal:
+            try applyMeal(change.body, in: group, logs: logs, db: db)
+            return nil
         }
     }
 
@@ -196,7 +204,7 @@ extension SQLiteLedgerRepository: SyncRepository {
     /// "which one is me" stays as this phone set it.
     private static func applyGroup(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws {
         let remote = try syncDecoder.decode(ExpenseGroup.self, from: body)
-        guard remote.id == group,
+        guard remote.id == group, SyncLimits.accepts(remote),
               !remote.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !remote.members.isEmpty,
               (0...4).contains(remote.currency.minorUnitDigits), remote.currency.code.count == 3
@@ -230,11 +238,12 @@ extension SQLiteLedgerRepository: SyncRepository {
     }
 
     /// The newer version of an expense wins; an older copy arriving late is ignored.
-    private static func applyExpense(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws {
+    private static func applyExpense(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws -> AppliedChange? {
         let expense = try syncDecoder.decode(Expense.self, from: body)
         try expense.validate()
         let currency = try String.fetchOne(db, sql: "SELECT currency_code FROM expense_group WHERE id = ?", arguments: [group.description])
-        guard expense.groupID == group, expense.version >= 1, expense.total.currency.code == currency else { throw SyncApplyError.invalid }
+        guard expense.groupID == group, SyncLimits.accepts(expense), expense.version >= 1,
+              expense.total.currency.code == currency else { throw SyncApplyError.invalid }
         let members = try memberIDs(in: group, db: db)
         guard expense.paidBy.keys.allSatisfy(members.contains), expense.allocation.shares.keys.allSatisfy(members.contains) else {
             throw SyncApplyError.unknownMember
@@ -242,7 +251,7 @@ extension SQLiteLedgerRepository: SyncRepository {
         let previous = try Row.fetchOne(db, sql: "SELECT group_id, version, deleted_at FROM expense WHERE id = ?", arguments: [expense.id.description])
         if let previous {
             guard (previous["group_id"] as String) == group.description else { throw SyncApplyError.wrongGroup }
-            if expense.version < (previous["version"] as Int) { return }
+            if expense.version < (previous["version"] as Int) { return nil }
         }
         let wasDeleted = previous.map { ($0["deleted_at"] as Date?) != nil } ?? false
         try db.execute(sql: """
@@ -263,14 +272,15 @@ extension SQLiteLedgerRepository: SyncRepository {
             try syncAudit(db, group: group, entity: .expense, id: expense.id.rawValue, action: action,
                           actor: knownActor(expense.changedBy, in: members), body: body)
         }
+        return AppliedChange(.expense(expense), action: action)
     }
 
     /// A payment from another phone follows the same rules as one made here. Above all,
     /// nothing from another phone can mark a payment confirmed: only provider evidence can.
-    private static func applySettlement(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws {
+    private static func applySettlement(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws -> AppliedChange? {
         let settlement = try syncDecoder.decode(Settlement.self, from: body)
         let members = try memberIDs(in: group, db: db)
-        guard settlement.groupID == group, settlement.from != settlement.to, settlement.amount.minorUnits > 0,
+        guard settlement.groupID == group, SyncLimits.accepts(settlement), settlement.from != settlement.to, settlement.amount.minorUnits > 0,
               members.contains(settlement.from), members.contains(settlement.to)
         else { throw SyncApplyError.invalid }
         let previous = try Data.fetchOne(db, sql: "SELECT payload FROM settlement WHERE id = ?", arguments: [settlement.id.description])
@@ -302,6 +312,7 @@ extension SQLiteLedgerRepository: SyncRepository {
             try syncAudit(db, group: group, entity: .settlement, id: settlement.id.rawValue, action: action,
                           actor: knownActor(settlement.changedBy, in: members), body: body)
         }
+        return AppliedChange(.settlement(settlement), action: action)
     }
 
     private static func applyMeal(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws {

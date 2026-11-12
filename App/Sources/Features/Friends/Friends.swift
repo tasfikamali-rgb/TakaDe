@@ -154,6 +154,10 @@ final class Friends {
         for row in rows {
             guard let plain = try? Self.open(row.sealed, with: key),
                   let payload = try? JSONDecoder().decode(FriendInvitePayload.self, from: plain),
+                  // Anyone who knows this account's ID can leave an invite, so its names are
+                  // untrusted: oversized ones are dropped rather than shown.
+                  payload.fromName.count <= SyncLimits.maxPersonNameLength,
+                  payload.groupName.count <= SyncLimits.maxGroupNameLength, payload.link.count <= 1_000,
                   let url = URL(string: payload.link), let invite = GroupInvite(url: url) else {
                 // Sealed to a key this phone doesn't have, or damaged: it can never be opened here.
                 await remove(row.id)

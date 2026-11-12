@@ -144,7 +144,7 @@ jobs:
           xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance light
           out="maestro-results/${{ steps.sim.outputs.slug }}-light"
           mkdir -p "$out"
-          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" ${{ matrix.tags }} \
+          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" ${{ matrix.tags }} --debug-output "$out/debug" \
             --format junit --output "$out/report.xml" maestro/flows
       - name: Main journey in dark mode
         if: matrix.dark && (success() || failure())
@@ -152,14 +152,14 @@ jobs:
           xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance dark
           out="maestro-results/${{ steps.sim.outputs.slug }}-dark"
           mkdir -p "$out"
-          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" \
+          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" --debug-output "$out/debug" \
             --format junit --output "$out/report.xml" maestro/flows/01_split_dinner.yaml
       - name: Collect Maestro debug output
         if: failure()
         run: |
           cp -R "$HOME/.maestro/tests" maestro-results/debug 2>/dev/null || true
           # Each step of the failed flows, with its status and time taken.
-          python3 scripts/ci/maestro_steps.py || true
+          python3 scripts/ci/maestro_steps.py maestro-results "$HOME/.maestro/tests" || true
           # What was on screen at the end of the last flow: visible texts and labels.
           maestro --device "${{ steps.sim.outputs.udid }}" hierarchy 2>/dev/null \
             | python3 -c 'import json,sys

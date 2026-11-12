@@ -44,7 +44,12 @@ struct AddExpenseView: View {
             } content: {
                 Section {
                     TextField("What was it for?", text: $draft.title)
-                    DatePicker("Date", selection: $draft.occurredAt, displayedComponents: .date)
+                    if let latest = draft.latestDate {
+                        // With a receipt the date can't be after today; without one it can.
+                        DatePicker("Date", selection: $draft.occurredAt, in: ...latest, displayedComponents: .date)
+                    } else {
+                        DatePicker("Date", selection: $draft.occurredAt, displayedComponents: .date)
+                    }
                     // A monthly copy follows its original, so only the original can repeat.
                     if draft.original?.repeatOf == nil {
                         Toggle("Repeat every month", isOn: $draft.repeatsMonthly)

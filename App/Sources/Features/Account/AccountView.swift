@@ -17,17 +17,12 @@ struct AccountView: View {
     @SceneStorage("account.showingSettings") private var showingSettings = false
 
     var body: some View {
-        AppForm {
-            Section {
-                ProfileHeader(name: myName, email: account.profile?.accountEmail ?? account.account?.email, isSignedIn: account.isSignedIn)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-            } footer: {
-                if hasName {
-                    Text("Your name can't be changed. To use a different name, make a new account.")
-                        .foregroundStyle(Color.inkMuted)
-                }
-            }
+        // Two layers (DESIGN.md 1b): you on the tinted header, everything you can do on
+        // the sheet below it.
+        LayeredForm {
+            ProfileHeader(name: myName, email: account.profile?.accountEmail ?? account.account?.email,
+                          provider: account.account?.provider, isSignedIn: account.isSignedIn, showsNameLock: hasName)
+        } content: {
             if !hasName {
                 // Only for a profile from an older version that has no name yet. It's set
                 // once and then locked like everyone else's.
@@ -49,7 +44,7 @@ struct AccountView: View {
                 }
             }
             if account.isSignedIn {
-                if account.usesAccountService { FriendIDSection() }
+                if account.usesAccountService { friendIDSection }
                 signedInSections
             } else {
                 signedOutSection
@@ -64,8 +59,8 @@ struct AccountView: View {
         } message: {
             Text("You can't change it later.")
         }
-        .readableWidth()
         .navigationTitle("Account")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { showingSettings = true } label: {
@@ -91,6 +86,21 @@ struct AccountView: View {
             Button("Remove", role: .destructive) { unlink(identity) }
         } message: { identity in
             Text("You won't be able to sign in with \(Text(identity.provider.label)) any more. Your other sign-in methods still work.")
+        }
+    }
+
+    /// One row for the TakaDe ID; the QR code, copy, share and "Get a new ID" are a tap
+    /// deeper, so the Account tab stays short.
+    private var friendIDSection: some View {
+        Section {
+            NavigationLink {
+                FriendIDView()
+            } label: {
+                FriendIDRow()
+            }
+        } footer: {
+            Text("Friends scan it or type it to add you to a group.")
+                .foregroundStyle(Color.inkMuted)
         }
     }
 
@@ -191,33 +201,133 @@ extension SignInMode: Identifiable {
     var id: Self { self }
 }
 
-/// The big avatar, name and email at the top of the Account tab.
+/// You, at the top of the Account tab: your photo, name, email and how you're signed in.
 private struct ProfileHeader: View {
     let name: String
     let email: String?
+    let provider: SignInProvider?
+    let isSignedIn: Bool
+    let showsNameLock: Bool
+
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.m) {
+            // At the largest text sizes the name gets the full width under the photo.
+            let layout = typeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.s))
+                : AnyLayout(HStackLayout(alignment: .center, spacing: Spacing.m))
+            layout {
+                ProfilePhotoPicker(name: name, size: 80)
+                VStack(alignment: .leading, spacing: Spacing.xxs) {
+                    if !name.isEmpty {
+                        Text(verbatim: name)
+                            .font(AppFont.title)
+                            .foregroundStyle(Color.ink)
+                            .lineLimit(2)
+                    }
+                    if let email {
+                        Text(verbatim: email)
+                            .font(AppFont.label)
+                            .foregroundStyle(Color.inkMuted)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                }
+                .accessibilityElement(children: .combine)
+            }
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                SignInStatusChip(provider: provider, isSignedIn: isSignedIn)
+                if showsNameLock {
+                    Text("Your name can't be changed. To use a different name, make a new account.")
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.inkMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .padding(.top, Spacing.xs)
+    }
+}
+
+/// A small pill that says how this profile is kept: which sign-in it uses, or that it lives
+/// on this phone only.
+private struct SignInStatusChip: View {
+    let provider: SignInProvider?
     let isSignedIn: Bool
 
     var body: some View {
-        HStack(spacing: Spacing.m) {
-            ProfilePhotoPicker(name: name, size: 72)
-            VStack(alignment: .leading, spacing: Spacing.xxs) {
-                if !name.isEmpty {
-                    Text(verbatim: name)
-                        .font(AppFont.title)
-                        .foregroundStyle(Color.ink)
-                        .lineLimit(2)
-                }
-                if let email {
-                    Text(verbatim: email).font(AppFont.label).foregroundStyle(Color.inkMuted)
+        HStack(spacing: Spacing.xs) {
+            icon
+                .frame(width: 16, height: 16)
+                .accessibilityHidden(true)
+            Group {
+                if isSignedIn, let provider {
+                    Text("Signed in with \(Text(provider.label))")
+                } else if isSignedIn {
+                    Text("Signed in")
                 } else {
-                    Text(isSignedIn ? LocalizedStringKey("Signed in") : LocalizedStringKey("Not signed in"))
-                        .font(AppFont.label)
-                        .foregroundStyle(Color.inkMuted)
+                    Text("On this phone only")
                 }
             }
-            .accessibilityElement(children: .combine)
+            .font(AppFont.label)
+            .foregroundStyle(Color.ink)
         }
-        .padding(.vertical, Spacing.s)
+        .padding(.horizontal, Spacing.s)
+        .padding(.vertical, 6)
+        .background(Capsule().fill(Color.surface))
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var icon: some View {
+        if isSignedIn, provider == .google {
+            // Google's own "G", never redrawn or recoloured (branding guidelines).
+            Image("GoogleG").resizable().renderingMode(.original).scaledToFit()
+        } else {
+            Image(systemName: isSignedIn ? (provider?.systemImage ?? "person.crop.circle") : "iphone")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Color.ink)
+        }
+    }
+}
+
+/// The TakaDe ID row on the Account tab: the ID itself, so it can be read out without
+/// opening the page.
+private struct FriendIDRow: View {
+    @Environment(Friends.self) private var friends
+
+    var body: some View {
+        HStack(spacing: Spacing.s) {
+            Image(systemName: "qrcode")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(Color.ink)
+                .frame(width: 28)
+                .accessibilityHidden(true)
+            Text("Your TakaDe ID")
+                .font(AppFont.bodyEmphasis)
+                .foregroundStyle(Color.ink)
+            Spacer(minLength: Spacing.xs)
+            if let code = friends.myCode {
+                Text(verbatim: code.description)
+                    .font(.body.monospaced())
+                    .foregroundStyle(Color.inkMuted)
+                    .lineLimit(1)
+                    .accessibilityLabel(Text(verbatim: code.description.map { String($0) }.joined(separator: " ")))
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .task { if friends.myCode == nil { try? await friends.ensureID() } }
+    }
+}
+
+/// The TakaDe ID page: QR code, copy, share and "Get a new ID".
+struct FriendIDView: View {
+    var body: some View {
+        AppForm { FriendIDSection() }
+            .readableWidth()
+            .navigationTitle("Your TakaDe ID")
+            .navigationBarTitleDisplayMode(.inline)
     }
 }
 

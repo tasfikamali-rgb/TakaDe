@@ -55,7 +55,27 @@ public struct SharedGroupState: Hashable, Sendable {
 public struct ApplyResult: Equatable, Sendable {
     public var applied = 0
     public var rejected = 0
+    /// Expenses and payments that another phone changed and that changed something here,
+    /// in relay order. This phone's own changes coming back are not in it. Used for
+    /// notifications (docs/adr/0025-group-change-notifications.md).
+    public var fromOthers: [AppliedChange] = []
     public init() {}
+}
+
+/// An expense or payment from another phone that was written to this phone's ledger.
+public struct AppliedChange: Hashable, Sendable {
+    public enum Item: Hashable, Sendable {
+        case expense(Expense)
+        case settlement(Settlement)
+    }
+
+    public let item: Item
+    public let action: AuditEvent.Action
+
+    public init(_ item: Item, action: AuditEvent.Action) {
+        self.item = item
+        self.action = action
+    }
 }
 
 public protocol SyncRepository: Sendable {
