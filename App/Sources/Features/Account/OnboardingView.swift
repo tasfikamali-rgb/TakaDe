@@ -179,6 +179,10 @@ struct OnboardingView: View {
             .padding(.horizontal, Spacing.m)
             .padding(.vertical, Spacing.xs)
             .frame(minHeight: selected ? 60 : 52)
+            // One element named by the country, so the flag emoji isn't read or audited
+            // as separate text.
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(regionName(code))
             .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
             .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
                 .stroke(Color.ink, lineWidth: selected ? 2 : 0))

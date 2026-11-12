@@ -70,6 +70,7 @@ struct AddExpenseView: View {
                 if draft.original != nil, onDelete != nil {
                     Section {
                         Button("Delete expense", role: .destructive) { confirmingDelete = true }
+                            .foregroundStyle(Color.owe)
                     }
                 }
             }

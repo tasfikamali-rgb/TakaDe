@@ -113,9 +113,12 @@ struct NewGroupView: View {
                             .focused($focus, equals: .newPerson)
                             .submitLabel(.next)
                             .onSubmit(addTyped)
-                        Button("Add", action: addTyped)
-                            .buttonStyle(.borderless)
-                            .disabled(!PersonName.isValid(trimmedNewPerson))
+                        // Shown only when it can add, not greyed out (greyed text fails contrast).
+                        if PersonName.isValid(trimmedNewPerson) {
+                            Button("Add", action: addTyped)
+                                .buttonStyle(.borderless)
+                                .font(AppFont.bodyEmphasis)
+                        }
                     }
                     Button("From contacts", systemImage: "person.crop.circle.badge.plus") { pickingContacts = true }
                 } header: {

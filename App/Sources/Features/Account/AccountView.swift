@@ -124,7 +124,9 @@ struct AccountView: View {
         }
         Section {
             Button("Sign out", action: signOut)
+            // The app's darker red: the system red is under 4.5:1 on white.
             Button("Delete account", role: .destructive) { confirmingDelete = true }
+                .foregroundStyle(Color.owe)
         }
     }
 

@@ -21,6 +21,7 @@ struct YourDataSection: View {
                 Button("Export my data", systemImage: "doc.badge.arrow.up", action: export)
             }
             Button("Delete all my data", role: .destructive) { confirmingErase = true }
+                .foregroundStyle(Color.owe)
             if let errorMessage {
                 Text(verbatim: errorMessage).foregroundStyle(Color.owe)
             }

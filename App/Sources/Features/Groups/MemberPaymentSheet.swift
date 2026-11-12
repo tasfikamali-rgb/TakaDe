@@ -84,6 +84,7 @@ struct MemberPaymentSheet: View {
                 if !member.isMe, let onRemove {
                     Section {
                         Button("Remove from group", systemImage: "person.badge.minus", role: .destructive) { confirmingRemove = true }
+                            .foregroundStyle(Color.owe)
                             .confirmationDialog(Text("Remove \(name) from this group?"), isPresented: $confirmingRemove, titleVisibility: .visible) {
                                 Button("Remove", role: .destructive) {
                                     dismiss()
