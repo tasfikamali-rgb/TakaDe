@@ -94,7 +94,7 @@ struct AddPeopleSheet: View {
                             }
                         }
                     } header: {
-                        Text("Added").foregroundStyle(Color.inkMuted)
+                        Text("Added").formHeader()
                     }
                 }
             }

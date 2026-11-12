@@ -148,9 +148,14 @@ struct NewGroupView: View {
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 132)
                                 .overlay(alignment: .topTrailing) {
+                                    // Semibold ink on a white chip: thin text straight on the
+                                    // tinted cover measured too light in the contrast audit.
                                     Label("Add cover photo", systemImage: "photo")
-                                        .font(AppFont.label)
+                                        .font(AppFont.text(14, .semibold, relativeTo: .subheadline))
                                         .foregroundStyle(Color.ink)
+                                        .padding(.horizontal, Spacing.s)
+                                        .padding(.vertical, Spacing.xs)
+                                        .background(Capsule().fill(Color.surface))
                                         .padding(Spacing.s)
                                 }
                         }
@@ -187,7 +192,7 @@ struct NewGroupView: View {
             .listRowBackground(Color.clear)
             .listRowInsets(EdgeInsets())
         } header: {
-            Text("What's it for").foregroundStyle(Color.inkMuted)
+            Text("What's it for").formHeader()
         }
     }
 
@@ -244,7 +249,7 @@ struct NewGroupView: View {
                 }
             }
         } header: {
-            Text("Who's in it").foregroundStyle(Color.inkMuted)
+            Text("Who's in it").formHeader()
         } footer: {
             if !trimmedMyName.isEmpty {
                 Text("You're in it as \(trimmedMyName).").foregroundStyle(Color.inkMuted)
@@ -297,7 +302,7 @@ struct NewGroupView: View {
                 Button("Search your contacts too", systemImage: "person.crop.circle") { Task { await allowContacts() } }
             }
         } header: {
-            Text("Add people").foregroundStyle(Color.inkMuted)
+            Text("Add people").formHeader()
         } footer: {
             Group {
                 if let note { Text(verbatim: note) }
