@@ -13,6 +13,7 @@ struct AccountView: View {
     @State private var errorMessage: String?
     @State private var working = false
     @State private var newName = ""
+    @State private var refresh = LogoRefreshState()
     @State private var confirmingName = false
     @SceneStorage("account.showingSettings") private var showingSettings = false
 
@@ -78,7 +79,7 @@ struct AccountView: View {
         .onChange(of: account.needsOnboarding) { _, needsOnboarding in
             if needsOnboarding { showingSettings = false }
         }
-        .refreshable { await account.refreshAccount() }
+        .logoRefreshableList(state: refresh) { await account.refreshAccount() }
         // Signed in or linked Google in the sheet: ask about the Google photo once it closes.
         .sheet(item: $flow, onDismiss: { account.offerGooglePhotoIfNeeded() }) { mode in
             AccountFlowSheet(mode: mode) { flow = nil }.rebuildsOnDynamicType()

@@ -96,15 +96,21 @@ enum MemberPhotos {
     }
 }
 
-/// A member's avatar: their contact photo when there is one, otherwise their initial.
+/// A member's avatar: their contact photo when there is one, then the photo of a TakaDe
+/// friend with exactly their name, otherwise their initial.
 struct MemberAvatar: View {
     let member: Member
     var size: CGFloat = 36
 
+    @Environment(SocialModel.self) private var social: SocialModel?
     @State private var photo: UIImage?
 
     var body: some View {
-        Avatar(name: member.displayName, size: size, photo: photo ?? MemberPhotos.cached(member.id))
+        Avatar(name: member.displayName, size: size, photo: photo ?? MemberPhotos.cached(member.id) ?? fallback)
             .task(id: member.id) { photo = await MemberPhotos.load(member.id) }
+    }
+
+    private var fallback: UIImage? {
+        member.isMe ? nil : social?.photo(forName: member.displayName)
     }
 }

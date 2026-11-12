@@ -26,11 +26,16 @@ unit tests and the CI build, not yet on a real phone.
 - **Checking more often, without live connections.** While the app is open, shared groups are
   checked once a minute (one small request per shared group). No Realtime channel is opened
   for this, so it doesn't count against the free plan's 200 connections (ADR 25, PR #47).
-- **Refresh.** Activity, Groups and a group's page refresh by pulling down; Activity also has
-  a refresh button in its header. The system spinner is replaced by the ৳ mark, which turns
+- **Refresh.** Activity, Groups, a group's page, Social and Account refresh by pulling down.
+  There's no refresh button (Sabit, 2026-11-12: "just scrolling up means refresh"). The system
+  spinner is hidden app-wide and replaced by the ৳ mark, which turns
   with the pull and then a full 360° per lap until the check finishes. With Reduce Motion it
   stays still. iOS 18 and later read the pull from the scroll view; on iOS 17 the system
   spinner shows during the pull and the mark turns while refreshing.
+
+- **Photos in Activity.** A member's picture is their contact photo on this phone, else the
+  photo of the one TakaDe friend with exactly the same name (matched on the phone), else their
+  initial. Social uses an inline title like Account, so the ৳ sits right under the bar.
 
 ## Not done
 - Instant delivery still needs push (ADR 25 part 2, paid Apple account).

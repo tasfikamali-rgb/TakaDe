@@ -10780,23 +10780,6 @@
         }
       }
     },
-    "Refresh": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "রিফ্রেশ"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh"
-          }
-        }
-      }
-    },
     "Today": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {

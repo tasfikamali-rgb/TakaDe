@@ -12,6 +12,7 @@ struct SocialView: View {
     @State private var adding = false
     @State private var removing: Friend?
     @State private var error: String?
+    @State private var refresh = LogoRefreshState()
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -19,6 +20,8 @@ struct SocialView: View {
                 .texturedBackground()
                 .readableWidth()
                 .navigationTitle("Social")
+                // Inline, like Account: the ৳ refresh sits just under the bar.
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     if social.isAvailable {
                         ToolbarItem(placement: .primaryAction) {
@@ -124,7 +127,7 @@ struct SocialView: View {
                     }
                 }
             }
-            .refreshable { await social.fetchInbox() }
+            .logoRefreshableList(state: refresh) { await social.fetchInbox() }
         }
     }
 
