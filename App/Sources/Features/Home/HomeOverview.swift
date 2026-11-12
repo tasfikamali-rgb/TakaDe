@@ -20,7 +20,8 @@ struct HomeOverview: View {
         .background(alignment: .top) {
             TexturedBackground(base: .header).frame(height: 480).ignoresSafeArea()
         }
-        .background(Color.canvas)
+        // The sheet ends with its content; the lines carry on to the bottom of the screen.
+        .background(TexturedBackground().ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showingGroupPicker) { GroupPickerSheet(groups: model.groups) }
         .task(id: model.revision) { total = await model.myTotal() }
