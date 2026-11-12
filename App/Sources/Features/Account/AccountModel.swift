@@ -306,9 +306,11 @@ final class AccountModel {
         ReceiptPhotos.deleteAll()
         try await store.eraseEverything()
         for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey, HomeRegion.storageKey,
-                    GroupNotifications.enabledKey, GroupNotifications.promptDismissedKey] {
+                    GroupNotifications.enabledKey, GroupNotifications.promptDismissedKey,
+                    CurrencyCatalog.codeKey, CurrencyCatalog.showsForeignKey] {
             UserDefaults.standard.removeObject(forKey: key)
         }
+        ExchangeRateStore.removeCache()
         // Notifications already shown can name people and amounts.
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
