@@ -87,9 +87,16 @@ struct ReceiptReviewView: View {
                     }
                 }
                 Section {
-                    Toggle("Use the receipt's date", isOn: $includesDate)
-                    if includesDate {
-                        DatePicker("Date", selection: $date, displayedComponents: .date)
+                    if suggestion.date != nil {
+                        // Found a date: offer it, and let the person correct a misread.
+                        Toggle("Use the receipt's date", isOn: $includesDate)
+                        if includesDate {
+                            DatePicker("Date", selection: $date, displayedComponents: .date)
+                        }
+                    } else {
+                        // Nothing to "use": say so rather than offering today's date.
+                        Text("No date found on the receipt. The expense keeps the date you picked.")
+                            .foregroundStyle(Color.inkMuted)
                     }
                 } footer: {
                     Text("Read on this phone. The photo isn't saved or uploaded.")

@@ -201,23 +201,61 @@ public enum ReceiptParser {
         }
     }
 
+    /// The first plausible date on the receipt. Reads day-first numeric dates (05/11/2026,
+    /// 5-11-26, 05.11.2026), year-first ISO dates (2026-11-05), and month names
+    /// (5 Nov 2026, 05-Nov-26, Nov 5, 2026), in Latin or Bengali digits. Years outside
+    /// 2000 to next year are ignored, so phone numbers and ids aren't read as dates.
     static func date(in lines: [String]) -> Date? {
-        let pattern = #"(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})"#
-        guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
-        for line in lines {
-            let range = NSRange(line.startIndex..., in: line)
-            guard let m = regex.firstMatch(in: line, range: range),
-                  let d = Range(m.range(at: 1), in: line).flatMap({ Int(line[$0]) }),
-                  let mo = Range(m.range(at: 2), in: line).flatMap({ Int(line[$0]) }),
-                  var y = Range(m.range(at: 3), in: line).flatMap({ Int(line[$0]) })
-            else { continue }
-            if y < 100 { y += 2000 }
-            // Bangladesh writes dates day first.
-            var components = DateComponents()
-            components.day = d; components.month = mo; components.year = y
-            guard (1...12).contains(mo), (1...31).contains(d) else { continue }
-            if let date = Calendar(identifier: .gregorian).date(from: components) { return date }
+        for raw in lines {
+            let line = Digits.toLatin(raw)
+            if let date = isoDate(line) ?? namedMonthDate(line) ?? dayFirstDate(line) { return date }
         }
         return nil
+    }
+
+    private static let months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+
+    private static func isoDate(_ line: String) -> Date? {
+        guard let g = groups(#"(?<!\d)(\d{4})[/\-.](\d{1,2})[/\-.](\d{1,2})(?!\d)"#, in: line) else { return nil }
+        return make(day: Int(g[2]), month: Int(g[1]), year: Int(g[0]))
+    }
+
+    private static func dayFirstDate(_ line: String) -> Date? {
+        guard let g = groups(#"(?<!\d)(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2}|\d{4})(?!\d)"#, in: line) else { return nil }
+        return make(day: Int(g[0]), month: Int(g[1]), year: Int(g[2]))
+    }
+
+    private static func namedMonthDate(_ line: String) -> Date? {
+        let month = #"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?"#
+        // 5 Nov 2026, 05-Nov-26, 5th November, 2026
+        if let g = groups(#"(?<!\d)(\d{1,2})(?:st|nd|rd|th)?[\s\-/.,]*"# + month + #"[\s\-/.,]*(\d{4}|\d{2})(?!\d)"#, in: line.lowercased()) {
+            return make(day: Int(g[0]), month: months.firstIndex(of: g[1]).map { $0 + 1 }, year: Int(g[2]))
+        }
+        // Nov 5, 2026
+        if let g = groups(month + #"\s*(\d{1,2})(?:st|nd|rd|th)?[\s,]+(\d{4})(?!\d)"#, in: line.lowercased()) {
+            return make(day: Int(g[1]), month: months.firstIndex(of: g[0]).map { $0 + 1 }, year: Int(g[2]))
+        }
+        return nil
+    }
+
+    private static func make(day: Int?, month: Int?, year: Int?) -> Date? {
+        guard let day, let month, var year else { return nil }
+        if year < 100 { year += 2000 }
+        let thisYear = Calendar(identifier: .gregorian).component(.year, from: Date())
+        guard (1...12).contains(month), (1...31).contains(day), (2000...thisYear + 1).contains(year) else { return nil }
+        var components = DateComponents()
+        components.day = day; components.month = month; components.year = year
+        let calendar = Calendar(identifier: .gregorian)
+        // Rejects 31/02 and the like instead of rolling over into the next month.
+        guard let date = calendar.date(from: components),
+              calendar.component(.day, from: date) == day else { return nil }
+        return date
+    }
+
+    /// The capture groups of the first match, as strings.
+    private static func groups(_ pattern: String, in line: String) -> [String]? {
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let m = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) else { return nil }
+        return (1..<m.numberOfRanges).map { i in Range(m.range(at: i), in: line).map { String(line[$0]) } ?? "" }
     }
 }

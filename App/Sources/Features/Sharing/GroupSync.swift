@@ -93,6 +93,8 @@ final class GroupSync {
     /// Joins with a link and brings the whole group onto this phone.
     func join(_ invite: GroupInvite) async throws -> GroupID {
         guard let relay else { throw Failure.unavailable }
+        // Rejoining a group already on this phone doesn't add one.
+        guard app.canAddGroup || app.group(invite.groupID) != nil else { throw AppModel.GroupLimitReached() }
         let id = try await relay.join(token: invite.token)
         guard id == invite.groupID else { throw Failure.wrongGroup }
         SyncKeychain.setKey(SymmetricKey(data: invite.key), for: id)

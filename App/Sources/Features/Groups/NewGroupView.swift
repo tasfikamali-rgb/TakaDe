@@ -239,6 +239,8 @@ struct NewGroupView: View {
                     photo: photoData)
                 dismiss()
                 onCreated(group.id)
+            } catch is AppModel.GroupLimitReached {
+                self.error = GroupLimitText.message
             } catch {
                 self.error = String(localized: "The group wasn't saved. Try again.", bundle: .appLanguage)
             }

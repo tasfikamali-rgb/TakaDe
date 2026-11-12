@@ -29,3 +29,8 @@ extension Color {
     static let tabBarSelected = Color.onLime
     static let tabBarUnselected = Color.onHeader.opacity(0.62)
 }
+
+/// The moving line texture behind the Home header: hairlines in the header's own ink.
+extension Color {
+    static let headerTexture = Color.onHeader.opacity(0.05)
+}
