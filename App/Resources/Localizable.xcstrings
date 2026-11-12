@@ -11680,6 +11680,57 @@
           }
         }
       }
+    },
+    "Give the group a name.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপের একটি নাম দিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Give the group a name."
+          }
+        }
+      }
+    },
+    "Add at least one more person.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্তত আরও একজনকে যোগ করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add at least one more person."
+          }
+        }
+      }
+    },
+    "Add your name in the Account tab first.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আগে অ্যাকাউন্ট ট্যাবে আপনার নাম দিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add your name in the Account tab first."
+          }
+        }
+      }
     }
   }
 }

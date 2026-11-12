@@ -76,6 +76,10 @@ struct NewGroupView: View {
             .onChange(of: focus) { _, field in
                 if field == .search { scrollToSearch(scroller) }
             }
+            // A "what's missing" note goes once it's been filled in.
+            .onChange(of: missing) { _, now in
+                if now == nil, made == nil { error = nil }
+            }
             .onChange(of: query) { _, _ in
                 if focus == .search { scrollToSearch(scroller) }
             }
@@ -119,7 +123,8 @@ struct NewGroupView: View {
                     } else if made != nil {
                         Button("Done", action: finish)
                     } else {
-                        Button("Create", action: create).disabled(!canSave)
+                        // Always drawn enabled (a greyed-out Create fails contrast); a tap says what's missing.
+                        Button("Create", action: create)
                     }
                 }
             }
@@ -517,17 +522,29 @@ struct NewGroupView: View {
 
     // MARK: Create
 
-    private var canSave: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && !trimmedMyName.isEmpty
-            && (!people.isEmpty || !emails.isEmpty)
-            && !working
+    /// What still needs filling in before the group can be made, in words.
+    private var missing: String? {
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return String(localized: "Give the group a name.", bundle: .appLanguage)
+        }
+        if people.isEmpty && emails.isEmpty {
+            return String(localized: "Add at least one more person.", bundle: .appLanguage)
+        }
+        if trimmedMyName.isEmpty {
+            return String(localized: "Add your name in the Account tab first.", bundle: .appLanguage)
+        }
+        return nil
     }
 
     /// Saves the group, then sends TakaDe users their sealed invites and opens Mail for email
     /// invites. If the invites can't go (offline, say), the group stays made and says so.
     private func create() {
-        guard canSave else { return }
+        guard !working else { return }
+        if let missing {
+            error = missing
+            AccessibilityNotification.Announcement(missing).post()
+            return
+        }
         working = true
         error = nil
         Task {
