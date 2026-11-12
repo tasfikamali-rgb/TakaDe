@@ -131,7 +131,7 @@ final class GroupSync {
                 try await relay.push([(id: change.id, ciphertext: try SyncCipher.seal(change, with: key))], to: group.id)
                 try? await relay.leave(group.id)
             } catch RelayClient.Failure.notInGroup {
-                // The relay already dropped the group (90 days idle): nobody else to tell.
+                // The relay already dropped the group (a year idle): nobody else to tell.
             }
             SyncKeychain.removeKey(for: group.id)
         }
