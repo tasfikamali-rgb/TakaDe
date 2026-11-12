@@ -23,8 +23,16 @@ Builds on ADR 16 (accounts on Supabase) and ADR 19 (shared groups).
   invites are deleted.
 - Limits against guessing IDs and spam: 30 lookups or sends per account per hour, 50 invites
   sent per day, 100 waiting per account. Lookups are logged for a day only.
-- One key per account, kept on this phone only. Signing in on another phone makes a new key
-  and publishes it; invites sealed to the old key can't be opened and are dropped.
+- One key per account, kept in iCloud Keychain (end-to-end encrypted by Apple) so the same
+  person's iPhone and iPad share it. Update 2026-11-12: it was first kept on one device only,
+  and each device replaced the other's key on the server, so invites sealed for the iPhone
+  were unreadable (and deleted) on the iPad and the other way round. Older device-only keys
+  move to iCloud Keychain on first use. With iCloud Keychain off, each device still has its
+  own key and the last one opened receives; an invite a device can't read is now left on
+  the server for the other device (dropped after 7 days) instead of being deleted.
+- While TakaDe is open it checks for invites every 15 seconds with one small request, and
+  stops in the background. No always-on connection (Realtime is limited on the free plan).
+  An invite closed with Cancel comes back the next time the app is opened.
 
 ## What the server can see
 The ID, the public key, who sent an invite to whom and when (account ids), and the size of
