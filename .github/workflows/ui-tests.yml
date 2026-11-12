@@ -93,6 +93,12 @@ jobs:
         run: |
           xcrun xcresulttool get test-results summary --path build/UITests.xcresult --compact \
             | python3 scripts/ci/xcresult_failures.py
+          # Screens where the audit named no element, printed as small base64 PNGs so
+          # they can be read from the log (artifact downloads aren't always available).
+          mkdir -p build/audit-shots
+          xcrun xcresulttool export attachments --path build/UITests.xcresult \
+            --output-path build/audit-shots >/dev/null 2>&1 || true
+          scripts/ci/print_pngs.sh build/audit-shots
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
@@ -105,7 +111,7 @@ jobs:
     name: Maestro on ${{ matrix.device }} (${{ matrix.shard }})
     needs: build
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       # One machine per device: the free plan runs only 5 Mac jobs at a time across the
@@ -160,6 +166,8 @@ jobs:
           cp -R "$HOME/.maestro/tests" maestro-results/debug 2>/dev/null || true
           # Each step of the failed flows, with its status and time taken.
           python3 scripts/ci/maestro_steps.py maestro-results "$HOME/.maestro/tests" || true
+          # Maestro's own screenshot of the failed step, as a small base64 PNG.
+          scripts/ci/print_pngs.sh maestro-results
           # What was on screen at the end of the last flow: visible texts and labels.
           maestro --device "${{ steps.sim.outputs.udid }}" hierarchy 2>/dev/null \
             | python3 -c 'import json,sys
@@ -175,6 +183,8 @@ jobs:
         with:
           name: maestro-debug-${{ steps.sim.outputs.slug }}
           path: maestro-results
+          # Maestro writes under a hidden .maestro folder.
+          include-hidden-files: true
           retention-days: 14
 
   iphone-duo:
