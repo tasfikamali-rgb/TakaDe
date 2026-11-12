@@ -7192,6 +7192,618 @@
           }
         }
       }
+    },
+    "QR code for your TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার TakaDe আইডির QR কোড"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "QR code for your TakaDe ID"
+          }
+        }
+      }
+    },
+    "Copy ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইডি কপি করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy ID"
+          }
+        }
+      }
+    },
+    "ID copied": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইডি কপি হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID copied"
+          }
+        }
+      }
+    },
+    "Add me on TakaDe with my ID: %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমার আইডি দিয়ে TakaDe-এ আমাকে যোগ করুন: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add me on TakaDe with my ID: %@"
+          }
+        }
+      }
+    },
+    "Share ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইডি শেয়ার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share ID"
+          }
+        }
+      }
+    },
+    "Get a new ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নতুন আইডি নিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get a new ID"
+          }
+        }
+      }
+    },
+    "Getting your ID…": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার আইডি আনা হচ্ছে…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Getting your ID…"
+          }
+        }
+      }
+    },
+    "Your TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার TakaDe আইডি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your TakaDe ID"
+          }
+        }
+      }
+    },
+    "Friends with TakaDe can add you to a group by scanning this code or typing your ID. It doesn't show your name, email or phone number.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe ব্যবহারকারী বন্ধুরা এই কোড স্ক্যান করে বা আপনার আইডি লিখে আপনাকে গ্রুপে যোগ করতে পারবেন। এতে আপনার নাম, ইমেইল বা ফোন নম্বর দেখা যায় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends with TakaDe can add you to a group by scanning this code or typing your ID. It doesn't show your name, email or phone number."
+          }
+        }
+      }
+    },
+    "Get a new ID?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নতুন আইডি নেবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get a new ID?"
+          }
+        }
+      }
+    },
+    "Your current ID and QR code stop working. Invites already sent to you still arrive.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার বর্তমান আইডি ও QR কোড আর কাজ করবে না। আগে পাঠানো আমন্ত্রণগুলো তবুও পৌঁছাবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your current ID and QR code stop working. Invites already sent to you still arrive."
+          }
+        }
+      }
+    },
+    "Scan a TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি স্ক্যান করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan a TakaDe ID"
+          }
+        }
+      }
+    },
+    "Point the camera at the QR code in your friend's Account tab.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধুর অ্যাকাউন্ট ট্যাবের QR কোডের দিকে ক্যামেরা ধরুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Point the camera at the QR code in your friend's Account tab."
+          }
+        }
+      }
+    },
+    "Invite sent to %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে আমন্ত্রণ পাঠানো হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invite sent to %@"
+          }
+        }
+      }
+    },
+    "They'll see it the next time they open TakaDe, and join as %@ in this group.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরের বার TakaDe খুললে তিনি এটি দেখবেন এবং এই গ্রুপে %@ হিসেবে যোগ দেবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "They'll see it the next time they open TakaDe, and join as %@ in this group."
+          }
+        }
+      }
+    },
+    "Sign in to your TakaDe account in the Account tab to add people by TakaDe ID.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি দিয়ে কাউকে যোগ করতে অ্যাকাউন্ট ট্যাবে আপনার TakaDe অ্যাকাউন্টে সাইন ইন করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to your TakaDe account in the Account tab to add people by TakaDe ID."
+          }
+        }
+      }
+    },
+    "Add a TakaDe user": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe ব্যবহারকারী যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a TakaDe user"
+          }
+        }
+      }
+    },
+    "That QR code isn't a TakaDe ID.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই QR কোডটি TakaDe আইডি নয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That QR code isn't a TakaDe ID."
+          }
+        }
+      }
+    },
+    "TKD-XXXX-XXXX": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TKD-XXXX-XXXX"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TKD-XXXX-XXXX"
+          }
+        }
+      }
+    },
+    "Scan their QR code": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তাদের QR কোড স্ক্যান করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan their QR code"
+          }
+        }
+      }
+    },
+    "Their TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তাদের TakaDe আইডি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Their TakaDe ID"
+          }
+        }
+      }
+    },
+    "They can find it in their Account tab.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তারা এটি তাদের অ্যাকাউন্ট ট্যাবে পাবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "They can find it in their Account tab."
+          }
+        }
+      }
+    },
+    "Their name in this group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে তাদের নাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Their name in this group"
+          }
+        }
+      }
+    },
+    "TakaDe doesn't share names between accounts, so type how the group knows them.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe এক অ্যাকাউন্টের নাম অন্য অ্যাকাউন্টকে দেখায় না, তাই গ্রুপে তাদের যে নামে চেনে সেটি লিখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe doesn't share names between accounts, so type how the group knows them."
+          }
+        }
+      }
+    },
+    "Add and send invite": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যোগ করে আমন্ত্রণ পাঠান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add and send invite"
+          }
+        }
+      }
+    },
+    "Their invite is encrypted on this phone so only their phone can read it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমন্ত্রণটি এই ফোনেই এনক্রিপ্ট করা হয়, তাই শুধু তাদের ফোনই এটি পড়তে পারবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Their invite is encrypted on this phone so only their phone can read it."
+          }
+        }
+      }
+    },
+    "That's not a TakaDe ID. It looks like TKD-7F3K-9QXM.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি TakaDe আইডি নয়। আইডি দেখতে TKD-7F3K-9QXM-এর মতো।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's not a TakaDe ID. It looks like TKD-7F3K-9QXM."
+          }
+        }
+      }
+    },
+    "That's your own TakaDe ID.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি আপনার নিজের TakaDe আইডি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's your own TakaDe ID."
+          }
+        }
+      }
+    },
+    "Invite sent": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমন্ত্রণ পাঠানো হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invite sent"
+          }
+        }
+      }
+    },
+    "TakaDe ID or QR code": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি বা QR কোড"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe ID or QR code"
+          }
+        }
+      }
+    },
+    "Decline": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "না করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decline"
+          }
+        }
+      }
+    },
+    "%@ invited you to %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ আপনাকে %2$@ গ্রুপে আমন্ত্রণ জানিয়েছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ invited you to %@"
+          }
+        }
+      }
+    },
+    "You'll see this group's expenses and payments and can add your own.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি এই গ্রুপের খরচ ও পেমেন্ট দেখতে পাবেন এবং নিজেরগুলোও যোগ করতে পারবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You'll see this group's expenses and payments and can add your own."
+          }
+        }
+      }
+    },
+    "Sign in to your TakaDe account to use TakaDe IDs.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি ব্যবহার করতে আপনার TakaDe অ্যাকাউন্টে সাইন ইন করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to your TakaDe account to use TakaDe IDs."
+          }
+        }
+      }
+    },
+    "No one has this TakaDe ID. Check it and try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই TakaDe আইডি কারও নেই। দেখে নিয়ে আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one has this TakaDe ID. Check it and try again."
+          }
+        }
+      }
+    },
+    "Too many tries for now. Wait a while and try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখন অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many tries for now. Wait a while and try again."
+          }
+        }
+      }
     }
   }
 }

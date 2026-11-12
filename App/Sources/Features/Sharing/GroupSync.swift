@@ -8,6 +8,8 @@ import TakaDeCore
 struct PendingInvite: Identifiable {
     let id = UUID()
     let invite: GroupInvite
+    /// Set when a friend sent it to this account by TakaDe ID, not as a link.
+    var from: Friends.Received?
 }
 
 /// Shared groups (docs/adr/0019-shared-groups.md). The phone stays the source of truth:

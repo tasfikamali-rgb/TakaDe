@@ -31,6 +31,7 @@ struct AccountView: View {
                 Text("This is how you appear in new groups, exactly as you type it")
             }
             if account.isSignedIn {
+                if account.usesAccountService { FriendIDSection() }
                 signedInSections
             } else {
                 signedOutSection
