@@ -19,6 +19,8 @@ struct JoinGroupSheet: View {
 
     @State private var stage: Stage = .paste
     @State private var pasted = ""
+    /// Why the text in the field can't be used, until the text changes.
+    @State private var linkError: (text: String, message: String)?
     @State private var newName = ""
 
     var body: some View {
@@ -75,22 +77,47 @@ struct JoinGroupSheet: View {
                 .lineLimit(3...6)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+            if let linkError, linkError.text == pasted {
+                Label {
+                    Text(verbatim: linkError.message)
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                }
+                .foregroundStyle(Color.owe)
+                .accessibilityElement(children: .combine)
+            }
             PasteButton(payloadType: String.self) { strings in
-                if let text = strings.first { pasted = text }
+                guard let text = strings.first else { return }
+                pasted = text
+                // A link from the Paste button joins straight away; anything else says why not.
+                joinPasted()
             }
             Button("Join", action: joinPasted)
                 .disabled(pasted.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         } footer: {
-            Text("Ask someone in the group to tap the invite button in the group and send you the link.")
+            Text("Only invite links from TakaDe work here. Ask someone in the group to tap the invite button in the group and send you the link.")
         }
     }
 
+    /// Joins only with a real TakaDe invite link. Anything else stays on this screen with a reason.
     private func joinPasted() {
-        guard let found = GroupInvite(text: pasted) else {
-            stage = .failed(String(localized: "That doesn't look like a TakaDe group link. Copy the whole message and try again.", bundle: .appLanguage))
-            return
+        if let found = GroupInvite(text: pasted) {
+            linkError = nil
+            start(found)
+        } else {
+            let message = Self.reason(notJoining: pasted)
+            linkError = (pasted, message)
+            AccessibilityNotification.Announcement(message).post()
         }
-        start(found)
+    }
+
+    /// A TakaDe link with a part missing (often cut off when copied) gets its own message.
+    static func reason(notJoining text: String) -> String {
+        let lowered = text.lowercased()
+        if lowered.contains("takade://join") || lowered.contains("takadeapp.com/join") {
+            return String(localized: "This invite link is incomplete. Copy the whole message again and paste it here.", bundle: .appLanguage)
+        }
+        return String(localized: "That's not a TakaDe invite link. Only links sent from a group's invite button work here.", bundle: .appLanguage)
     }
 
     private func start(_ invite: GroupInvite) {
