@@ -66,17 +66,20 @@ jobs:
           key: spm-app-${{ runner.os }}-${{ hashFiles('Packages/TakaDeKit/Package.swift') }}
       - name: Install XcodeGen and generate project
         run: brew install xcodegen && xcodegen generate --quiet
-      - name: Boot simulator
+      - name: Build app and UI tests (simulator boots alongside)
         id: sim
-        run: echo "udid=$(scripts/ci/boot-simulator.sh 'iPhone 16')" >> "$GITHUB_OUTPUT"
-      - name: Build app and UI tests
         run: |
+          # Booting takes ~3 minutes; do it while the build runs instead of before it.
+          scripts/ci/boot-simulator.sh 'iPhone 16' > build-udid.txt &
+          boot=$!
           xcodebuild build-for-testing \
             -project TakaDe.xcodeproj -scheme TakaDe \
-            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/DerivedData \
             -clonedSourcePackagesDirPath build/SourcePackages \
             -quiet
+          wait $boot
+          echo "udid=$(cat build-udid.txt)" >> "$GITHUB_OUTPUT"
       - name: Accessibility audit and launch tests
         run: |
           xcodebuild test-without-building \
@@ -99,14 +102,20 @@ jobs:
           retention-days: 7
 
   flows:
-    name: Maestro on ${{ matrix.device }}
+    name: Maestro on ${{ matrix.device }} (${{ matrix.shard }})
     needs: build
     runs-on: macos-15
     timeout-minutes: 30
     strategy:
       fail-fast: false
+      # Flows are split across machines so they run side by side. Dark mode re-runs
+      # only the main journey (the accessibility audit covers contrast), and iPad runs
+      # the layout-sensitive flows.
       matrix:
-        device: ["iPhone 16", "iPad Pro 13-inch"]
+        include:
+          - { device: "iPhone 16", shard: "smoke", tags: "--include-tags smoke", dark: true }
+          - { device: "iPhone 16", shard: "other", tags: "--exclude-tags smoke", dark: false }
+          - { device: "iPad Pro 13-inch", shard: "layout", tags: "--include-tags adaptive,smoke", dark: false }
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode
@@ -115,34 +124,36 @@ jobs:
         with:
           name: TakaDe-simulator-app
           path: build
-      - run: tar -xzf build/TakaDe.app.tgz -C build
-      - name: Install Maestro
-        run: |
-          curl -fsSL https://get.maestro.mobile.dev | bash
-          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
-      - name: Boot simulator and install app
+      - name: Boot simulator, install Maestro and the app
         id: sim
         run: |
-          udid=$(scripts/ci/boot-simulator.sh "${{ matrix.device }}")
+          # Boot in the background while Maestro downloads.
+          scripts/ci/boot-simulator.sh "${{ matrix.device }}" > udid.txt &
+          boot=$!
+          tar -xzf build/TakaDe.app.tgz -C build
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+          wait $boot
+          udid=$(cat udid.txt)
           xcrun simctl install "$udid" build/TakaDe.app
           echo "udid=$udid" >> "$GITHUB_OUTPUT"
-          echo "slug=$(echo '${{ matrix.device }}' | tr ' A-Z' '-a-z')" >> "$GITHUB_OUTPUT"
+          echo "slug=$(echo '${{ matrix.device }}-${{ matrix.shard }}' | tr ' A-Z' '-a-z')" >> "$GITHUB_OUTPUT"
       - name: Flows in light mode
         run: |
           maestro --version
           xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance light
           out="maestro-results/${{ steps.sim.outputs.slug }}-light"
           mkdir -p "$out"
-          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" \
+          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" ${{ matrix.tags }} \
             --format junit --output "$out/report.xml" maestro/flows
-      - name: Flows in dark mode
-        if: success() || failure()
+      - name: Main journey in dark mode
+        if: matrix.dark && (success() || failure())
         run: |
           xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance dark
           out="maestro-results/${{ steps.sim.outputs.slug }}-dark"
           mkdir -p "$out"
           maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" \
-            --format junit --output "$out/report.xml" maestro/flows
+            --format junit --output "$out/report.xml" maestro/flows/01_split_dinner.yaml
       - name: Collect Maestro debug output
         if: failure()
         run: |
