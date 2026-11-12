@@ -68,7 +68,8 @@ struct RootView: View {
         // A TabView doesn't pass a safe area inset down to its pages, so the bar floats in an
         // overlay and each page reserves room for it (TabContent).
         .overlay(alignment: .bottom) {
-            if usesPillBar && !chrome.hidesTabBar {
+            // `-auditHideTabBar YES` is a UI-test switch for telling tab-bar audit issues apart.
+            if usesPillBar && !chrome.hidesTabBar && !UserDefaults.standard.bool(forKey: "auditHideTabBar") {
                 PillTabBar(selection: $tab, unread: [.social: social.unreadTotal, .activity: inbox.unread])
                     .padding(.horizontal, Spacing.screenMargin)
                     .padding(.bottom, Spacing.xs)

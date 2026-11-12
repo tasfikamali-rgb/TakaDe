@@ -84,6 +84,18 @@ final class AccessibilityAuditTests: XCTestCase {
         try audit(app, for: [.textClipped, .sufficientElementDescription])
     }
 
+    /// Temporary diagnostic: the Bengali Home audit with the tab bar hidden, to confirm or
+    /// rule out the tab labels as the unnamed "Text clipped" issue. Remove once known.
+    @MainActor
+    func testBengaliLaunchesWithoutTabBar() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-appLanguage", "bn", "-AppleLanguages", "(bn)", "-AppleLocale", "bn_BD",
+                                "-holdTexture", "YES", "-auditHideTabBar", "YES"]
+        app.launch()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
+        try audit(app, for: [.textClipped])
+    }
+
     // MARK: Helpers
 
     @MainActor
@@ -133,8 +145,21 @@ final class AccessibilityAuditTests: XCTestCase {
         // between tabs), so the audit doesn't measure a label mid-animation.
         sleep(1)
         var savedScreenshot = false
+        // Every issue the audit reports, ignored or not, saved as one text attachment, since
+        // the CI summary shows only the first failure per test.
+        var issueLog: [String] = []
+        defer {
+            if !issueLog.isEmpty {
+                let log = XCTAttachment(string: issueLog.joined(separator: "\n"))
+                log.name = "issues-\(self.name)"
+                log.lifetime = .keepAlways
+                self.add(log)
+            }
+        }
         try app.performAccessibilityAudit(for: types) { issue in
             let label = issue.element?.label ?? "(no element)"
+            let where_ = issue.element.map { "\(String(describing: $0.elementType)) \"\($0.label)\" frame \($0.frame)" } ?? "no element"
+            issueLog.append("[\(issue.auditType.rawValue)] \(issue.compactDescription) | \(where_) | \(issue.detailedDescription)")
             if issue.auditType == .contrast, let sheetTop, let element = issue.element,
                element.frame.maxY <= sheetTop {
                 print("Ignored contrast on dimmed content behind the sheet: \(label)")
