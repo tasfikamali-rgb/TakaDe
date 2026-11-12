@@ -10,8 +10,7 @@ struct RootView: View {
     @Environment(Friends.self) private var friends
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    // Scene storage, so a language switch (which rebuilds the whole tree) or a new window
+    // Scene storage, so a language switch (which rebuilds the tabs) or a new window
     // comes back to the same tab instead of jumping to Groups.
     @SceneStorage("selectedTab") private var tab: AppTab = .home
     @State private var chrome = AppChrome()
@@ -39,8 +38,10 @@ struct RootView: View {
         }
         .tint(.ink)
         .toggleStyle(AppSwitchStyle())
-        // Fonts with a Bengali fallback are scaled when built, so rebuild on a text size change.
-        .id(dynamicTypeSize)
+        // Fonts and strings are fixed when built, so rebuild the tabs on a text size or
+        // language change. Only the tabs: the onboarding cover and invite sheet below hang off
+        // this view and must not close and reopen when the language changes.
+        .rebuildsOnDynamicType()
         .onGeometryChange(for: CGSize.self) { proxy in
             // The whole window, safe areas included, so bars and notches don't skew the shape.
             let insets = proxy.safeAreaInsets
@@ -82,6 +83,7 @@ struct RootView: View {
                 tab = .home
                 model.requestedGroup = id
             }
+            .rebuildsOnDynamicType()
         }
         .overlay(alignment: .top) {
             if let error = model.loadError {
