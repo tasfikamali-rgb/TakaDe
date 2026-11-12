@@ -12,7 +12,7 @@ struct ShareCardLine: View {
                 .foregroundStyle(Color.ink)
             Spacer(minLength: Spacing.s)
             Text(verbatim: MoneyFormatter.format(line.amount, digits: digits).plain)
-                .font(AppFont.bodyEmphasis)
+                .font(AppFont.figures(16, .medium, relativeTo: .body, bengali: digits == .bengali))
                 .monospacedDigit()
                 .foregroundStyle(Color.ink)
         }

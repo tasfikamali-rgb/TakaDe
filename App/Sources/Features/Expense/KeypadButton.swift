@@ -20,7 +20,7 @@ struct KeypadButton: View {
                     Text(verbatim: bengali ? Digits.toBengali(key.label) : key.label)
                 }
             }
-            .font(style == .digit ? AppFont.display(28, relativeTo: .title, bengali: bengali) : AppFont.headline)
+            .font(style == .digit ? AppFont.figures(28, .semibold, relativeTo: .title, display: true, bengali: bengali) : AppFont.headline)
             .frame(maxWidth: .infinity, minHeight: style == .digit ? 60 : 48)
             .background(
                 RoundedRectangle(cornerRadius: Radius.key, style: .continuous)
