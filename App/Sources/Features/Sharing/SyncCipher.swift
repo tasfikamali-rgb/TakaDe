@@ -32,20 +32,42 @@ enum SyncCipher {
         return change
     }
 
-    /// Receipt photos are already JPEG, so they're sealed without compressing again.
-    static func sealReceipt(_ jpeg: Data, id: UUID, groupID: GroupID, with key: SymmetricKey) throws -> String {
-        let box = try AES.GCM.seal(jpeg, using: key, authenticating: receiptContext(groupID, id))
-        guard let combined = box.combined else { throw Failure.malformed }
-        return prefix + combined.base64EncodedString()
+    // MARK: Receipts
+
+    /// What a shared receipt turned out to be. New uploads are always text (ADR 28); photos
+    /// are what older versions of the app sent.
+    enum Receipt {
+        case photo(Data)
+        case text(packed: Data)
     }
 
-    static func openReceipt(_ text: String, id: UUID, groupID: GroupID, with key: SymmetricKey) throws -> Data {
+    private static let textPrefix = "t1."
+
+    /// The receipt's text, already compressed by `ReceiptText.pack`. Sealed with its own
+    /// authenticated context, so a photo can't be passed off as text or the other way round.
+    static func sealReceiptText(_ packed: Data, id: UUID, groupID: GroupID, with key: SymmetricKey) throws -> String {
+        let box = try AES.GCM.seal(packed, using: key, authenticating: receiptTextContext(groupID, id))
+        guard let combined = box.combined else { throw Failure.malformed }
+        return textPrefix + combined.base64EncodedString()
+    }
+
+    static func openReceipt(_ text: String, id: UUID, groupID: GroupID, with key: SymmetricKey) throws -> Receipt {
+        if text.hasPrefix(textPrefix) {
+            guard let combined = Data(base64Encoded: String(text.dropFirst(textPrefix.count))) else { throw Failure.malformed }
+            let packed = try AES.GCM.open(AES.GCM.SealedBox(combined: combined), using: key, authenticating: receiptTextContext(groupID, id))
+            _ = try ReceiptText.unpack(packed) // checked before it's kept
+            return .text(packed: packed)
+        }
         guard text.hasPrefix(prefix), let combined = Data(base64Encoded: String(text.dropFirst(prefix.count))) else { throw Failure.malformed }
-        return try AES.GCM.open(AES.GCM.SealedBox(combined: combined), using: key, authenticating: receiptContext(groupID, id))
+        return .photo(try AES.GCM.open(AES.GCM.SealedBox(combined: combined), using: key, authenticating: receiptContext(groupID, id)))
     }
 
     private static func receiptContext(_ group: GroupID, _ id: UUID) -> Data {
         Data("takade.receipt.v1|\(group)|\(id.uuidString)".utf8)
+    }
+
+    private static func receiptTextContext(_ group: GroupID, _ id: UUID) -> Data {
+        Data("takade.receipt-text.v1|\(group)|\(id.uuidString)".utf8)
     }
 
     private static func context(_ group: GroupID, _ change: UUID) -> Data {

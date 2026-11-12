@@ -11,7 +11,7 @@ actor RelayClient {
     enum Failure: Error, Equatable {
         case offline
         case inviteNotValid
-        /// The group is gone from the relay (idle for 90 days) or this phone was never in it.
+        /// The group is gone from the relay (idle for a year) or this phone was never in it.
         case notInGroup
         case guestSignInOff
         case server(status: Int, code: String?)

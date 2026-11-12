@@ -24,7 +24,7 @@ struct SyncStatusLabel: View {
 
     private var text: LocalizedStringKey? {
         switch sync.status[groupID] {
-        case .ended: return "No longer shared after 90 days without changes. Invite people again to share it."
+        case .ended: return "No longer shared after a year without changes. Invite people again to share it."
         case .offline: return pending > 0 ? "Offline. Your changes will be shared when you're back online." : "Offline. Showing what's on this phone."
         case .failed: return "Couldn't sync just now. Your changes are saved on this phone."
         case .syncing: return sync.isShared(groupID) ? "Syncing…" : nil

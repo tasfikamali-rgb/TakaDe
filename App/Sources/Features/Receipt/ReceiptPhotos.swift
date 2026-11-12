@@ -66,6 +66,25 @@ enum ReceiptPhotos {
 
     static func delete(_ id: UUID) {
         if let url = url(for: id) { try? FileManager.default.removeItem(at: url) }
+        if let url = textURL(for: id) { try? FileManager.default.removeItem(at: url) }
+    }
+
+    // MARK: Receipt text
+
+    /// The text read from a receipt, next to its photo. In a shared group this, not the photo,
+    /// is what the other phones get (ADR 28), and it's all they keep.
+    static func textURL(for id: UUID) -> URL? {
+        folder?.appendingPathComponent(id.uuidString + ".receipt")
+    }
+
+    static func storeText(_ packed: Data, for id: UUID) throws {
+        guard let url = textURL(for: id) else { throw CocoaError(.fileWriteUnknown) }
+        try packed.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    }
+
+    /// Compressed, as it's sent (`ReceiptText.pack`).
+    static func packedText(for id: UUID) -> Data? {
+        textURL(for: id).flatMap { try? Data(contentsOf: $0) }
     }
 
     /// For "Delete all my data".

@@ -99,7 +99,7 @@ struct ReceiptReviewView: View {
                             .foregroundStyle(Color.inkMuted)
                     }
                 } footer: {
-                    Text("Read on this phone. The photo isn't saved or uploaded.")
+                    Text("Read on this phone. In a shared group, the others get this text, encrypted, not the photo.")
                 }
             }
             .readableWidth()
