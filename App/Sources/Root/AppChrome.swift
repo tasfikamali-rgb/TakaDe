@@ -9,4 +9,10 @@ final class AppChrome {
     var hidesTabBar = false
     /// Whether this window uses the floating pill bar (set by RootView from the window shape).
     var showsPillBar = true
+    /// The New group and Join a group sheets. They're shown from RootView, above the tabs,
+    /// because the tabs are rebuilt on a text size or language change, and a sheet shown
+    /// from inside them closed when that happened (the accessibility audit changes the
+    /// text size, so it closed the sheet mid-audit).
+    var showsNewGroup = false
+    var showsJoin = false
 }

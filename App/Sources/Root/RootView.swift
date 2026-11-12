@@ -1,4 +1,5 @@
 import SwiftUI
+import TakaDeCore
 
 /// On a tall compact window (an iPhone held upright) the floating pill bar from DESIGN.md
 /// replaces the system tab bar. Everywhere else (iPad, iPhone Duo's displays, landscape,
@@ -29,6 +30,11 @@ struct RootView: View {
         guard horizontalSizeClass != .regular else { return false }
         guard windowSize.width > 0 else { return true }
         return windowSize.height >= windowSize.width * 1.6
+    }
+
+    private func openGroup(_ id: GroupID) {
+        tab = .home
+        model.requestedGroup = id
     }
 
     private func unread(_ tab: AppTab) -> Int {
@@ -120,6 +126,14 @@ struct RootView: View {
                 model.requestedGroup = id
             }
             .rebuildsOnDynamicType()
+        }
+        // Shown from here, not from the Groups tab, so a text size or language change
+        // (which rebuilds the tabs) doesn't close them. A new or joined group opens on Groups.
+        .sheet(isPresented: $chrome.showsNewGroup) {
+            NewGroupView(onCreated: openGroup).rebuildsOnDynamicType()
+        }
+        .sheet(isPresented: $chrome.showsJoin) {
+            JoinGroupSheet(invite: nil, onJoined: openGroup).rebuildsOnDynamicType()
         }
         // A tapped group notification opens that group.
         .onChange(of: notifications.tappedGroup, initial: true) { _, id in
