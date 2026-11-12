@@ -31,7 +31,24 @@ struct HomeHeader: View {
                     .font(AppFont.label)
                     .foregroundStyle(Color.onHeader.opacity(0.72))
                 Spacer()
-                CurrencyToggle(foreignCode: foreignCode, showsForeign: $showsForeign) { choosingCurrency = true }
+                VStack(alignment: .trailing, spacing: Spacing.xxs) {
+                    CurrencyToggle(foreignCode: foreignCode, showsForeign: $showsForeign) { choosingCurrency = true }
+                    // Says what the toggle is for (Sabit, 2026-11-12); tapping it opens the list.
+                    Button { choosingCurrency = true } label: {
+                        HStack(spacing: 2) {
+                            Text("Set currency")
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 9, weight: .bold))
+                                .accessibilityHidden(true)
+                        }
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.onHeader.opacity(0.72))
+                        .padding(.horizontal, Spacing.xs)
+                        .frame(minHeight: 28)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
             }
             AmountText(money: converted ?? total.magnitude, size: .balance, color: .onHeader, minorColor: .onHeader.opacity(0.6))
             if showsForeign {

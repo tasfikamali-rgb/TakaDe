@@ -310,7 +310,7 @@ final class AccountModel {
         if profile?.account?.provider == .google { await GoogleSignInService.revoke() }
         // Signs out of the account here; the account itself stays until "Delete account".
         await supabase?.signOut()
-        KeychainStore.deleteAll()
+        KeychainStore.deleteAllIncludingSynced()
         // Shared groups' keys and the sharing sign-in go too.
         SyncKeychain.deleteAll()
         ReceiptPhotos.deleteAll()

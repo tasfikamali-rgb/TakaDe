@@ -12,11 +12,15 @@ struct HomeView: View {
     @State private var path: [GroupID] = []
     @State private var showingNewGroup = false
     @State private var showingJoin = false
+    /// The iPad sidebar. In portrait it floats over the group, so it hides once a group is
+    /// picked or created; otherwise a new group and its expenses sit under it.
+    @State private var columns: NavigationSplitViewVisibility = .automatic
+    @State private var isPortrait = false
 
     var body: some View {
         Group {
             if horizontalSizeClass == .regular {
-                NavigationSplitView {
+                NavigationSplitView(columnVisibility: $columns) {
                     HomeOverview(selection: $selection, onNewGroup: showNewGroup, onJoin: showJoin)
                         .navigationSplitViewColumnWidth(min: 320, ideal: 380)
                 } detail: {
@@ -45,7 +49,15 @@ struct HomeView: View {
                 }
             }
         }
-        .onChange(of: selection) { _, newValue in syncPath(newValue) }
+        .onGeometryChange(for: Bool.self) { $0.size.width < $0.size.height } action: { portrait in
+            isPortrait = portrait
+            // Side by side again in landscape.
+            if !portrait { columns = .automatic }
+        }
+        .onChange(of: selection) { _, newValue in
+            syncPath(newValue)
+            hideOverlaySidebar(newValue)
+        }
         .onChange(of: path) { _, newValue in
             selection = newValue.last
             updateChrome()
@@ -67,6 +79,12 @@ struct HomeView: View {
     /// Inside a group on a phone, the group's own "Settle up" takes the bottom edge.
     private func updateChrome() {
         chrome.hidesTabBar = horizontalSizeClass != .regular && !path.isEmpty
+    }
+
+    /// Only in portrait, where the sidebar covers the group instead of sitting beside it.
+    private func hideOverlaySidebar(_ id: GroupID?) {
+        guard horizontalSizeClass == .regular, isPortrait, id != nil else { return }
+        columns = .detailOnly
     }
 
     private func showNewGroup() { showingNewGroup = true }

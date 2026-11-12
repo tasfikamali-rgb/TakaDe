@@ -65,10 +65,12 @@ struct TakaDeApp: App {
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
                     await account.load()
+                    // Invites first: they shouldn't wait behind every shared group's sync.
+                    friends.stopWatching()
+                    friends.startWatching()
                     await model.reload()
                     await model.addDueRepeats()
                     await sync.syncAll()
-                    await friends.checkInbox()
                     await social.start()
                 }
                 // Invite links: takade://join?… now, https://takadeapp.com/join?… later.
@@ -79,8 +81,9 @@ struct TakaDeApp: App {
                     lock.scenePhaseChanged(to: phase)
                     if phase == .background {
                         wasInBackground = true
-                        // Messages wait on the server until the app is back.
+                        // Messages and invites wait on the server until the app is back.
                         social.stop()
+                        friends.stopWatching()
                         Self.scheduleRefresh()
                     }
                     if phase == .active, wasInBackground {
@@ -95,10 +98,10 @@ struct TakaDeApp: App {
                         // Fresh exchange rates on every open, straight from the public source,
                         // only for people who show their balance in another currency (ADR 27).
                         if showsForeignCurrency { Task { await exchange.refresh() } }
+                        friends.startWatching()
                         Task {
                             await model.addDueRepeats()
                             await sync.syncAll()
-                            await friends.checkInbox()
                             await social.start()
                         }
                     }
