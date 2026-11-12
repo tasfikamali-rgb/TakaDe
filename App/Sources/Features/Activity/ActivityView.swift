@@ -26,7 +26,7 @@ struct ActivityView: View {
                             .padding(.top, Spacing.huge)
                     }
                     ForEach(days, id: \.start) { day in
-                        Text(dayTitle(day.start))
+                        dayTitle(day.start)
                             .font(AppFont.caption)
                             .foregroundStyle(Color.inkMuted)
                             .frame(maxWidth: .infinity)
