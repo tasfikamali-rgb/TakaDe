@@ -8,7 +8,7 @@ extension SettlementStatus {
         case .notStarted: String(localized: "Not started", bundle: .appLanguage)
         case .handoffStarted: String(localized: "Payment app opened, not confirmed", bundle: .appLanguage)
         case .pending: String(localized: "Waiting for confirmation", bundle: .appLanguage)
-        case .reportedUnverified: String(localized: "Recorded by you, not verified", bundle: .appLanguage)
+        case .reportedUnverified: String(localized: "Reported paid, not confirmed yet", bundle: .appLanguage)
         case .acknowledgedByRecipient: String(localized: "Marked received by the person paid", bundle: .appLanguage)
         case .confirmed: String(localized: "Confirmed by the provider", bundle: .appLanguage)
         case .failed: String(localized: "Failed", bundle: .appLanguage)
