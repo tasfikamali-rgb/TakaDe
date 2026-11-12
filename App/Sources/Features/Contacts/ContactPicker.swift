@@ -28,9 +28,9 @@ struct ContactPicker: UIViewControllerRepresentable {
 
         // Implementing the plural form turns on picking several people at once.
         func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
-            let names = contacts.compactMap(ContactName.of)
+            let picked = contacts.compactMap { PickedContact($0) }
             parent.isPresented = false
-            parent.onPick(names)
+            parent.onPick(picked)
         }
 
         func contactPickerDidCancel(_ picker: CNContactPickerViewController) {

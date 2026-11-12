@@ -44,13 +44,13 @@
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "গ্রুপে মানুষ যোগ করতে খুঁজে বাছাই করার জন্য TakaDe আপনার কন্ট্যাক্ট দেখায়। শুধু আপনার বাছাই করা নামগুলো এই ফোনে রাখা হয়। কন্ট্যাক্ট কখনো আপলোড হয় না।"
+            "value": "গ্রুপে মানুষ যোগ করতে খুঁজে বাছাই করার জন্য TakaDe আপনার কন্ট্যাক্ট দেখায়। শুধু আপনার বাছাই করা মানুষদের নাম, ছবি আর মোবাইল নম্বর এই ফোনে রাখা হয়। কন্ট্যাক্ট কখনো আপলোড হয় না।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "TakaDe shows your contacts so you can search and pick people to add to a group. Only the names you pick are kept, on this phone. Your contacts are never uploaded."
+            "value": "TakaDe shows your contacts so you can search and pick people to add to a group. Only the names, photos and mobile numbers of the people you pick are kept, on this phone. Your contacts are never uploaded."
           }
         }
       }
