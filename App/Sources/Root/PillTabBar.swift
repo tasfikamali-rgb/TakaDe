@@ -122,14 +122,16 @@ private struct PillTabButton: View {
                 // At accessibility text sizes the bar shows icons only, like the system tab
                 // bar: touch and hold a tab for the large content viewer to read its name.
                 if !dynamicTypeSize.isAccessibilitySize {
+                    // fixedSize keeps the label on one line at its full width, so the button
+                    // grows instead of cutting it off. No lineLimit: with one, the audit warned
+                    // that long Bengali labels (অ্যাকাউন্ট) may clip at larger text sizes.
                     Text(tab.title)
                         .font(AppFont.text(11, .semibold, relativeTo: .caption2))
-                        .lineLimit(1)
                         .fixedSize()
                 }
             }
             .foregroundStyle(isSelected ? Color.tabBarSelected : Color.tabBarUnselected)
-            .padding(.horizontal, 6)
+            .padding(.horizontal, 4)
             .padding(.vertical, 4)
             .frame(minWidth: 60, minHeight: 48)
             .contentShape(Capsule(style: .continuous))
