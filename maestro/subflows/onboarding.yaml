@@ -12,9 +12,7 @@ appId: app.takade.ios
     visible: "English"
     timeout: 5000
 - tapOn: "English"
-- takeScreenshot: ${OUT}/00a-onboarding-language
 - tapOn: "Continue"
-- takeScreenshot: ${OUT}/00b-onboarding-account
 - tapOn: "Continue without account"
 - tapOn: "Your name"
 - inputText: "Sabit"
@@ -26,7 +24,8 @@ appId: app.takade.ios
       visible: "Start splitting"
     commands:
       - tapOn: "Start splitting"
-# iPad portrait starts with the sidebar hidden.
+# iPad in portrait opens on the empty detail ("Pick a group") with the group list
+# in a collapsed sidebar. Open it so the same steps work on phone and tablet.
 - runFlow:
     when:
       visible: "Show Sidebar"

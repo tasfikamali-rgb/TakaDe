@@ -15,9 +15,12 @@ final class AccessibilityAuditTests: XCTestCase {
     func testA_Onboarding() throws {
         let app = launch()
         XCTAssertTrue(app.buttons["Get started"].waitForExistence(timeout: 10))
+        // First launch after install is slow on CI; the audit times out if it starts
+        // while the app is still settling.
+        sleep(3)
         try audit(app)
         app.buttons["Get started"].tap()
-        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 10))
         try audit(app)
     }
 
@@ -34,8 +37,11 @@ final class AccessibilityAuditTests: XCTestCase {
         let app = launch()
         completeOnboardingIfNeeded(app)
         app.buttons["Create a group"].tap()
-        XCTAssertTrue(app.navigationBars["New group"].waitForExistence(timeout: 5))
-        try audit(app)
+        let sheetBar = app.navigationBars["New group"]
+        XCTAssertTrue(sheetBar.waitForExistence(timeout: 5))
+        // The Groups screen shows above the sheet under the system dimming. The audit
+        // measures that dimmed text too; only the sheet's own elements count here.
+        try audit(app, ignoringContrastAbove: sheetBar.frame.minY)
     }
 
     @MainActor
@@ -114,9 +120,15 @@ final class AccessibilityAuditTests: XCTestCase {
     /// the system font and the app's tint; the audit flags them on some OS versions
     /// even though the app can't style them further. Everything else fails the test.
     @MainActor
-    private func audit(_ app: XCUIApplication, for types: XCUIAccessibilityAuditType = .all) throws {
+    private func audit(_ app: XCUIApplication, for types: XCUIAccessibilityAuditType = .all,
+                       ignoringContrastAbove sheetTop: CGFloat? = nil) throws {
         try app.performAccessibilityAudit(for: types) { issue in
             let label = issue.element?.label ?? "(no element)"
+            if issue.auditType == .contrast, let sheetTop, let element = issue.element,
+               element.frame.maxY <= sheetTop {
+                print("Ignored contrast on dimmed content behind the sheet: \(label)")
+                return true
+            }
             if issue.auditType == .contrast || issue.auditType == .dynamicType,
                let element = issue.element, element.elementType == .button {
                 let navButtons = app.navigationBars.buttons.allElementsBoundByIndex
