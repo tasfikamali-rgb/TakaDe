@@ -10524,6 +10524,74 @@
           }
         }
       }
+    },
+    "Use your Google photo?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার Google ছবি ব্যবহার করবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use your Google photo?"
+          }
+        }
+      }
+    },
+    "Use Google photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Google ছবি ব্যবহার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Google photo"
+          }
+        }
+      }
+    },
+    "Google will ask you to share your profile photo. It's saved on this phone and shown to friends you add on TakaDe, never kept on our servers.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Google আপনার প্রোফাইল ছবি শেয়ার করার অনুমতি চাইবে। ছবিটি এই ফোনে সেভ থাকবে এবং TakaDe-তে যোগ করা বন্ধুরা দেখতে পাবে, আমাদের সার্ভারে কখনো রাখা হয় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google will ask you to share your profile photo. It's saved on this phone and shown to friends you add on TakaDe, never kept on our servers."
+          }
+        }
+      }
+    },
+    "Your Google photo couldn't be added. Tap your photo in Account to try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার Google ছবি যোগ করা যায়নি। আবার চেষ্টা করতে অ্যাকাউন্টে আপনার ছবিতে ট্যাপ করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Google photo couldn't be added. Tap your photo in Account to try again."
+          }
+        }
+      }
     }
   }
 }
