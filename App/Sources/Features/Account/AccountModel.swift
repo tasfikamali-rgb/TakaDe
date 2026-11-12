@@ -29,6 +29,10 @@ final class AccountModel {
     private(set) var isLoaded = false
     /// The profile picture, kept on this phone only (ProfilePhotoFile).
     private(set) var photo: UIImage?
+    /// Bumped each time the photo is set or removed, so friends can be sent the new one.
+    private(set) var photoRevision = 0
+    /// True while the app should ask "Use your Google photo?" (GooglePhotoOffer).
+    private(set) var offersGooglePhoto = false
     let store: ProfileRepository
     let google: GoogleSignInService?
     let supabase: SupabaseAuth?
@@ -74,6 +78,8 @@ final class AccountModel {
         isLoaded = true
         await checkAppleCredential()
         await refreshAccount()
+        // Signed in with Google before this question existed: ask once.
+        if profile != nil { offerGooglePhotoIfNeeded() }
     }
 
     // MARK: Sign-in service
@@ -103,7 +109,9 @@ final class AccountModel {
         if let supabase, provider == .google, let google {
             let nonce = SupabaseAuth.makeNonce()
             let identity = try await google.signIn(nonce: nonce.hashed, includeProfile: false)
-            return try await adopt(supabase.signInWithGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
+            let outcome = try await adopt(supabase.signInWithGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
+            usedGoogle()
+            return outcome
         }
         if let supabase, let oauth = SupabaseAuth.Provider(provider) {
             return try await adopt(supabase.signIn(with: oauth))
@@ -111,6 +119,7 @@ final class AccountModel {
         guard provider == .google else { throw SupabaseAuth.Failure.couldNotStart }
         let identity = try await signInWithGoogle()
         try await adoptOnDevice(identity.account)
+        usedGoogle()
         return SignInOutcome(name: identity.name, isNew: false)
     }
 
@@ -130,6 +139,7 @@ final class AccountModel {
             let nonce = SupabaseAuth.makeNonce()
             let identity = try await google.signIn(nonce: nonce.hashed, includeProfile: false)
             _ = try await adopt(supabase.linkGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
+            usedGoogle()
             return
         }
         guard let supabase, let oauth = SupabaseAuth.Provider(provider) else { throw SupabaseAuth.Failure.couldNotStart }
@@ -320,6 +330,7 @@ final class AccountModel {
         MemberPhotos.reset()
         FriendPhotos.removeAll()
         photo = nil
+        offersGooglePhoto = false
         profile = nil
         identities = []
         await app.reload()
@@ -329,7 +340,35 @@ final class AccountModel {
 
     /// True when Google can be asked for this person's photo.
     var canUseGooglePhoto: Bool {
-        google != nil && (profile?.account?.provider == .google || identities.contains { $0.provider == .google })
+        google != nil && (profile?.account?.provider == .google || pendingLinked?.provider == .google
+                          || identities.contains { $0.provider == .google })
+    }
+
+    private static let googlePhotoAskedKey = "account.googlePhotoAsked"
+
+    /// After signing in with Google (Sabit, 2026-11-12): ask whether to use the Google photo,
+    /// when there's no photo yet and the question hasn't been answered since that sign-in.
+    func offerGooglePhotoIfNeeded() {
+        guard canUseGooglePhoto, photo == nil, !UserDefaults.standard.bool(forKey: Self.googlePhotoAskedKey) else { return }
+        offersGooglePhoto = true
+    }
+
+    /// Either answer counts; it's asked again only after the next Google sign-in.
+    func answeredGooglePhotoOffer() {
+        UserDefaults.standard.set(true, forKey: Self.googlePhotoAskedKey)
+        offersGooglePhoto = false
+    }
+
+    /// A fresh Google sign-in or link: the photo question may be asked again.
+    private func usedGoogle() {
+        UserDefaults.standard.removeObject(forKey: Self.googlePhotoAskedKey)
+    }
+
+    /// The Google email this account uses, so Google's sheet can skip choosing an account.
+    private var googleEmail: String? {
+        identities.first { $0.provider == .google }?.email
+            ?? (profile?.account?.provider == .google ? profile?.account?.email : nil)
+            ?? (pendingLinked?.provider == .google ? pendingLinked?.email : nil)
     }
 
     /// "Use my Google photo" (Sabit, 2026-11-12): asks Google directly, in its own sheet, for
@@ -337,7 +376,7 @@ final class AccountModel {
     /// TakaDe's sign-in service, so the account still holds no name or photo.
     func useGooglePhoto() async throws {
         guard let google else { throw GoogleSignInService.Failure.couldNotStart }
-        let identity = try await google.signIn(includeProfile: true)
+        let identity = try await google.signIn(includeProfile: true, loginHint: googleEmail)
         guard let picture = identity.picture, picture.scheme == "https",
               picture.host?.hasSuffix(".googleusercontent.com") == true else { throw GoogleSignInService.Failure.badResponse }
         // Google's address ends in a size such as "=s96-c"; ask for a sharper one.
@@ -353,11 +392,13 @@ final class AccountModel {
 
     func setPhoto(_ data: Data) async throws {
         photo = try await ProfilePhotoFile.save(data)
+        photoRevision += 1
     }
 
     func removePhoto() {
         ProfilePhotoFile.remove()
         photo = nil
+        photoRevision += 1
     }
 
     // MARK: Export

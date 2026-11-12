@@ -96,7 +96,7 @@ struct ChatView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 HStack(spacing: Spacing.xs) {
-                    Avatar(name: friend.name, size: 30, photo: FriendPhotos.image(for: friend.id))
+                    Avatar(name: friend.name, size: 30, photo: social.photo(for: friend.id))
                     VStack(alignment: .leading, spacing: 0) {
                         Text(verbatim: friend.displayName)
                             .font(AppFont.bodyEmphasis)

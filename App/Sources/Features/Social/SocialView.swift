@@ -143,12 +143,13 @@ struct SocialView: View {
 
 /// A friend in the list: their name as you typed it, the last message, and how many are new.
 private struct FriendRow: View {
+    @Environment(SocialModel.self) private var social
     let friend: Friend
     let isTyping: Bool
 
     var body: some View {
         HStack(spacing: Spacing.s) {
-            Avatar(name: friend.name, size: 44, photo: FriendPhotos.image(for: friend.id))
+            Avatar(name: friend.name, size: 44, photo: social.photo(for: friend.id))
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(verbatim: friend.displayName)
@@ -203,7 +204,7 @@ private struct RequestRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             HStack(spacing: Spacing.s) {
-                Avatar(name: friend.name, size: 44, photo: FriendPhotos.image(for: friend.id))
+                Avatar(name: friend.name, size: 44, photo: social.photo(for: friend.id))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: friend.displayName)
                         .font(AppFont.bodyEmphasis)
