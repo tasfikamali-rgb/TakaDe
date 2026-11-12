@@ -1,18 +1,13 @@
 import Foundation
 import TakaDeCore
 
-/// Which digits to show amounts in. Automatic uses Bengali digits in the Bengali interface.
-enum DigitPreference: String, CaseIterable, Identifiable {
-    case automatic, latin, bengali
-
+/// Digits follow the language (Sabit, 2026-11-11): Bengali digits (১২৩) in Bangla and
+/// 1 2 3 in English. There's no separate setting; `storageKey` is the old setting's key,
+/// kept only so "Delete all my data" clears it from earlier installs.
+enum DigitPreference {
     static let storageKey = "digitPreference"
-    var id: String { rawValue }
 
-    func resolved(for locale: Locale) -> DigitStyle {
-        switch self {
-        case .latin: .latin
-        case .bengali: .bengali
-        case .automatic: locale.language.languageCode?.identifier == "bn" ? .bengali : .latin
-        }
+    static func style(for locale: Locale) -> DigitStyle {
+        locale.language.languageCode?.identifier == "bn" ? .bengali : .latin
     }
 }

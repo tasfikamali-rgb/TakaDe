@@ -2,21 +2,23 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
-    @AppStorage(DigitPreference.storageKey) private var digits: DigitPreference = .automatic
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
 
     var body: some View {
         Form {
-            Section("Language") {
-                Picker("Language", selection: $language) {
-                    ForEach([AppLanguage.bengali, .english, .system]) { option in
+            Section {
+                Picker("Language", selection: $language.choice) {
+                    ForEach(AppLanguage.choices) { option in
                         Text(verbatim: option.nativeName).tag(option)
                     }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+            } header: {
+                Text("Language")
+                    .foregroundStyle(Color.inkMuted)
             }
-            Section("Appearance") {
+            Section {
                 Picker("Appearance", selection: $appearance) {
                     ForEach(AppAppearance.allCases) { option in
                         Text(option.label).tag(option)
@@ -24,14 +26,9 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-            }
-            Section("Numbers") {
-                Picker("Numbers", selection: $digits) {
-                    Text("Automatic").tag(DigitPreference.automatic)
-                    Text(verbatim: "123").tag(DigitPreference.latin)
-                    Text(verbatim: "১২৩").tag(DigitPreference.bengali)
-                }
-                .pickerStyle(.segmented)
+            } header: {
+                Text("Appearance")
+                    .foregroundStyle(Color.inkMuted)
             }
             AppLockSection()
         }

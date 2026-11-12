@@ -27,6 +27,19 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
+    /// The only two choices offered (Sabit, 2026-11-11): no "Same as phone".
+    static let choices: [AppLanguage] = [.bengali, .english]
+
+    /// The language actually showing. Before anyone picks, "system" resolves to the
+    /// phone's language, so a two-option picker always has one selected.
+    var choice: AppLanguage {
+        get {
+            guard self == .system else { return self }
+            return Bundle.main.preferredLocalizations.first == "bn" ? .bengali : .english
+        }
+        set { self = newValue }
+    }
+
     /// Each language is shown in its own script so anyone can find theirs.
     var nativeName: String {
         switch self {

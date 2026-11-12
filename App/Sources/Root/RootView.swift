@@ -71,7 +71,7 @@ struct RootView: View {
         .animation(Motion.standard, value: chrome.hidesTabBar)
         .environment(chrome)
         .fullScreenCover(isPresented: Binding(get: { account.needsOnboarding }, set: { _ in })) {
-            OnboardingView()
+            OnboardingView().rebuildsOnDynamicType()
         }
         // A tapped invite link. Waits until onboarding is done for someone new to TakaDe.
         // Next, any other invite friends sent by TakaDe ID.

@@ -11,11 +11,17 @@ tags:
     clearState: true
 - runFlow: ../subflows/onboarding.yaml
 - tapOn: "Create a group"
-- tapOn: "Group name"
+- tapOn:
+    id: "newGroup.name"
 - inputText: "Flat"
-# "Your name" is prefilled from onboarding.
-- tapOn: "Name"
+# Your own name comes from onboarding; the new group never asks for it.
+# Return in the group name moves to Add name (the field can sit under the keyboard,
+# below the optional photo), then Add puts Rishan in the list.
+- pressKey: Enter
+- tapOn:
+    id: "newGroup.memberName"
 - inputText: "Rishan"
+- pressKey: Enter
 - tapOn: "Create"
 - extendedWaitUntil:
     visible: "Add expense"

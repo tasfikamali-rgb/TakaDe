@@ -12,7 +12,7 @@ struct ExpenseRow: View {
             if let category = expense.category {
                 CategoryBadge(category: category)
             } else {
-                Avatar(name: expense.paidBy.keys.map(group.storedName(of:)).sorted().first ?? "?", size: 36)
+                Avatar(name: expense.paidBy.keys.map(group.storedName(of:)).sorted().first ?? "", size: 36)
             }
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 HStack(spacing: Spacing.xxs) {

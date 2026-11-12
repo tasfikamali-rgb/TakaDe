@@ -9,8 +9,8 @@ struct QuickSettingsMenu: View {
     var body: some View {
         Menu {
             Section("Language") {
-                Picker(selection: $language) {
-                    ForEach([AppLanguage.bengali, .english, .system]) { option in
+                Picker(selection: $language.choice) {
+                    ForEach(AppLanguage.choices) { option in
                         Text(verbatim: option.nativeName).tag(option)
                     }
                 } label: {

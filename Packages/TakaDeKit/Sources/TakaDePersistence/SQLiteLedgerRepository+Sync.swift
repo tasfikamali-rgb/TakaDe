@@ -197,20 +197,21 @@ extension SQLiteLedgerRepository: SyncRepository {
         let exists = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM expense_group WHERE id = ?)", arguments: [group.description]) ?? false
         // Currency and creation date are fixed once the group exists.
         try db.execute(sql: """
-            INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id, accent)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET name = excluded.name, archived_at = excluded.archived_at,
-                simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id
+                simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id, accent = excluded.accent
             """, arguments: [group.description, remote.name, remote.currency.code, remote.currency.minorUnitDigits, remote.createdAt,
-                             remote.archivedAt, remote.simplifiesDebts, remote.kind.rawValue, remote.managerID?.description])
+                             remote.archivedAt, remote.simplifiesDebts, remote.kind.rawValue, remote.managerID?.description, remote.accentHex])
         let remoteIDs = Set(remote.members.map(\.id))
         for (position, member) in remote.members.enumerated() {
             // A member id that belongs to another group is never moved; the update is skipped.
             try db.execute(sql: """
-                INSERT INTO member (id, group_id, display_name, is_me, position) VALUES (?, ?, ?, 0, ?)
-                ON CONFLICT(id) DO UPDATE SET display_name = excluded.display_name, position = excluded.position
+                INSERT INTO member (id, group_id, display_name, is_me, position, nickname) VALUES (?, ?, ?, 0, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET display_name = excluded.display_name, position = excluded.position,
+                    nickname = excluded.nickname
                     WHERE member.group_id = excluded.group_id
-                """, arguments: [member.id.description, group.description, member.displayName, position])
+                """, arguments: [member.id.description, group.description, member.displayName, position, member.nickname])
         }
         // People added here and not yet seen by the other phone stay, after the others.
         let localOnly = try String.fetchAll(db, sql: "SELECT id FROM member WHERE group_id = ? ORDER BY position", arguments: [group.description])

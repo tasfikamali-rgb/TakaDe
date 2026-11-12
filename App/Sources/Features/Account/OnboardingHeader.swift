@@ -8,7 +8,7 @@ struct OnboardingHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             HStack(spacing: Spacing.xxs) {
-                ForEach(0..<3) { index in
+                ForEach(0..<Self.stepCount) { index in
                     Capsule()
                         .fill(index <= progress ? Color.lime : Color.onHeader.opacity(0.18))
                         .frame(width: index == progress ? 24 : 8, height: 8)
@@ -17,9 +17,7 @@ struct OnboardingHeader: View {
             // Decorative: the step is read with the title instead, so there's no tiny
             // element for VoiceOver to land on.
             .accessibilityHidden(true)
-            Text(verbatim: "TakaDe")
-                .font(AppFont.label)
-                .foregroundStyle(Color.onHeader.opacity(0.72))
+            TakaLogo(width: 104, mark: Color.onHeader, word: Color.onHeader)
                 .padding(.top, Spacing.m)
             Text(title)
                 .font(AppFont.title)
@@ -27,7 +25,7 @@ struct OnboardingHeader: View {
                 .foregroundStyle(Color.onHeader)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
-                .accessibilityValue(Text("Step \(progress + 1) of 3"))
+                .accessibilityValue(Text("Step \(progress + 1) of \(Self.stepCount)"))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Spacing.screenMargin)
@@ -36,22 +34,25 @@ struct OnboardingHeader: View {
         .readableWidth()
     }
 
-    /// Language, then the welcome choice, then the details (name or sign-in method).
+    static let stepCount = 4
+
+    /// Where you're from, language, sign in or not, then your name. The welcome screen
+    /// comes before and has no header.
     private var progress: Int {
         switch step {
-        case .language: 0
-        case .welcome: 1
-        case .name, .method: 2
+        case .welcome, .region: 0
+        case .language: 1
+        case .account: 2
+        case .name, .method: 3
         }
     }
 
     private var title: LocalizedStringKey {
         switch (step, mode) {
+        case (.welcome, _), (.region, _): "Where are you from?"
         case (.language, _): "Choose your language"
-        case (.welcome, _): "Split bills with friends & family, settle up in taka"
+        case (.account, _), (.method, _): "Sign in or continue"
         case (.name, _): "What should your friends call you?"
-        case (.method, .signIn): "Sign in to your account"
-        case (.method, _): "How do you want to sign in?"
         }
     }
 }

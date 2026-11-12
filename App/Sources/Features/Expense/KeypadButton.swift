@@ -4,7 +4,6 @@ import TakaDeCore
 struct KeypadButton: View {
     enum Style { case digit, `operator` }
 
-    @AppStorage(DigitPreference.storageKey) private var digitPreference: DigitPreference = .automatic
     @Environment(\.locale) private var locale
 
     let key: KeypadKey
@@ -13,7 +12,7 @@ struct KeypadButton: View {
 
     var body: some View {
         Button(action: tap) {
-            let bengali = digitPreference.resolved(for: locale) == .bengali
+            let bengali = DigitPreference.style(for: locale) == .bengali
             Group {
                 if key == .delete {
                     Image(systemName: "delete.left")

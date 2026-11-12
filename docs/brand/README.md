@@ -17,7 +17,7 @@ The mark is the Bangladeshi taka sign (৳) cut on a diagonal, with the two halv
 | `android/play-store-icon-512.png` | Google Play listing icon, 512×512, opaque. Play applies its own corner mask. |
 
 ## Launch
-The iPhone launch screen shows the whole ৳ (`LaunchMark`, 96 pt) on `launchBackground` (lime in light mode, near-black in dark). `LaunchSplash` then cuts the sign into the logo's two halves with a light tap and fades to the app in about 0.9 s. Reduce Motion skips the cut. The halves are drawn in SwiftUI by `TakaMark`, generated from the same glyph.
+The iPhone launch screen shows the whole ৳ (`LaunchMark`, 96 pt) on `launchBackground` (lime in light mode, near-black in dark). `LaunchSplash` then cuts the sign into the logo's two halves with a light tap, slides it left while "akaDe" wipes in beside it, ending on the logo "৳akaDe", holds, and fades to the app in about 1.7 s. `TakaWordmark.swift` (the outlined "akaDe" and the lockup positions) is generated from `logo-on-light.svg` by `scripts/brand_wordmark_swift.py`. It plays on every open: a cold launch and each return from the background. Reduce Motion cross-fades the sign to the logo instead. The halves are drawn in SwiftUI by `TakaMark`, generated from the same glyph.
 
 ## Rules
 - Colors are the app tokens: lime `#4BE83A`, ink `#161616`, near-black `#0B0B0B`. No gradients, shadows or outlines on the mark.

@@ -14,11 +14,13 @@ final class AccessibilityAuditTests: XCTestCase {
     // other tests complete onboarding.
     func testA_Onboarding() throws {
         let app = launch()
-        XCTAssertTrue(app.buttons["English"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Get started"].waitForExistence(timeout: 10))
         // First launch after install is slow on CI; the audit times out if it starts
         // while the app is still settling.
-        _ = app.buttons["Continue"].waitForExistence(timeout: 10)
         sleep(3)
+        try audit(app)
+        app.buttons["Get started"].tap()
+        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 10))
         try audit(app)
     }
 
@@ -90,13 +92,18 @@ final class AccessibilityAuditTests: XCTestCase {
         return app
     }
 
-    /// First launch shows language, account and name steps. The profile lives in
-    /// the app's database, so this only runs once per simulator install.
+    /// First launch shows welcome, where you're from, language, account and name steps.
+    /// The profile lives in the app's database, so this only runs once per simulator install.
     @MainActor
     private func completeOnboardingIfNeeded(_ app: XCUIApplication) {
-        guard app.buttons["Continue without account"].exists
-            || app.buttons["English"].waitForExistence(timeout: 3) else { return }
-        if app.buttons["English"].exists {
+        let started = app.buttons["Get started"].waitForExistence(timeout: 3)
+        guard started || app.buttons["Continue"].exists || app.buttons["Continue without account"].exists else { return }
+        if started { app.buttons["Get started"].tap() }
+        // Where you're from: the suggestion is already picked.
+        if app.buttons["Continue"].waitForExistence(timeout: 3), !app.buttons["English"].exists {
+            app.buttons["Continue"].tap()
+        }
+        if app.buttons["English"].waitForExistence(timeout: 3) {
             app.buttons["English"].tap()
             app.buttons["Continue"].tap()
         }

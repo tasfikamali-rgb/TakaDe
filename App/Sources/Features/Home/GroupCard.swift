@@ -10,11 +10,12 @@ struct GroupCard: View {
     let group: ExpenseGroup
     var isSelected = false
     @State private var stats = GroupStats.empty
+    @State private var photo: UIImage?
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             HStack(spacing: Spacing.s) {
-                AvatarStack(names: group.members.map(\.displayName), size: 28, ring: isSelected ? .surfaceRaised : .surface)
+                GroupPhotoBadge(group: group, photo: photo, size: photo == nil ? 28 : 36, ring: isSelected ? .surfaceRaised : .surface)
                 Text(verbatim: group.name)
                     .font(AppFont.bodyEmphasis)
                     .foregroundStyle(Color.ink)
@@ -55,7 +56,10 @@ struct GroupCard: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .task(id: model.revision) { stats = await GroupStats.load(group, from: model) }
+        .task(id: model.revision) {
+            photo = GroupPhotoFile.load(group.id)
+            stats = await GroupStats.load(group, from: model)
+        }
     }
 
     private var cardFill: Color { isSelected ? .surfaceRaised : .surface }

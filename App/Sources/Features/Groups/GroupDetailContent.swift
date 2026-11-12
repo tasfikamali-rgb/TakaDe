@@ -19,6 +19,7 @@ struct GroupDetailContent: View {
     @State private var newMemberName = ""
     @State private var duplicateMember: String?
     @State private var paymentMember: Member?
+    @State private var removingMember: Member?
     @State private var recentlyDeleted: Expense?
     @State private var editing: Expense?
     @State private var errorMessage: String?
@@ -38,16 +39,17 @@ struct GroupDetailContent: View {
                     onAddMember: askForMember,
                     onAddFromContacts: { pickingContacts = true },
                     onOpenMember: openMember,
+                    onRemoveMember: { removingMember = $0 },
                     onAddTakaDeUser: sync.isAvailable ? { addingTakaDeUser = true } : nil)
             }
             .frame(maxWidth: .infinity)
         }
-        .background(alignment: .top) { Color.lilac.frame(height: 480).ignoresSafeArea() }
+        .background(alignment: .top) { GroupTint.color(for: group).frame(height: 480).ignoresSafeArea() }
         .background(Color.canvas)
-        .background(ContactPicker(isPresented: $pickingContacts, onPick: addContacts))
+        .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
         .navigationTitle(Text(verbatim: group.name))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color.lilac, for: .navigationBar)
+        .toolbarBackground(GroupTint.color(for: group), for: .navigationBar)
         .toolbar {
             // The header already shows the name large; keep the title for Back and VoiceOver only.
             ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1).accessibilityHidden(true) }
@@ -118,7 +120,16 @@ struct GroupDetailContent: View {
             }
         }
         .sheet(item: $paymentMember) { member in
-            MemberPaymentSheet(group: group, member: member)
+            // The sheet asks first, then closes itself.
+            MemberPaymentSheet(group: group, member: member) { remove(member) }
+        }
+        .confirmationDialog(
+            Text("Remove \(removingMember.map { group.displayName(of: $0.id) } ?? "") from this group?"),
+            isPresented: Binding(get: { removingMember != nil }, set: { if !$0 { removingMember = nil } }),
+            titleVisibility: .visible,
+            presenting: removingMember
+        ) { member in
+            Button("Remove", role: .destructive) { remove(member) }
         }
         .alert("Add a person", isPresented: $showingAddMember) {
             TextField("Name", text: $newMemberName)
@@ -162,6 +173,25 @@ struct GroupDetailContent: View {
 
     private func askForMember() { showingAddMember = true }
 
+    /// Removes someone who isn't in any expense, payment or meal count. Otherwise says why
+    /// they stay, so balances and history never change behind anyone's back.
+    private func remove(_ member: Member) {
+        removingMember = nil
+        let name = group.displayName(of: member.id)
+        Task {
+            do {
+                try await app.removeMember(member, from: group)
+                errorMessage = nil
+            } catch MemberRemovalError.hasEntries {
+                errorMessage = String(localized: "\(name) is in expenses or payments in this group, so they stay. That keeps everyone's balance right.", bundle: .appLanguage)
+            } catch MemberRemovalError.isManager {
+                errorMessage = String(localized: "\(name) keeps this mess's books, so they stay.", bundle: .appLanguage)
+            } catch {
+                errorMessage = String(localized: "\(name) wasn't removed. Try again.", bundle: .appLanguage)
+            }
+        }
+    }
+
     private func openMember(_ member: Member) {
         recentlyDeleted = nil
         paymentMember = member
@@ -172,6 +202,11 @@ struct GroupDetailContent: View {
     private func checkNewMember() {
         let name = newMemberName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { newMemberName = ""; return }
+        if let problem = NameRule.message(for: name) {
+            errorMessage = problem
+            newMemberName = ""
+            return
+        }
         let taken = group.members.contains {
             $0.displayName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name.lowercased()
         }
@@ -200,7 +235,9 @@ struct GroupDetailContent: View {
         var seen = existing
         var skipped: [String] = []
         var toAdd: [String] = []
-        for name in names {
+        // Contact names with emoji or symbols are left out; they can be typed by hand.
+        let notNames = names.filter { !PersonName.isValid($0) }
+        for name in names where PersonName.isValid(name) {
             let key = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             if seen.contains(key) { skipped.append(name) } else { seen.insert(key); toAdd.append(name) }
         }
@@ -213,6 +250,8 @@ struct GroupDetailContent: View {
             }
             if !skipped.isEmpty {
                 errorMessage = String(localized: "\(skipped.formatted(.list(type: .and))) is already in this group.", bundle: .appLanguage)
+            } else if !notNames.isEmpty {
+                errorMessage = String(localized: "\(notNames.formatted(.list(type: .and))) wasn't added. Names can't have emoji, numbers or symbols. Add them with Type a name.", bundle: .appLanguage)
             } else {
                 errorMessage = nil
             }

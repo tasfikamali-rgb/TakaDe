@@ -4,8 +4,13 @@ import TakaDeCore
 
 /// "Scan receipt" with the camera where available, or pick a photo. The result is
 /// shown for review before anything fills the form.
+///
+/// With `onEnterAmount`, it shows three large, equal choices instead (Scan receipt,
+/// From photos, Enter amount), for a new expense that has no amount yet: Add expense
+/// opens on these rather than jumping to the number pad (Sabit, 2026-11-12).
 struct ReceiptScanButton: View {
     let onReviewed: (_ merchant: String?, _ total: Money?, _ date: Date?) -> Void
+    var onEnterAmount: (() -> Void)?
     /// The photo, kept with the expense so others can see what was paid.
     var onPhoto: ((CGImage) -> Void)? = nil
 
@@ -18,16 +23,20 @@ struct ReceiptScanButton: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
-            HStack(spacing: Spacing.m) {
-                if DocumentScanner.isAvailable {
-                    Button("Scan receipt", systemImage: "doc.viewfinder", action: openCamera)
+            if let onEnterAmount {
+                choices(onEnterAmount)
+            } else {
+                HStack(spacing: Spacing.m) {
+                    if DocumentScanner.isAvailable {
+                        Button("Scan receipt", systemImage: "doc.viewfinder", action: openCamera)
+                    }
+                    PhotosPicker(selection: $photo, matching: .images) {
+                        Label(DocumentScanner.isAvailable ? "From photos" : "Scan receipt from photos", systemImage: "photo")
+                    }
+                    if isReading { ProgressView() }
                 }
-                PhotosPicker(selection: $photo, matching: .images) {
-                    Label(DocumentScanner.isAvailable ? "From photos" : "Scan receipt from photos", systemImage: "photo")
-                }
-                if isReading { ProgressView() }
+                .buttonStyle(.borderless)
             }
-            .buttonStyle(.borderless)
             if let error {
                 Text(verbatim: error).font(AppFont.caption).foregroundStyle(Color.owe)
             }
@@ -45,6 +54,35 @@ struct ReceiptScanButton: View {
             guard let item else { return }
             Task { await read(item) }
         }
+    }
+
+    /// Side by side when they fit, stacked at large text sizes.
+    private func choices(_ onEnterAmount: @escaping () -> Void) -> some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: Spacing.s) { choiceTiles(onEnterAmount) }
+            VStack(spacing: Spacing.s) { choiceTiles(onEnterAmount) }
+        }
+        .overlay {
+            if isReading {
+                ProgressView()
+                    .padding(Spacing.m)
+                    .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func choiceTiles(_ onEnterAmount: @escaping () -> Void) -> some View {
+        if DocumentScanner.isAvailable {
+            Button(action: openCamera) { ChoiceTile(title: "Scan receipt", systemImage: "doc.viewfinder") }
+                .buttonStyle(.plain)
+        }
+        PhotosPicker(selection: $photo, matching: .images) {
+            ChoiceTile(title: "From photos", systemImage: "photo.on.rectangle")
+        }
+        .buttonStyle(.plain)
+        Button(action: onEnterAmount) { ChoiceTile(title: "Enter amount", systemImage: "number") }
+            .buttonStyle(.plain)
     }
 
     private func openCamera() { showingCamera = true }
@@ -81,5 +119,28 @@ struct ReceiptScanButton: View {
         } catch {
             self.error = String(localized: "The receipt couldn't be read. Type the amount instead.", bundle: .appLanguage)
         }
+    }
+}
+
+/// One of the big starting choices in Add expense.
+private struct ChoiceTile: View {
+    let title: LocalizedStringKey
+    let systemImage: String
+
+    var body: some View {
+        VStack(spacing: Spacing.xs) {
+            Image(systemName: systemImage)
+                .font(.title2.weight(.medium))
+                .accessibilityHidden(true)
+            Text(title)
+                .font(AppFont.label)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .foregroundStyle(Color.ink)
+        .frame(maxWidth: .infinity, minHeight: 88)
+        .padding(.horizontal, Spacing.xs)
+        .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+        .contentShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
     }
 }

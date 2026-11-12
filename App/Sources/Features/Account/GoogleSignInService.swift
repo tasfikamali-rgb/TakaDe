@@ -4,7 +4,9 @@ import Foundation
 import UIKit
 
 /// Sign in with Google using the system browser sheet and PKCE (OAuth 2.0 for native apps),
-/// with no Google SDK. The app talks only to Google: it reads the person's id, name and email
+/// with no Google SDK. It uses the app's own iOS client, so Google's screen names TakaDe,
+/// not the sign-in service's web address; with accounts on, the ID token then goes to the
+/// service (SupabaseAuth.signInWithGoogle). The app talks only to Google: it reads the person's id, name and email
 /// from the ID token and keeps the refresh token in the Keychain so it can be revoked later.
 @MainActor
 final class GoogleSignInService {
@@ -12,6 +14,8 @@ final class GoogleSignInService {
         let userID: String
         let email: String?
         let name: String?
+        /// Google's ID token, for handing to TakaDe's sign-in service (ADR 0016).
+        let idToken: String
     }
 
     enum Failure: Error {
@@ -27,8 +31,12 @@ final class GoogleSignInService {
         self.config = config
     }
 
-    /// Throws `CancellationError` if the person closes the sheet.
-    func signIn() async throws -> Identity {
+    /// Throws `CancellationError` if the person closes the sheet. `nonce` (the SHA-256 of a
+    /// raw nonce) goes into the ID token, so the sign-in service can check the token was
+    /// made for this request.
+    /// `includeProfile` false asks Google for the email only, so no name or picture reaches
+    /// the sign-in service in the ID token.
+    func signIn(nonce: String? = nil, includeProfile: Bool = true) async throws -> Identity {
         let verifier = Self.randomURLSafe(32)
         let challenge = Self.base64URL(Data(SHA256.hash(data: Data(verifier.utf8))))
         let state = Self.randomURLSafe(16)
@@ -38,12 +46,13 @@ final class GoogleSignInService {
             .init(name: "client_id", value: config.clientID),
             .init(name: "redirect_uri", value: config.redirectURI),
             .init(name: "response_type", value: "code"),
-            .init(name: "scope", value: "openid email profile"),
+            .init(name: "scope", value: includeProfile ? "openid email profile" : "openid email"),
             .init(name: "code_challenge", value: challenge),
             .init(name: "code_challenge_method", value: "S256"),
             .init(name: "state", value: state),
             .init(name: "prompt", value: "select_account"),
         ]
+        if let nonce { components.queryItems?.append(.init(name: "nonce", value: nonce)) }
 
         let callback: URL = try await withCheckedThrowingContinuation { continuation in
             let session = ASWebAuthenticationSession(url: components.url!, callbackURLScheme: config.redirectScheme) { url, error in
@@ -74,7 +83,7 @@ final class GoogleSignInService {
         if let refresh = tokens.refreshToken ?? tokens.accessToken {
             KeychainStore.set(refresh, for: Self.tokenKey)
         }
-        return Identity(userID: claims.sub, email: claims.email, name: claims.name)
+        return Identity(userID: claims.sub, email: claims.email, name: claims.name, idToken: tokens.idToken)
     }
 
     /// Forgets the sign-in on this phone and asks Google to revoke TakaDe's access.
@@ -106,6 +115,8 @@ final class GoogleSignInService {
         let iss: String
         let email: String?
         let name: String?
+        /// Google's ID token, for handing to TakaDe's sign-in service (ADR 0016).
+        let idToken: String
     }
 
     private func exchange(code: String, verifier: String) async throws -> TokenResponse {

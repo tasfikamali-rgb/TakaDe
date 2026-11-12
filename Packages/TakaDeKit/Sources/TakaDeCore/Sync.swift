@@ -94,7 +94,7 @@ extension ExpenseGroup {
     /// The copy other phones receive: "which one is me" is per phone, so nobody is marked.
     public var forSharing: ExpenseGroup {
         var copy = self
-        copy.members = members.map { Member(id: $0.id, displayName: $0.displayName, isMe: false) }
+        copy.members = members.map { Member(id: $0.id, displayName: $0.displayName, isMe: false, nickname: $0.nickname) }
         return copy
     }
 }

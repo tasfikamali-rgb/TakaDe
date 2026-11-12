@@ -9,16 +9,24 @@ struct Avatar: View {
     var fill: Color = .surfaceRaised
 
     var body: some View {
-        Text(verbatim: initial)
-            .font(AppFont.text(size * 0.42, .semibold, relativeTo: .body))
-            .foregroundStyle(Color.ink)
-            .frame(width: size, height: size)
-            .background(Circle().fill(fill))
-            .overlay(Circle().stroke(ring, lineWidth: 2))
-            .accessibilityHidden(true)
+        Group {
+            if let initial {
+                Text(verbatim: initial)
+                    .font(AppFont.text(size * 0.42, .semibold, relativeTo: .body))
+            } else {
+                // No name yet: a person outline rather than a question mark.
+                Image(systemName: "person.fill")
+                    .font(.system(size: size * 0.42))
+            }
+        }
+        .foregroundStyle(Color.ink)
+        .frame(width: size, height: size)
+        .background(Circle().fill(fill))
+        .overlay(Circle().stroke(ring, lineWidth: 2))
+        .accessibilityHidden(true)
     }
 
-    private var initial: String {
-        name.trimmingCharacters(in: .whitespacesAndNewlines).first.map(String.init) ?? "?"
+    private var initial: String? {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).first.map(String.init)
     }
 }

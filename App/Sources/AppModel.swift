@@ -80,14 +80,36 @@ final class AppModel {
         groups.first { $0.id == id }
     }
 
-    func createGroup(name: String, myName: String, otherNames: [String], kind: GroupKind = .standard) async throws -> ExpenseGroup {
+    func createGroup(name: String, myName: String, otherNames: [String], kind: GroupKind = .standard, photo: Data? = nil) async throws -> ExpenseGroup {
         let me = Member(displayName: myName, isMe: true)
         let others = otherNames.map { Member(displayName: $0) }
         // In a mess, whoever sets it up on their phone keeps the books.
-        let group = ExpenseGroup(name: name, members: [me] + others, kind: kind, managerID: kind == .mess ? me.id : nil)
+        var group = ExpenseGroup(name: name, members: [me] + others, kind: kind, managerID: kind == .mess ? me.id : nil)
+        // A photo that can't be read is skipped; the group is still made.
+        if let photo, let saved = try? await GroupPhotoFile.save(photo, for: group.id) {
+            group.accentHex = saved.accentHex
+        }
         try await repository.save(group, actor: me.id)
         await reload()
         return group
+    }
+
+    /// Sets the group's photo and takes the group's colour from it.
+    func setGroupPhoto(_ data: Data, for group: ExpenseGroup) async throws {
+        let saved = try await GroupPhotoFile.save(data, for: group.id)
+        var updated = self.group(group.id) ?? group
+        updated.accentHex = saved.accentHex
+        try await repository.save(updated, actor: updated.me?.id)
+        await reload()
+    }
+
+    /// Removes the photo; the group goes back to the standard colour.
+    func removeGroupPhoto(for group: ExpenseGroup) async throws {
+        GroupPhotoFile.remove(group.id)
+        var updated = self.group(group.id) ?? group
+        updated.accentHex = nil
+        try await repository.save(updated, actor: updated.me?.id)
+        await reload()
     }
 
     @discardableResult
@@ -107,6 +129,25 @@ final class AppModel {
         await reload()
         changed(group.id)
         return added
+    }
+
+    /// Takes someone out of a group, if nothing in it mentions them (see
+    /// `LedgerRepository.removeMember`). Throws `MemberRemovalError` otherwise.
+    func removeMember(_ member: Member, from group: ExpenseGroup) async throws {
+        try await repository.removeMember(member.id, from: group.id, actor: group.me?.id)
+        await reload()
+        changed(group.id)
+    }
+
+    /// Sets or clears what this group calls someone. The person's name never changes.
+    func setNickname(_ nickname: String?, for member: MemberID, in group: ExpenseGroup) async throws {
+        var updated = self.group(group.id) ?? group
+        guard let index = updated.members.firstIndex(where: { $0.id == member }) else { return }
+        let trimmed = nickname?.trimmingCharacters(in: .whitespacesAndNewlines)
+        updated.members[index].nickname = trimmed?.isEmpty == false ? trimmed : nil
+        try await repository.save(updated, actor: updated.me?.id)
+        await reload()
+        changed(group.id)
     }
 
     // MARK: Monthly repeats

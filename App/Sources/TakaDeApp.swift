@@ -8,8 +8,12 @@ struct TakaDeApp: App {
     @State private var sync: GroupSync
     @State private var friends: Friends
     @State private var lock = AppLock()
-    /// Shown once per cold launch; see LaunchSplash.
+    /// Shown on every open: a cold launch and each return from the background (Sabit,
+    /// 2026-11-11). Not after Control Center or a notification pull, which only pass
+    /// through .inactive. A new `splashRun` restarts the animation; see LaunchSplash.
     @State private var showsSplash = true
+    @State private var splashRun = 0
+    @State private var wasInBackground = false
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
@@ -48,6 +52,12 @@ struct TakaDeApp: App {
                 }
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     lock.scenePhaseChanged(to: phase)
+                    if phase == .background { wasInBackground = true }
+                    if phase == .active, wasInBackground {
+                        wasInBackground = false
+                        splashRun += 1
+                        showsSplash = true
+                    }
                     // Windows can appear after launch (a new scene, the lock cover).
                     if phase == .active {
                         appearance.apply(animated: false)
@@ -65,6 +75,7 @@ struct TakaDeApp: App {
                 .overlay {
                     if showsSplash {
                         LaunchSplash { showsSplash = false }
+                            .id(splashRun)
                     }
                 }
         }
