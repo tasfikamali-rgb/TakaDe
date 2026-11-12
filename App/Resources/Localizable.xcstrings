@@ -8162,6 +8162,57 @@
         }
       }
     },
+    "Sign in again": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আবার সাইন ইন করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in again"
+          }
+        }
+      }
+    },
+    "Your sign-in on this phone ended. Open Account and tap Sign in again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ফোনে আপনার সাইন ইন শেষ হয়ে গেছে। অ্যাকাউন্ট খুলে আবার সাইন ইন করুন চাপুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your sign-in on this phone ended. Open Account and tap Sign in again."
+          }
+        }
+      }
+    },
+    "Your sign-in on this phone ended. Sign in again with the same method to use TakaDe IDs, chats and shared groups. Nothing on this phone is lost.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ফোনে আপনার সাইন ইন শেষ হয়ে গেছে। TakaDe আইডি, চ্যাট আর শেয়ার করা গ্রুপ ব্যবহার করতে আগের পদ্ধতিতেই আবার সাইন ইন করুন। এই ফোনের কিছুই হারাবে না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your sign-in on this phone ended. Sign in again with the same method to use TakaDe IDs, chats and shared groups. Nothing on this phone is lost."
+          }
+        }
+      }
+    },
     "Sign in to your TakaDe account to use TakaDe IDs.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {

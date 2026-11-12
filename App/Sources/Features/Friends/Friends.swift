@@ -24,6 +24,9 @@ struct FriendInvitePayload: Codable, Sendable {
 final class Friends {
     enum Failure: Error, Equatable {
         case notSignedIn
+        /// The Account tab shows a TakaDe account, but this phone's sign-in to the service
+        /// has ended (its refresh token was used up or revoked). Signing in again fixes it.
+        case signInEnded
         case notFound
         case tooMany
         case offline
@@ -55,6 +58,12 @@ final class Friends {
     /// True when this phone is signed in to a TakaDe account on the service.
     var isAvailable: Bool { userID != nil }
 
+    /// The "not signed in" error to show: "sign in again" when the Account tab still shows
+    /// an account, so nobody is told to sign in when they think they already are.
+    var signedOut: Failure {
+        account.profile?.accountID != nil ? .signInEnded : .notSignedIn
+    }
+
     var userID: String? {
         guard let supabase = account.supabase, let session = supabase.session,
               account.profile?.accountID == session.user.id else { return nil }
@@ -65,7 +74,7 @@ final class Friends {
 
     /// Makes this account's ID the first time, and puts this phone's key on it.
     func ensureID() async throws {
-        guard let supabase = account.supabase, let user = userID else { throw Failure.notSignedIn }
+        guard let supabase = account.supabase, let user = userID else { throw signedOut }
         if myCodeOwner != user { myCode = nil }
         let key = privateKey(for: user, creating: true)!
         let publicKey = key.publicKey.rawRepresentation.base64URLEncoded
@@ -99,7 +108,7 @@ final class Friends {
 
     /// A new ID. The old one stops working at once; invites already waiting still arrive.
     func replaceID() async throws {
-        guard let supabase = account.supabase, let user = userID else { throw Failure.notSignedIn }
+        guard let supabase = account.supabase, let user = userID else { throw signedOut }
         for _ in 0..<5 {
             let code = Self.randomCode()
             do {
@@ -125,7 +134,7 @@ final class Friends {
 
     /// The friend's public key, or `notFound`. Each lookup counts toward an hourly limit.
     func lookUp(_ code: FriendCode) async throws -> Curve25519.KeyAgreement.PublicKey {
-        guard let supabase = account.supabase, userID != nil else { throw Failure.notSignedIn }
+        guard let supabase = account.supabase, userID != nil else { throw signedOut }
         struct Row: Decodable { let public_key: String }
         let data = try await call { try await supabase.rest("rpc/find_friend", method: "POST", body: ["p_code": code.raw]) }
         guard let text = try JSONDecoder().decode([Row].self, from: data).first?.public_key,
@@ -135,7 +144,7 @@ final class Friends {
     }
 
     func send(_ payload: FriendInvitePayload, to code: FriendCode, key: Curve25519.KeyAgreement.PublicKey) async throws {
-        guard let supabase = account.supabase, userID != nil else { throw Failure.notSignedIn }
+        guard let supabase = account.supabase, userID != nil else { throw signedOut }
         let sealed = try Self.seal(JSONEncoder().encode(payload), to: key)
         _ = try await call {
             try await supabase.rest("rpc/send_friend_invite", method: "POST", body: ["p_code": code.raw, "p_sealed": sealed])
@@ -275,11 +284,11 @@ final class Friends {
         do {
             return try await body()
         } catch SupabaseAuth.Failure.notSignedIn {
-            throw Failure.notSignedIn
+            throw signedOut
         } catch SupabaseAuth.Failure.server(let status, let code) {
             if code == "TK429" { throw Failure.tooMany }
             if code == "P0002" { throw Failure.notFound }
-            if code == "28000" || status == 401 { throw Failure.notSignedIn }
+            if code == "28000" || status == 401 { throw signedOut }
             // PostgREST: no such function or table. Postgres: undefined function or table.
             if code == "PGRST202" || code == "PGRST205" || code == "42883" || code == "42P01" { throw Failure.notSetUp }
             if code == "23505" { throw SupabaseAuth.Failure.server(status: status, code: code) }
@@ -300,6 +309,8 @@ extension Friends.Failure {
         switch self {
         case .notSignedIn:
             String(localized: "Sign in to your TakaDe account to use TakaDe IDs.", bundle: .appLanguage)
+        case .signInEnded:
+            String(localized: "Your sign-in on this phone ended. Open Account and tap Sign in again.", bundle: .appLanguage)
         case .notFound:
             String(localized: "No one has this TakaDe ID. Check it and try again.", bundle: .appLanguage)
         case .tooMany:

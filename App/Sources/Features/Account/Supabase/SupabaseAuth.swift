@@ -1,13 +1,16 @@
 import AuthenticationServices
 import CryptoKit
 import Foundation
+import Observation
 import TakaDeCore
+import UIKit
 
 /// TakaDe accounts through Supabase Auth's REST API, with no Supabase SDK, so nothing else
 /// joins the app's privacy manifest. Email sign-in uses a 6-digit code (no passwords),
 /// Apple passes its ID token, and Google and Microsoft go through the system browser sheet
 /// with PKCE. The session is kept in the Keychain only.
 @MainActor
+@Observable
 final class SupabaseAuth {
     enum Provider: String, Sendable {
         case google, azure
@@ -38,8 +41,11 @@ final class SupabaseAuth {
 
     let config: SupabaseConfig
     private(set) var session: AuthSession?
-    private var webSession: ASWebAuthenticationSession?
-    private let anchor = PresentationAnchorProvider()
+    @ObservationIgnored private var webSession: ASWebAuthenticationSession?
+    @ObservationIgnored private let anchor = PresentationAnchorProvider()
+    /// The one token refresh in flight. Every caller waits for it instead of sending its own,
+    /// because the service gives out each refresh token once.
+    @ObservationIgnored private var refreshing: Task<Void, Error>?
 
     init(config: SupabaseConfig) {
         self.config = config
@@ -292,16 +298,51 @@ final class SupabaseAuth {
     }
 
     private func refreshIfNeeded() async throws {
+        // Read at launch only; if iOS started the app before the phone was first unlocked,
+        // the Keychain was closed then. Look again before calling it signed out.
+        if session == nil { session = AuthSession.load() }
         guard let current = session else { throw Failure.notSignedIn }
         guard current.isExpiring else { return }
+        if let refreshing { return try await refreshing.value }
+        let task = Task { try await self.refresh(current) }
+        refreshing = task
+        defer { refreshing = nil }
+        try await task.value
+    }
+
+    /// Swaps the refresh token for new tokens. The service retires the old refresh token the
+    /// moment it answers, so the answer must not be lost: the app asks iOS for time to finish
+    /// if it goes to the background, and a dropped connection is retried once at once (the
+    /// service answers a quick repeat of the same token with the same new tokens).
+    private func refresh(_ current: AuthSession) async throws {
+        let background = UIApplication.shared.beginBackgroundTask(withName: "Sign-in refresh")
+        defer { if background != .invalid { UIApplication.shared.endBackgroundTask(background) } }
+        let body = ["refresh_token": current.refreshToken]
         do {
-            let json = try await post("token?grant_type=refresh_token", body: ["refresh_token": current.refreshToken])
+            let json: [String: Any]
+            do {
+                json = try await post("token?grant_type=refresh_token", body: body)
+            } catch let error as URLError where Self.mayHaveReachedServer(error) {
+                json = try await post("token?grant_type=refresh_token", body: body)
+            }
+            // Signed out, or into another account, while this was out: drop the answer.
+            guard session?.refreshToken == current.refreshToken else { return }
             _ = try adopt(json)
         } catch Failure.server(let status, _) where (400...401).contains(status) {
+            // A newer sign-in replaced this one while we waited: keep it.
+            guard session?.refreshToken == current.refreshToken else { return }
             // The refresh token was revoked or used up: the person has to sign in again.
             session = nil
             AuthSession.clear()
             throw Failure.notSignedIn
+        }
+    }
+
+    /// Errors after which the request may still have reached the service.
+    nonisolated static func mayHaveReachedServer(_ error: URLError) -> Bool {
+        switch error.code {
+        case .networkConnectionLost, .timedOut, .cancelled, .backgroundSessionWasDisconnected: true
+        default: false
         }
     }
 
