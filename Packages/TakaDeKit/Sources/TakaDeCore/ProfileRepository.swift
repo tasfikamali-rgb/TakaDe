@@ -47,12 +47,26 @@ public struct LedgerExport: Codable, Sendable {
     /// Sign-in methods linked to the account. Never tokens.
     public let accountIdentities: [AccountIdentity]?
     public let groups: [GroupData]
+    /// Friends from the Social tab and the messages with them, as kept on this phone.
+    public let friends: [FriendData]?
 
-    public init(exportedAt: Date = Date(), profile: LocalProfile?, accountIdentities: [AccountIdentity]? = nil, groups: [GroupData]) {
+    public struct FriendData: Codable, Sendable {
+        public let friend: Friend
+        public let messages: [FriendMessage]
+
+        public init(friend: Friend, messages: [FriendMessage]) {
+            self.friend = friend
+            self.messages = messages
+        }
+    }
+
+    public init(exportedAt: Date = Date(), profile: LocalProfile?, accountIdentities: [AccountIdentity]? = nil, groups: [GroupData],
+                friends: [FriendData]? = nil) {
         formatVersion = 1
         self.exportedAt = exportedAt
         self.profile = profile
         self.accountIdentities = accountIdentities
         self.groups = groups
+        self.friends = friends
     }
 }

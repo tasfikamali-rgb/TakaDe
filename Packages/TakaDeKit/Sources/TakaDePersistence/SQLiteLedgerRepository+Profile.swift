@@ -88,7 +88,11 @@ extension SQLiteLedgerRepository: ProfileRepository {
                                 history: try await history(of: group.id),
                                 paymentHandles: handles))
         }
-        return LedgerExport(profile: profile, accountIdentities: try await accountIdentities(), groups: groups)
+        var friends: [LedgerExport.FriendData] = []
+        for friend in try await allFriends() {
+            friends.append(LedgerExport.FriendData(friend: friend, messages: try await messages(with: friend.id)))
+        }
+        return LedgerExport(profile: profile, accountIdentities: try await accountIdentities(), groups: groups, friends: friends)
     }
 
     public func eraseEverything() async throws {
@@ -105,6 +109,8 @@ extension SQLiteLedgerRepository: ProfileRepository {
                 DELETE FROM member;
                 DELETE FROM expense_group;
                 DELETE FROM account_identity;
+                DELETE FROM friend_message;
+                DELETE FROM friend;
                 DELETE FROM sync_outbox;
                 DELETE FROM group_sync;
                 DELETE FROM local_profile;

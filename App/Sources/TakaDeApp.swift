@@ -7,6 +7,7 @@ struct TakaDeApp: App {
     @State private var account: AccountModel
     @State private var sync: GroupSync
     @State private var friends: Friends
+    @State private var social: SocialModel
     @State private var lock = AppLock()
     /// Shown on every open: a cold launch and each return from the background (Sabit,
     /// 2026-11-11). Not after Control Center or a notification pull, which only pass
@@ -25,7 +26,9 @@ struct TakaDeApp: App {
         let sync = GroupSync(app: model)
         _account = State(initialValue: account)
         _sync = State(initialValue: sync)
-        _friends = State(initialValue: Friends(account: account, sync: sync))
+        let friends = Friends(account: account, sync: sync)
+        _friends = State(initialValue: friends)
+        _social = State(initialValue: SocialModel(store: model.social, account: account, friends: friends))
         // Switches take the app tint (ink), which is near-white in dark mode: a white knob
         // on a white track, so on and off looked alike. Lime "on" reads in both modes.
         UISwitch.appearance().onTintColor = UIColor(named: "toggleOn")
@@ -41,6 +44,7 @@ struct TakaDeApp: App {
                 .environment(lock)
                 .environment(sync)
                 .environment(friends)
+                .environment(social)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
                     await account.load()
@@ -48,6 +52,7 @@ struct TakaDeApp: App {
                     await model.addDueRepeats()
                     await sync.syncAll()
                     await friends.checkInbox()
+                    await social.start()
                 }
                 // Invite links: takade://join?… now, https://takadeapp.com/join?… later.
                 .onOpenURL { url in
@@ -55,7 +60,11 @@ struct TakaDeApp: App {
                 }
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     lock.scenePhaseChanged(to: phase)
-                    if phase == .background { wasInBackground = true }
+                    if phase == .background {
+                        wasInBackground = true
+                        // Messages wait on the server until the app is back.
+                        social.stop()
+                    }
                     if phase == .active, wasInBackground {
                         wasInBackground = false
                         splashRun += 1
@@ -69,6 +78,7 @@ struct TakaDeApp: App {
                             await model.addDueRepeats()
                             await sync.syncAll()
                             await friends.checkInbox()
+                            await social.start()
                         }
                     }
                 }

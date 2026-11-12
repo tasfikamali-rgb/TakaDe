@@ -51,3 +51,14 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
 4. Check space used at any time: `select * from public.sync_storage();`
 5. **TakaDe IDs:** run `migrations/20261112020000_friend_ids.sql` (ADR 0021), so friends with
    accounts can add each other by ID or QR code. It stores an ID and a public key per account.
+
+## Social tab messages (ADR 0024)
+
+1. **SQL editor:** run `migrations/20261112030000_friend_messages.sql` after the TakaDe IDs
+   file. It adds the sealed message box, blocking, spam limits, a nightly cleanup, and puts
+   `friend_message` on Realtime so a new message reaches an open app at once.
+2. **Project Settings > Realtime:** leave **Allow public access** on (the default). The
+   "typing…" signal uses a broadcast channel whose name only the two phones can work out.
+   With it off, messages still arrive at once; only "typing…" stops showing.
+3. Free plan limits that matter: 200 phones connected to Realtime at the same time and 2
+   million Realtime messages a month. Only phones with the app open are connected.

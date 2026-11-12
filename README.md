@@ -28,6 +28,7 @@ This is the **local-only MVP** foundation. Everything is stored on one iPhone or
 | bKash / upay / bank payments | **Not integrated.** No money moves. See [decisions](docs/decisions-needed.md) |
 | Android, widgets | Planned next, in that order |
 | Sync, accounts, invitations | Not started; decisions needed first |
+| Social tab: friends by TakaDe ID, encrypted text messages, live "typing…" | Implemented; needs `supabase/migrations/20261112030000_friend_messages.sql`. No push notifications yet |
 
 ## Layout
 

@@ -15,6 +15,7 @@ struct TabContent: View {
     @ViewBuilder private var content: some View {
         switch tab {
         case .home: HomeView()
+        case .social: SocialView()
         case .activity: NavigationStack { ActivityView() }
         case .account: NavigationStack { AccountView() }
         }

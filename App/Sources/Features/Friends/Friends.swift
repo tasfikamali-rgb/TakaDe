@@ -41,7 +41,7 @@ final class Friends {
     @ObservationIgnored private let sync: GroupSync
     @ObservationIgnored private var checking = false
 
-    private static let suite = HPKE.Ciphersuite.Curve25519_SHA256_ChachaPoly
+    static let suite = HPKE.Ciphersuite.Curve25519_SHA256_ChachaPoly
     private static let info = Data("takade.friend-invite.v1".utf8)
 
     init(account: AccountModel, sync: GroupSync) {
@@ -52,7 +52,7 @@ final class Friends {
     /// True when this phone is signed in to a TakaDe account on the service.
     var isAvailable: Bool { userID != nil }
 
-    private var userID: String? {
+    var userID: String? {
         guard let supabase = account.supabase, let session = supabase.session,
               account.profile?.accountID == session.user.id else { return nil }
         return session.user.id
@@ -176,7 +176,7 @@ final class Friends {
 
     // MARK: Keys and sealing
 
-    private func privateKey(for user: String, creating: Bool) -> Curve25519.KeyAgreement.PrivateKey? {
+    func privateKey(for user: String, creating: Bool) -> Curve25519.KeyAgreement.PrivateKey? {
         let name = "friend.key.\(user)"
         if let text = KeychainStore.get(name), let raw = Data(base64URLEncoded: text),
            let key = try? Curve25519.KeyAgreement.PrivateKey(rawRepresentation: raw) {
@@ -212,7 +212,7 @@ final class Friends {
     private static func now() -> String { ISO8601DateFormatter().string(from: Date()) }
 
     /// Turns service and network errors into the few cases the screens explain.
-    private func call(_ body: () async throws -> Data) async throws -> Data {
+    func call(_ body: () async throws -> Data) async throws -> Data {
         do {
             return try await body()
         } catch SupabaseAuth.Failure.notSignedIn {

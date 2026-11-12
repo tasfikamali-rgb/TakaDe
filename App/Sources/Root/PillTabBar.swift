@@ -5,6 +5,8 @@ import SwiftUI
 /// Colors come only from the `tabBar…` tokens, so the palette can change without touching this.
 struct PillTabBar: View {
     @Binding var selection: AppTab
+    /// Unread counts by tab, shown as a small dot (Social's new messages).
+    var unread: [AppTab: Int] = [:]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @Namespace private var slots
@@ -26,6 +28,7 @@ struct PillTabBar: View {
                 PillTabButton(
                     tab: tab,
                     isSelected: tab == selection,
+                    unread: unread[tab, default: 0],
                     bounce: bounces[tab, default: 0],
                     select: { select(tab) }
                 )
@@ -95,6 +98,7 @@ private struct PillTabButton: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let tab: AppTab
     let isSelected: Bool
+    let unread: Int
     let bounce: Int
     let select: () -> Void
 
@@ -106,6 +110,14 @@ private struct PillTabButton: View {
                     .symbolVariant(isSelected ? .fill : .none)
                     .symbolEffect(.bounce.down, value: bounce)
                     .frame(minHeight: 20)
+                    .overlay(alignment: .topTrailing) {
+                        if unread > 0 {
+                            Circle()
+                                .fill(isSelected ? Color.tabBarSelected : Color.tabBarIndicator)
+                                .frame(width: 7, height: 7)
+                                .offset(x: 5, y: -1)
+                        }
+                    }
                     .accessibilityHidden(true)
                 // At accessibility text sizes the bar shows icons only, like the system tab
                 // bar: touch and hold a tab for the large content viewer to read its name.
@@ -124,6 +136,7 @@ private struct PillTabButton: View {
         }
         .buttonStyle(PressScaleButtonStyle())
         .accessibilityLabel(tab.title)
+        .accessibilityValue(unread > 0 ? Text("\(unread) unread") : Text(verbatim: ""))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityShowsLargeContentViewer {
             Label(tab.title, systemImage: tab.systemImage)
