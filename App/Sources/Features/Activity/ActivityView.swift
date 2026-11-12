@@ -4,8 +4,8 @@ import TakaDeCore
 /// What happened across all groups, as a feed of messages (Sabit, 2026-11-12): each change
 /// anyone makes is one bubble, yours on the right and other people's on the left with their
 /// picture, grouped by day, newest first. Changes that arrived since you last looked say
-/// "New". Pull down, or tap the refresh button, to check shared groups now; the ৳ turns
-/// while it checks.
+/// "New". Pull down to check shared groups now; the ৳ turns while it checks (Sabit,
+/// 2026-11-12: no refresh button, pulling down is the refresh).
 struct ActivityView: View {
     @Environment(AppModel.self) private var model
     @Environment(GroupSync.self) private var sync
@@ -54,11 +54,9 @@ struct ActivityView: View {
                 .font(AppFont.title)
                 .accessibilityAddTraits(.isHeader)
             Spacer()
-            if sync.isAvailable {
-                LogoRefreshButton(state: refresh, action: checkNow)
-            }
         }
         .padding(.top, Spacing.xs)
+        .frame(minHeight: 44)
     }
 
     /// Pulls every shared group now. New changes reload the list through `model.revision`.

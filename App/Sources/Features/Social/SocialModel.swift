@@ -234,6 +234,17 @@ final class SocialModel {
         return FriendPhotos.image(for: friend)
     }
 
+    /// The photo of the one friend whose name is exactly `name`, so a group member who is
+    /// also your friend shows their own picture. Matching happens on this phone only. Nil
+    /// when no friend, or more than one, has that name.
+    func photo(forName name: String) -> UIImage? {
+        let wanted = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !wanted.isEmpty else { return nil }
+        let matches = chats.filter { $0.name.trimmingCharacters(in: .whitespacesAndNewlines) == wanted }
+        guard matches.count == 1 else { return nil }
+        return photo(for: matches[0].id)
+    }
+
     private static let profileChangedKey = "social.profileChanged"
     private static let profileSharedOnceKey = "social.profileSharedOnce"
 

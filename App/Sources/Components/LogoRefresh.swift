@@ -4,9 +4,11 @@ import SwiftUI
 /// Pulling down turns the mark with the pull; let go past the line and it keeps turning,
 /// a full 360° each lap, until the refresh is done.
 ///
-/// Usage: put `LogoRefreshHeader(state:)` first inside the scroll content, and
-/// `.logoRefreshable(state:action:)` on the ScrollView. On iOS 17, which can't read the
-/// pull, the system spinner does the pulling and the mark only turns while refreshing.
+/// Usage: in a ScrollView, put `LogoRefreshHeader(state:)` first inside the content and
+/// `.logoRefreshable(state:action:)` on the ScrollView. A List or Form under an inline
+/// navigation bar uses `.logoRefreshableList(state:action:)` instead. The system spinner is
+/// hidden app-wide (TakaDeApp), so the ৳ is the only indicator. On iOS 17, which can't read
+/// the pull, the mark appears and turns once the refresh starts.
 @MainActor
 @Observable
 final class LogoRefreshState {
@@ -85,10 +87,56 @@ struct LogoRefreshHeader: View {
 }
 
 extension View {
-    /// See `LogoRefreshState`. VoiceOver users get the same refresh through the screen's own
-    /// refresh button, or the system "refresh" action on iOS 17.
+    /// See `LogoRefreshState`. On iOS 17, and for VoiceOver's own refresh, the system
+    /// refresh runs it.
     func logoRefreshable(state: LogoRefreshState, action: @escaping () async -> Void) -> some View {
         modifier(LogoRefreshModifier(state: state, action: action))
+    }
+}
+
+extension View {
+    /// For a List or Form under an inline navigation bar. The system pull keeps the space
+    /// open while refreshing; the ৳ is drawn in that space, just under the bar.
+    func logoRefreshableList(state: LogoRefreshState, action: @escaping () async -> Void) -> some View {
+        modifier(LogoListRefreshModifier(state: state, action: action))
+    }
+}
+
+private struct LogoListRefreshModifier: ViewModifier {
+    let state: LogoRefreshState
+    let action: () async -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .refreshable { await state.refresh(action) }
+            .modifier(PullTracker(state: state))
+            .overlay(alignment: .top) {
+                let progress = min(state.pull / LogoRefreshState.threshold, 1)
+                // The system control holds about 60 points open while it refreshes.
+                SpinningTakaMark(progress: progress, spins: state.isRefreshing)
+                    .offset(y: (state.isRefreshing ? 30 : state.pull / 2) - 13)
+                    .opacity(state.isRefreshing ? 1 : Double(progress))
+                    .scaleEffect(state.isRefreshing ? 1 : 0.6 + 0.4 * progress)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+    }
+}
+
+/// Reads how far a List is pulled past its top (iOS 18 and later).
+private struct PullTracker: ViewModifier {
+    let state: LogoRefreshState
+
+    func body(content: Content) -> some View {
+        if #available(iOS 18, *) {
+            content.onScrollGeometryChange(for: CGFloat.self) { geometry in
+                max(0, -(geometry.contentOffset.y + geometry.contentInsets.top))
+            } action: { _, pull in
+                state.pull = pull
+            }
+        } else {
+            content
+        }
     }
 }
 
@@ -117,39 +165,10 @@ private struct LogoRefreshModifier: ViewModifier {
     }
 }
 
-/// A round refresh button for a screen's header: arrows at rest, the turning ৳ while busy.
-struct LogoRefreshButton: View {
-    let state: LogoRefreshState
-    let action: () async -> Void
-
-    var body: some View {
-        Button {
-            Task { await state.refresh(action) }
-        } label: {
-            ZStack {
-                if state.isRefreshing {
-                    SpinningTakaMark(spins: true, size: 22)
-                } else {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(Color.ink)
-                }
-            }
-            .frame(width: 44, height: 44)
-            .background(Circle().fill(Color.surface))
-            .contentShape(Circle())
-        }
-        .buttonStyle(PressScaleButtonStyle())
-        .disabled(state.isRefreshing)
-        .accessibilityLabel(state.isRefreshing ? Text("Refreshing") : Text("Refresh"))
-    }
-}
-
 #Preview {
     VStack(spacing: 24) {
         SpinningTakaMark(spins: true, size: 40)
         SpinningTakaMark(progress: 0.4, spins: false, size: 40)
-        LogoRefreshButton(state: LogoRefreshState()) { try? await Task.sleep(for: .seconds(2)) }
     }
     .padding()
     .background(Color.canvas)

@@ -52,6 +52,8 @@ struct TakaDeApp: App {
         // Switches take the app tint (ink), which is near-white in dark mode: a white knob
         // on a white track, so on and off looked alike. Lime "on" reads in both modes.
         UISwitch.appearance().onTintColor = UIColor(named: "toggleOn")
+        // Pull to refresh shows the turning ৳ instead of the system spinner (LogoRefresh).
+        UIRefreshControl.appearance().tintColor = .clear
     }
 
     var body: some Scene {

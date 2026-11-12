@@ -13,6 +13,7 @@ struct AccountView: View {
     @State private var errorMessage: String?
     @State private var working = false
     @State private var newName = ""
+    @State private var refresh = LogoRefreshState()
     @State private var confirmingName = false
     @SceneStorage("account.showingSettings") private var showingSettings = false
 
@@ -74,7 +75,7 @@ struct AccountView: View {
         // Changing the language rebuilds the whole app so every string switches. Scene
         // storage keeps Settings open through that, instead of dropping back to Account.
         .navigationDestination(isPresented: $showingSettings) { SettingsView() }
-        .refreshable { await account.refreshAccount() }
+        .logoRefreshableList(state: refresh) { await account.refreshAccount() }
         // Signed in or linked Google in the sheet: ask about the Google photo once it closes.
         .sheet(item: $flow, onDismiss: { account.offerGooglePhotoIfNeeded() }) { mode in
             AccountFlowSheet(mode: mode) { flow = nil }.rebuildsOnDynamicType()
