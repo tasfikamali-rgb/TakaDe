@@ -56,7 +56,7 @@ struct GroupHeader<Status: View>: View {
                         .foregroundStyle(Color.ink.opacity(0.72))
                         .padding(.top, Spacing.xs)
                     if state != .settled {
-                        AmountText(money: myNet.magnitude, size: .balance, color: .ink, minorColor: .ink.opacity(0.6))
+                        AmountText(money: myNet.magnitude, size: .balance, color: .ink, minorColor: .inkMuted)
                     }
                 }
                 Button("Add expense", systemImage: "plus", action: onAddExpense)
