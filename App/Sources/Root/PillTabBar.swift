@@ -44,7 +44,9 @@ struct PillTabBar: View {
         // Slide a finger along the bar to move between tabs; taps still go to the buttons.
         .simultaneousGesture(slide)
         .padding(Self.inset)
-        .frame(height: Self.barHeight)
+        .frame(minHeight: Self.barHeight)
+        // Its own height: grows with larger text instead of filling the space it's offered.
+        .fixedSize(horizontal: false, vertical: true)
         .background {
             Capsule(style: .continuous)
                 .fill(Color.tabBarBackground)
@@ -56,8 +58,9 @@ struct PillTabBar: View {
                         .strokeBorder(Color.onHeader.opacity(colorScheme == .dark ? 0.12 : 0.06), lineWidth: 1)
                 }
         }
-        // The bar has a fixed height; very large text sizes use the large content viewer instead.
-        .dynamicTypeSize(...DynamicTypeSize.xLarge)
+        // Grows with text up to the first accessibility size; beyond that, touch and hold a
+        // tab for the large content viewer, as with the system tab bar.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
         .sensoryFeedback(.selection, trigger: selection)
     }
 
@@ -104,16 +107,17 @@ private struct PillTabButton: View {
                     .font(.system(size: 17, weight: .semibold))
                     .symbolVariant(isSelected ? .fill : .none)
                     .symbolEffect(.bounce.down, value: bounce)
-                    .frame(height: 20)
+                    .frame(minHeight: 20)
                     .accessibilityHidden(true)
                 Text(tab.title)
                     .font(AppFont.text(11, .semibold, relativeTo: .caption2))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.7)
             }
             .foregroundStyle(isSelected ? Color.tabBarSelected : Color.tabBarUnselected)
             .padding(.horizontal, 6)
-            .frame(minWidth: 60, maxWidth: 76, maxHeight: .infinity)
+            .padding(.vertical, 4)
+            .frame(minWidth: 60, maxWidth: 76, minHeight: 48)
             .contentShape(Capsule(style: .continuous))
         }
         .buttonStyle(PressScaleButtonStyle())
