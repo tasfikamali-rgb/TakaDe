@@ -47,7 +47,8 @@ struct GroupDetailContent: View {
             .frame(maxWidth: .infinity)
         }
         .background(alignment: .top) { TexturedBackground(base: GroupTint.color(for: group)).frame(height: 480).ignoresSafeArea() }
-        .background(Color.canvas)
+        // The sheet ends with its content; the lines carry on to the bottom of the screen.
+        .background(TexturedBackground().ignoresSafeArea())
         .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
         .navigationTitle(Text(verbatim: group.name))
         .navigationBarTitleDisplayMode(.inline)
