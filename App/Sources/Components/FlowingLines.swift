@@ -60,7 +60,11 @@ struct FlowingLines: View {
         }
     }
 
-    private var paused: Bool { reduceMotion || !isVisible || scenePhase != .active }
+    /// UI tests launch with `-holdTexture YES`: the accessibility audit waits for the screen
+    /// to stop moving, and these lines never do.
+    private static let held = UserDefaults.standard.bool(forKey: "holdTexture")
+
+    private var paused: Bool { reduceMotion || Self.held || !isVisible || scenePhase != .active }
 }
 
 /// A flat token color with the moving lines over it. The one background for screens,

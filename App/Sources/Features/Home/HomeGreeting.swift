@@ -13,7 +13,7 @@ struct HomeGreeting: View {
             Text("Who owes who?")
             HStack(alignment: .lastTextBaseline, spacing: size * 0.08) {
                 Text("We got receipts")
-                BlinkingBang(size: size, blinks: !reduceMotion)
+                BlinkingBang(size: size, blinks: !reduceMotion && !UserDefaults.standard.bool(forKey: "holdTexture"))
             }
         }
         .font(AppFont.display(32, relativeTo: .largeTitle))
