@@ -27,7 +27,7 @@ struct DeleteSection: View {
             }
         } header: {
             Text("Delete")
-                .foregroundStyle(Color.inkMuted)
+                .formHeader()
         }
         .disabled(working)
         .alert("Delete your account?", isPresented: $confirmingAccount) {

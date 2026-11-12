@@ -17,7 +17,7 @@ struct SettingsView: View {
                 .labelsHidden()
             } header: {
                 Text("Language")
-                    .foregroundStyle(Color.inkMuted)
+                    .formHeader()
             }
             Section {
                 Picker("Appearance", selection: $appearance) {
@@ -29,7 +29,7 @@ struct SettingsView: View {
                 .labelsHidden()
             } header: {
                 Text("Appearance")
-                    .foregroundStyle(Color.inkMuted)
+                    .formHeader()
             }
             NotificationsSection()
             AppLockSection()

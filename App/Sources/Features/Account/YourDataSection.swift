@@ -24,7 +24,7 @@ struct YourDataSection: View {
             }
         } header: {
             Text("Your data")
-                .foregroundStyle(Color.inkMuted)
+                .formHeader()
         } footer: {
             Group {
                 if exportURL != nil {
