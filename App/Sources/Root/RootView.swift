@@ -38,6 +38,7 @@ struct RootView: View {
             }
         }
         .tint(.ink)
+        .toggleStyle(AppSwitchStyle())
         // Fonts with a Bengali fallback are scaled when built, so rebuild on a text size change.
         .id(dynamicTypeSize)
         .onGeometryChange(for: CGSize.self) { proxy in
