@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
+    @State private var showingData = false
 
     var body: some View {
         AppForm {
@@ -33,11 +34,19 @@ struct SettingsView: View {
             NotificationsSection()
             AppLockSection()
             Section {
-                NavigationLink {
-                    DataAndExportView()
-                } label: {
-                    Label("Data and export", systemImage: "square.and.arrow.up")
-                        .foregroundStyle(Color.ink)
+                // A button with its own chevron: the system NavigationLink chevron is drawn
+                // in a faint grey that failed the accessibility audit's contrast check.
+                Button { showingData = true } label: {
+                    HStack {
+                        Label("Data and export", systemImage: "square.and.arrow.up")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(Color.inkMuted)
+                            .accessibilityHidden(true)
+                    }
+                    .foregroundStyle(Color.ink)
+                    .contentShape(Rectangle())
                 }
             } footer: {
                 Text("What's stored where, and a copy of all your groups.")
@@ -45,6 +54,7 @@ struct SettingsView: View {
             }
             DeleteSection()
         }
+        .navigationDestination(isPresented: $showingData) { DataAndExportView() }
         .readableWidth()
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
