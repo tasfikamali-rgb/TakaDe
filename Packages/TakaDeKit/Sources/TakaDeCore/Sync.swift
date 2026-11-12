@@ -92,6 +92,14 @@ public struct AppliedChange: Hashable, Sendable {
         self.item = item
         self.action = action
     }
+
+    /// Who the other phone says made the change; nil when it didn't say.
+    public var changedBy: MemberID? {
+        switch item {
+        case .expense(let expense): expense.changedBy
+        case .settlement(let settlement): settlement.changedBy
+        }
+    }
 }
 
 public protocol SyncRepository: Sendable {

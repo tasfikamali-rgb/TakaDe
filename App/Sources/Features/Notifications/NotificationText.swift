@@ -55,6 +55,8 @@ enum NotificationText {
             return String(localized: "\(name(by)) marked your \(money(amount)) payment as received.", bundle: .appLanguage, comment: "Notification: person, amount")
         case let .paymentChanged(by, amount):
             return String(localized: "\(name(by)) changed a payment of \(money(amount)).", bundle: .appLanguage, comment: "Notification: person, amount")
+        case let .othersPayment(from, to, amount):
+            return String(localized: "\(name(from)) says they paid \(name(to)) \(money(amount)).", bundle: .appLanguage, comment: "Notification: payer, person paid, amount. A payment between two other people, their word, not verified")
         }
     }
 

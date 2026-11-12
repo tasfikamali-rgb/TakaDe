@@ -16,6 +16,7 @@ This is the **local-only MVP** foundation. Everything is stored on one iPhone or
 | Groups with members (names kept exactly as typed) | Implemented |
 | Expenses split equally, by amounts or by shares (older percent and extras splits still count) | Implemented |
 | Edit expenses and payments; Activity and History show who changed what, e.g. Amount ৳500 → ৳650 | Implemented |
+| Activity as a message feed with an unread number on the tab and app icon; pull to refresh with the turning ৳ ([ADR 28](docs/adr/0028-activity-feed-unread-and-logo-refresh.md)) | Implemented; not yet tried on a phone |
 | Balances and suggested "who pays whom" | Implemented |
 | Recording a payment: *recorded by you, not verified*, or *marked received* by the person paid | Implemented |
 | Split keypad that does sums (`1200 ÷ 4`) | Implemented |

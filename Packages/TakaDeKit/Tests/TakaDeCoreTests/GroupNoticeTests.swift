@@ -35,9 +35,17 @@ final class GroupNoticeTests: XCTestCase {
         XCTAssertEqual(notice?.events, [.expense(title: "Hotel", action: .edited, by: rafi.id, myShare: nil)])
     }
 
-    func testExpenseIAmNotPartOfSaysNothing() throws {
+    func testExpenseIAmNotPartOfStillSaysWhoAddedIt() throws {
         let other = try expense(paidBy: rafi, among: [rafi, nila], by: rafi)
-        XCTAssertNil(GroupNotice.make(group: group, changes: [AppliedChange(.expense(other), action: .created)], myBalance: nil))
+        let notice = GroupNotice.make(group: group, changes: [AppliedChange(.expense(other), action: .created)], myBalance: nil)
+        XCTAssertEqual(notice?.events, [.expense(title: "Hotel", action: .created, by: rafi.id, myShare: nil)])
+    }
+
+    func testChangedByComesFromTheExpenseOrPayment() throws {
+        let added = try expense(paidBy: rafi, among: [me, rafi], by: nila)
+        let paid = try payment(from: rafi, to: me, by: rafi)
+        XCTAssertEqual(AppliedChange(.expense(added), action: .created).changedBy, nila.id)
+        XCTAssertEqual(AppliedChange(.settlement(paid), action: .created).changedBy, rafi.id)
     }
 
     func testDeletedExpenseHasNoShare() throws {
@@ -77,7 +85,10 @@ final class GroupNoticeTests: XCTestCase {
             AppliedChange(.settlement(withdrawn), action: .statusChanged),
             AppliedChange(.settlement(between), action: .created),
         ], myBalance: nil)
-        XCTAssertEqual(notice?.events, [.paymentChanged(by: rafi.id, amount: Money(minorUnits: 50_000))])
+        XCTAssertEqual(notice?.events, [
+            .paymentChanged(by: rafi.id, amount: Money(minorUnits: 50_000)),
+            .othersPayment(from: rafi.id, to: nila.id, amount: Money(minorUnits: 50_000)),
+        ])
     }
 
     func testMyOwnPaymentFromAnotherPhoneSaysNothing() throws {
