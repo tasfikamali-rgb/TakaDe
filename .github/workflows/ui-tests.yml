@@ -108,13 +108,13 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-      # Flows are split across machines so they run side by side. Dark mode re-runs
-      # only the main journey (the accessibility audit covers contrast), and iPad runs
-      # the layout-sensitive flows.
+      # One machine per device: the free plan runs only 5 Mac jobs at a time across the
+      # repo, so more machines per run mostly means more waiting in the queue. Dark mode
+      # re-runs only the main journey (the accessibility audit covers contrast), and
+      # iPad runs the layout-sensitive flows.
       matrix:
         include:
-          - { device: "iPhone 16", shard: "smoke", tags: "--include-tags smoke", dark: true }
-          - { device: "iPhone 16", shard: "other", tags: "--exclude-tags smoke", dark: false }
+          - { device: "iPhone 16", shard: "all", tags: "", dark: true }
           - { device: "iPad Pro 13-inch", shard: "layout", tags: "--include-tags adaptive,smoke", dark: false }
     steps:
       - uses: actions/checkout@v4
@@ -181,6 +181,9 @@ jobs:
     # runner doesn't have it, rather than pretending it was tested.
     name: iPhone Duo (if the runner has it)
     needs: build
+    # Started by hand only (Run workflow): GitHub's runners don't have this simulator
+    # yet, and the job would otherwise hold one of the 5 Mac slots on every run.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-26
     timeout-minutes: 30
     steps:

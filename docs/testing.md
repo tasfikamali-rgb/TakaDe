@@ -35,8 +35,10 @@ screenshot and logs, and prints the text that was on screen.
 
 ### Speed
 
-- Jobs run side by side instead of one after another, and the Maestro flows are split
-  across machines.
+- Jobs run side by side instead of one after another: one Maestro job per device.
+- The free plan runs at most 5 Mac jobs at a time across the whole repo, so most of the
+  wait is queueing when several branches run at once. Each run asks for 4 Macs (build,
+  accessibility, iPhone, iPad); the iPhone Duo job only runs when started by hand.
 - Simulators boot while the app builds or Maestro downloads, not before.
 - Swift packages are cached between runs.
 - A new push cancels the run that was still going for the same branch.
