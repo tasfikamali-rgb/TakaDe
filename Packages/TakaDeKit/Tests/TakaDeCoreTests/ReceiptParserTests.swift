@@ -113,4 +113,34 @@ final class ReceiptParserTests: XCTestCase {
         XCTAssertTrue(s.items.isEmpty)
         XCTAssertNil(s.computedTotal)
     }
+
+    // MARK: Dates (synthetic lines)
+
+    private func ymd(_ lines: [String]) -> [Int]? {
+        ReceiptParser.date(in: lines).map {
+            let c = Calendar(identifier: .gregorian).dateComponents([.year, .month, .day], from: $0)
+            return [c.year!, c.month!, c.day!]
+        }
+    }
+
+    func testReadsCommonReceiptDateFormats() {
+        XCTAssertEqual(ymd(["Date: 05/11/2026"]), [2026, 11, 5])
+        XCTAssertEqual(ymd(["05-11-26 18:42"]), [2026, 11, 5])
+        XCTAssertEqual(ymd(["2026-11-05 18:42:10"]), [2026, 11, 5])
+        XCTAssertEqual(ymd(["Date 05-Nov-2026"]), [2026, 11, 5])
+        XCTAssertEqual(ymd(["5 November 2026"]), [2026, 11, 5])
+        XCTAssertEqual(ymd(["Nov 5, 2026  7:10 PM"]), [2026, 11, 5])
+        XCTAssertEqual(ymd(["তারিখ: ০৫/১১/২০২৬"]), [2026, 11, 5])
+    }
+
+    func testIgnoresThingsThatAreNotDates() {
+        XCTAssertNil(ymd(["Tel 01711-223344", "Time 12.30", "Invoice 2026-99"]))
+        XCTAssertNil(ymd(["31/02/2026"]))
+        XCTAssertNil(ymd(["12/10/1987"]))
+    }
+
+    func testIsoDateIsNotMisreadAsDayFirst() {
+        // "2026-11-05" also contains "26-11-05"; it must read as 5 November 2026.
+        XCTAssertEqual(ymd(["2026-11-05"]), [2026, 11, 5])
+    }
 }

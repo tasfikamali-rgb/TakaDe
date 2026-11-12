@@ -112,10 +112,18 @@ enum SharingError {
             return String(localized: "This link has expired or was stopped. Ask for a new one.", bundle: .appLanguage)
         case GroupSync.Failure.wrongGroup:
             return String(localized: "This invite link was changed after it was sent, so it can't be used. Ask for a new one.", bundle: .appLanguage)
+        case is AppModel.GroupLimitReached:
+            return GroupLimitText.message
         case GroupSync.Failure.unavailable, RelayClient.Failure.guestSignInOff:
             return String(localized: "Sharing groups isn't available in this version of TakaDe yet.", bundle: .appLanguage)
         default:
             return String(localized: "Something went wrong. Try again in a moment.", bundle: .appLanguage)
         }
+    }
+}
+
+enum GroupLimitText {
+    static var message: String {
+        String(localized: "You have \(AppModel.groupLimit) groups, the most TakaDe allows. Delete a group you no longer use to make room.", bundle: .appLanguage)
     }
 }

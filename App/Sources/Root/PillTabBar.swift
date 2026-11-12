@@ -10,6 +10,9 @@ struct PillTabBar: View {
     @Namespace private var slots
     /// Bumped for the tab that was just picked, so only its icon bounces.
     @State private var bounces: [AppTab: Int] = [:]
+    /// True while a finger slides along the bar; the indicator lifts slightly.
+    @State private var isDragging = false
+    @State private var rowWidth: CGFloat = 0
 
     private static let barHeight: CGFloat = 58
     private static let inset: CGFloat = 5
@@ -34,8 +37,12 @@ struct PillTabBar: View {
             Capsule(style: .continuous)
                 .fill(Color.tabBarIndicator)
                 .matchedGeometryEffect(id: selection, in: slots, isSource: false)
+                .scaleEffect(isDragging && !reduceMotion ? 1.06 : 1)
                 .accessibilityHidden(true)
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { rowWidth = $0 }
+        // Slide a finger along the bar to move between tabs; taps still go to the buttons.
+        .simultaneousGesture(slide)
         .padding(Self.inset)
         .frame(height: Self.barHeight)
         .background {
@@ -52,6 +59,27 @@ struct PillTabBar: View {
         // The bar has a fixed height; very large text sizes use the large content viewer instead.
         .dynamicTypeSize(...DynamicTypeSize.xLarge)
         .sensoryFeedback(.selection, trigger: selection)
+    }
+
+    private var slide: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .onChanged { value in
+                if !isDragging {
+                    withAnimation(Motion.press) { isDragging = true }
+                }
+                if let tab = tab(at: value.location.x) { select(tab) }
+            }
+            .onEnded { _ in
+                withAnimation(Motion.tabSwitch(reduceMotion: reduceMotion)) { isDragging = false }
+            }
+    }
+
+    /// The tab under a point along the row, clamped to the ends.
+    private func tab(at x: CGFloat) -> AppTab? {
+        let tabs = AppTab.allCases
+        guard rowWidth > 0, !tabs.isEmpty else { return nil }
+        let index = Int((x / rowWidth) * CGFloat(tabs.count))
+        return tabs[min(max(index, 0), tabs.count - 1)]
     }
 
     private func select(_ tab: AppTab) {

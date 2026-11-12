@@ -8621,19 +8621,70 @@
         }
       }
     },
-    "Export a copy of your groups, or delete everything from this phone.": {
+    "To delete your account or your data, open Settings.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "আপনার গ্রুপগুলোর একটি কপি এক্সপোর্ট করুন, অথবা এই ফোন থেকে সবকিছু মুছে ফেলুন।"
+            "value": "অ্যাকাউন্ট বা ডেটা মুছতে সেটিংস খুলুন।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Export a copy of your groups, or delete everything from this phone."
+            "value": "To delete your account or your data, open Settings."
+          }
+        }
+      }
+    },
+    "What's stored where, and a copy of all your groups.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কোথায় কী রাখা আছে, আর আপনার সব গ্রুপের একটি কপি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What's stored where, and a copy of all your groups."
+          }
+        }
+      }
+    },
+    "No date found on the receipt. The expense keeps the date you picked.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদে কোনো তারিখ পাওয়া যায়নি। খরচে আপনার বেছে নেওয়া তারিখই থাকবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No date found on the receipt. The expense keeps the date you picked."
+          }
+        }
+      }
+    },
+    "You have %lld groups, the most TakaDe allows. Delete a group you no longer use to make room.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার %lldটি গ্রুপ আছে, TakaDe-তে এর বেশি রাখা যায় না। জায়গা করতে অব্যবহৃত একটি গ্রুপ মুছে ফেলুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have %lld groups, the most TakaDe allows. Delete a group you no longer use to make room."
           }
         }
       }
