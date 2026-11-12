@@ -10,6 +10,10 @@ struct SettleUpView: View {
     let balances: GroupBalances
     /// Earlier payments in this group, to catch a transaction id typed twice.
     var settlements: [Settlement] = []
+    /// Opened from a payment request in a chat: the person who asked, so their payment is
+    /// picked, and the numbers they sent, used when this phone has none saved for them.
+    var askedBy: MemberID?
+    var sharedHandles: [PaymentAsk.Handle] = []
 
     @State private var selected: SuggestedTransfer?
     @State private var method: SettlementMethod = .cash
@@ -56,12 +60,18 @@ struct SettleUpView: View {
                 }
                 if let selected, let me = group.me, selected.to == me.id {
                     Section {
+                        AskInChatButton(
+                            title: Text("Ask \(group.storedName(of: selected.from)) in Social"),
+                            personName: group.storedName(of: selected.from),
+                            ask: .pay(in: group, from: selected.from, to: me.id, amount: selected.amount, handles: myHandles),
+                            words: AskWords.pay(to: group.storedName(of: selected.from), amount: selected.amount,
+                                                group: group.name, handles: myHandles))
                         ShareLink(item: ReminderText.make(to: group.storedName(of: selected.from), amount: selected.amount,
                                                           group: group.name, handles: myHandles)) {
                             Label("Remind \(group.storedName(of: selected.from))", systemImage: "bell")
                         }
                     } footer: {
-                        Text("Sends a friendly message with the amount and your numbers through any chat app.")
+                        Text("Social sends a payment request they can settle from. Remind sends the same in any other chat app.")
                     }
                 }
                 if let selected {
@@ -121,7 +131,12 @@ struct SettleUpView: View {
     }
 
     private func preselect() {
-        if selected == nil, myTransfers.count == 1 { selected = myTransfers.first }
+        guard selected == nil else { return }
+        if let askedBy, let asked = myTransfers.first(where: { $0.to == askedBy && $0.from == group.me?.id }) {
+            selected = asked
+        } else if myTransfers.count == 1 {
+            selected = myTransfers.first
+        }
     }
 
     private func loadPayeeHandles() async {
@@ -133,6 +148,9 @@ struct SettleUpView: View {
             return
         }
         payeeHandles = (try? await app.profiles.paymentHandles(for: selected.to)) ?? []
+        if payeeHandles.isEmpty, selected.to == askedBy {
+            payeeHandles = sharedHandles.compactMap { try? PaymentHandle(memberID: selected.to, rail: $0.rail, handle: $0.handle) }
+        }
         // Start "Paid with" on how they like to be paid.
         if method == .cash, let first = payeeHandles.first { method = first.rail.settlementMethod }
     }

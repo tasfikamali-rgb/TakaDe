@@ -336,9 +336,10 @@ final class SocialModel {
 
     /// Shows the message at once, then seals and sends it. A failed send stays in the chat
     /// with "Not sent. Tap to try again."
-    func send(_ text: String, to friend: Friend, myName: String) async {
-        guard let text = FriendMessage.cleaned(text) else { return }
-        var message = FriendMessage(friendID: friend.id, direction: .outgoing, text: text, state: .sending)
+    @discardableResult
+    func send(_ text: String, to friend: Friend, myName: String, ask: PaymentAsk? = nil) async -> Bool {
+        guard let text = FriendMessage.cleaned(text) else { return false }
+        var message = FriendMessage(friendID: friend.id, direction: .outgoing, text: text, state: .sending, ask: ask)
         _ = try? await store.save(message)
         revision += 1
         stoppedTyping(in: friend)
@@ -346,6 +347,21 @@ final class SocialModel {
         _ = try? await store.save(message)
         await reload()
         revision += 1
+        return message.state == .sent
+    }
+
+    /// The one chat that belongs to a group member, found by the name they have in the group
+    /// (ignoring case and spaces). Nil when no friend or more than one has that name, so the
+    /// person picks. Groups don't keep TakaDe IDs, so a name is the only link on this phone.
+    func chat(forMemberNamed name: String) -> Friend? {
+        let wanted = Self.matchKey(name)
+        guard !wanted.isEmpty else { return nil }
+        let matches = chats.filter { Self.matchKey($0.name) == wanted }
+        return matches.count == 1 ? matches.first : nil
+    }
+
+    private static func matchKey(_ name: String) -> String {
+        name.lowercased().filter { !$0.isWhitespace }
     }
 
     func retry(_ message: FriendMessage, to friend: Friend, myName: String) async {
@@ -359,7 +375,7 @@ final class SocialModel {
     }
 
     private func sendState(of message: FriendMessage, to friend: Friend, myName: String) async -> FriendMessage.State {
-        let envelope = FriendEnvelope(kind: .text, id: message.id, fromName: myName, text: message.text)
+        let envelope = FriendEnvelope(kind: .text, id: message.id, fromName: myName, text: message.text, ask: message.ask)
         do {
             if try await deliver(envelope, to: friend) {
                 sendProblem = nil
@@ -492,7 +508,8 @@ final class SocialModel {
         }
         hideTyping(friend.id)
         guard envelope.kind == .text, let text = envelope.text.flatMap(FriendMessage.cleaned) else { return true }
-        _ = try? await store.save(FriendMessage(id: envelope.id, friendID: friend.id, direction: .incoming, text: text, at: at, state: .received))
+        _ = try? await store.save(FriendMessage(id: envelope.id, friendID: friend.id, direction: .incoming, text: text, at: at,
+                                                state: .received, ask: envelope.ask))
         return true
     }
 

@@ -36,6 +36,16 @@ struct PaymentsCard: View {
                         .tint(Color.ink)
                         .padding(.bottom, Spacing.xs)
                         .accessibilityHint(Text("Marks this payment received. Only do this once the money has reached you."))
+                        if (settlement.userReference ?? "").trimmingCharacters(in: .whitespaces).isEmpty {
+                            AskInChatButton(
+                                title: Text("Ask for proof"),
+                                personName: group.storedName(of: settlement.from),
+                                ask: .proof(of: settlement, in: group),
+                                words: AskWords.proof(to: group.storedName(of: settlement.from), amount: settlement.amount,
+                                                      group: group.name))
+                            .font(AppFont.label)
+                            .padding(.bottom, Spacing.xs)
+                        }
                     }
                 }
             }
