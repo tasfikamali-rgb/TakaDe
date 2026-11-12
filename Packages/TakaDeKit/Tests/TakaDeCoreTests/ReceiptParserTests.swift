@@ -139,6 +139,23 @@ final class ReceiptParserTests: XCTestCase {
         XCTAssertNil(ymd(["12/10/1987"]))
     }
 
+    func testSkipsDatesAfterToday() {
+        let calendar = Calendar(identifier: .gregorian)
+        let now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 12, hour: 23))!
+        func read(_ lines: [String]) -> [Int]? {
+            ReceiptParser.date(in: lines, now: now).map {
+                let c = calendar.dateComponents([.year, .month, .day], from: $0)
+                return [c.year!, c.month!, c.day!]
+            }
+        }
+        // Today is fine; tomorrow isn't.
+        XCTAssertEqual(read(["12/11/2026"]), [2026, 11, 12])
+        XCTAssertNil(read(["13/11/2026"]))
+        XCTAssertNil(read(["2027-01-05"]))
+        // A later date on the slip is passed over for the real one below it.
+        XCTAssertEqual(read(["Valid till 05/11/2027", "Date: 05/11/2026"]), [2026, 11, 5])
+    }
+
     func testIsoDateIsNotMisreadAsDayFirst() {
         // "2026-11-05" also contains "26-11-05"; it must read as 5 November 2026.
         XCTAssertEqual(ymd(["2026-11-05"]), [2026, 11, 5])

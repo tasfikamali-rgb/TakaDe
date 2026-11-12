@@ -1,7 +1,7 @@
 import SwiftUI
 import TakaDeCore
 
-/// The balance header (cream in light mode, navy in dark) with the groups sheet sliding over it.
+/// The balance header (near-white in light mode, dark gray in dark) with the groups sheet sliding over it.
 struct HomeOverview: View {
     @Environment(AppModel.self) private var model
     @Binding var selection: GroupID?
@@ -20,7 +20,8 @@ struct HomeOverview: View {
         .background(alignment: .top) {
             TexturedBackground(base: .header).frame(height: 480).ignoresSafeArea()
         }
-        .background(Color.canvas)
+        // The sheet ends with its content; the lines carry on to the bottom of the screen.
+        .background(TexturedBackground().ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showingGroupPicker) { GroupPickerSheet(groups: model.groups) }
         .task(id: model.revision) { total = await model.myTotal() }

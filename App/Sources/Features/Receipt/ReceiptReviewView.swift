@@ -91,7 +91,7 @@ struct ReceiptReviewView: View {
                         // Found a date: offer it, and let the person correct a misread.
                         Toggle("Use the receipt's date", isOn: $includesDate)
                         if includesDate {
-                            DatePicker("Date", selection: $date, displayedComponents: .date)
+                            DatePicker("Date", selection: $date, in: ...Date(), displayedComponents: .date)
                         }
                     } else {
                         // Nothing to "use": say so rather than offering today's date.

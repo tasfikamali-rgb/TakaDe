@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// Fine contour lines that ripple slowly behind every screen, like the ruled lines of a
-/// khata page lifting in a breeze. Flat hairlines in one tint (`texture`), no blur, glow or
-/// gradient, so it reads as paper, not decoration. Transparent: put it over a flat color,
+/// khata page lifting in a breeze. Flat hairlines in one faint tint (`texture`), no blur, glow
+/// or gradient, so it reads as paper, not decoration. Transparent: put it over a flat color,
 /// usually through `TexturedBackground`. Holds still with Reduce Motion, and stops drawing
 /// off screen and in the background.
 struct FlowingLines: View {
@@ -37,8 +37,8 @@ struct FlowingLines: View {
         let count = Int(size.height / spacing) + 2
         let width = max(size.width, 1)
         let height = max(size.height, 1)
-        // A little over a hairline, so the lines stay visible on cream without getting heavy.
-        let lineWidth: CGFloat = max(2 / displayScale, 0.75)
+        // Hairlines: texture you notice only when you look for it.
+        let lineWidth: CGFloat = 1.5 / displayScale
         for row in 0..<count {
             let baseY = CGFloat(row) * spacing
             // Lines bend a little more towards the bottom, and the crest drifts sideways,

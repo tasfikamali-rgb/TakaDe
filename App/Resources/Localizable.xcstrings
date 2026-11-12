@@ -9080,6 +9080,74 @@
         }
       }
     },
+    "Are you sure?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি কি নিশ্চিত?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Are you sure?"
+          }
+        }
+      }
+    },
+    "Yes, delete everything": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "হ্যাঁ, সব মুছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yes, delete everything"
+          }
+        }
+      }
+    },
+    "Keep my data": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমার ডেটা রাখুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep my data"
+          }
+        }
+      }
+    },
+    "This is the last step. All your groups and expenses will be gone from this phone for good.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটাই শেষ ধাপ। আপনার সব গ্রুপ আর খরচ এই ফোন থেকে চিরতরে মুছে যাবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is the last step. All your groups and expenses will be gone from this phone for good."
+          }
+        }
+      }
+    },
     "Signed in with %@": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {

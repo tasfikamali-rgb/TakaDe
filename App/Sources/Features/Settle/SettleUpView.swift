@@ -6,7 +6,6 @@ import TakaDeCore
 struct SettleUpView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let group: ExpenseGroup
     let balances: GroupBalances
     /// Earlier payments in this group, to catch a transaction id typed twice.
@@ -76,10 +75,12 @@ struct SettleUpView: View {
                 }
             }
         }
-        .overlay {
+        // Settle up is a sheet, so an overlay here would stop below the sheet's top edge.
+        // A full-screen cover reaches every edge (Sabit, 2026-11-12: "doesn't cover the full").
+        .fullScreenCover(isPresented: showsSuccess) {
             if let recorded {
                 SuccessOverlay(amount: recorded.amount, message: successMessage(recorded), onClose: cancel)
-                    .transition(reduceMotion ? .opacity : .scale(scale: 0.2, anchor: .bottomTrailing).combined(with: .opacity))
+                    .presentationBackground(.clear)
             }
         }
         .onAppear(perform: preselect)
@@ -138,6 +139,10 @@ struct SettleUpView: View {
 
     private func cancel() { dismiss() }
 
+    private var showsSuccess: Binding<Bool> {
+        Binding(get: { recorded != nil }, set: { if !$0 { recorded = nil } })
+    }
+
     private func record() async -> Bool {
         guard let t = selected, let me = group.me else { return false }
         if duplicateWarning != nil {
@@ -155,7 +160,10 @@ struct SettleUpView: View {
                 }
                 try await app.record(settlement, in: group)
                 saveError = nil
-                withAnimation(Motion.standard(reduceMotion: reduceMotion)) { recorded = t }
+                // The cover appears at once; SuccessOverlay animates its own entrance.
+                var appear = Transaction()
+                appear.disablesAnimations = true
+                withTransaction(appear) { recorded = t }
                 return true
         } catch {
             saveError = String(localized: "The payment wasn't recorded. Try again.", bundle: .appLanguage)
