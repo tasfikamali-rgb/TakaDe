@@ -36,9 +36,33 @@ final class GroupIconTests: XCTestCase {
     }
 
     func testWordsMustMatchWhole() {
-        XCTAssertNil(GroupIcon.emoji(for: "Cards night"))
-        XCTAssertNil(GroupIcon.emoji(for: "Unity"))
-        XCTAssertNil(GroupIcon.emoji(for: "Scary"))
+        // "Cards" isn't "car", "Unity" isn't "uni", "Scary" isn't "car".
+        XCTAssertNotEqual(GroupIcon.emoji(for: "Cards night"), "🚗")
+        XCTAssertNotEqual(GroupIcon.emoji(for: "Unity"), "🎓")
+        XCTAssertNotEqual(GroupIcon.emoji(for: "Scary"), "🚗")
+    }
+
+    func testUnicodeKeywordsCoverEverydayWords() {
+        XCTAssertEqual(GroupIcon.emoji(for: "Gas"), "⛽")
+        XCTAssertEqual(GroupIcon.emoji(for: "গ্যাস"), "⛽")
+        XCTAssertEqual(GroupIcon.emoji(for: "Guitars"), "🎸")
+        XCTAssertEqual(GroupIcon.emoji(for: "Pizza Friday"), "🍕")
+        XCTAssertEqual(GroupIcon.emoji(for: "ক্যামেরা"), "📷")
+        // The hand-picked list still comes first: a gas bill is a bill.
+        XCTAssertEqual(GroupIcon.emoji(for: "Gas bill"), "💡")
+    }
+
+    func testCountryNamesGiveFlags() {
+        XCTAssertEqual(GroupIcon.emoji(for: "Japan trip"), "🇯🇵")
+        XCTAssertEqual(GroupIcon.emoji(for: "জাপান ট্যুর"), "🇯🇵")
+        XCTAssertEqual(GroupIcon.emoji(for: "Bangladesh"), "🇧🇩")
+        // Words that are also countries don't become flags.
+        XCTAssertNotEqual(GroupIcon.emoji(for: "Football jersey"), "🇯🇪")
+    }
+
+    func testKeywordListLoads() {
+        GroupIcon.warmUp()
+        XCTAssertEqual(GroupIcon.stems(of: "guitars"), ["guitars", "guitar"])
     }
 
     func testTypedEmojiWins() {

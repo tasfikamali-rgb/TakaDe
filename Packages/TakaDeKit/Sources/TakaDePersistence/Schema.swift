@@ -210,6 +210,12 @@ enum Schema {
                 t.add(column: "named_by_me", .boolean).notNull().defaults(to: false)
             }
         }
+        // Who made each group, so only they can delete it (docs/adr/0027-delete-groups.md).
+        migrator.registerMigration("v11_group_creator") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "created_by", .text)
+            }
+        }
         return migrator
     }
 }

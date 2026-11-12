@@ -58,12 +58,13 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
         try await db.write { db in
             let exists = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM expense_group WHERE id = ?)", arguments: [group.id.description]) ?? false
             try db.execute(sql: """
-                INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id, accent)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id, accent, created_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET name = excluded.name, archived_at = excluded.archived_at,
-                    simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id, accent = excluded.accent
+                    simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id, accent = excluded.accent,
+                    created_by = COALESCE(expense_group.created_by, excluded.created_by)
                 """, arguments: [group.id.description, group.name, group.currency.code, group.currency.minorUnitDigits, group.createdAt, group.archivedAt,
-                                 group.simplifiesDebts, group.kind.rawValue, group.managerID?.description, group.accentHex])
+                                 group.simplifiesDebts, group.kind.rawValue, group.managerID?.description, group.accentHex, group.createdBy?.description])
             // Members: upsert listed members. Nobody is deleted here; `removeMember` does that,
             // and only for someone nothing in the group mentions.
             let profileID = try String.fetchOne(db, sql: "SELECT id FROM local_profile LIMIT 1")
@@ -229,6 +230,28 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
         }
     }
 
+    public func deleteGroup(_ group: GroupID) async throws {
+        try await db.write { db in try Self.deleteGroup(group, db: db) }
+    }
+
+    /// Deletes a group and everything about it inside the caller's transaction. History is
+    /// append-only for normal use; deleting the whole group is the one exception (like Delete
+    /// all my data), so the guard comes off and goes back on in the same transaction.
+    static func deleteGroup(_ group: GroupID, db: Database) throws {
+        let id = group.description
+        // Members cascade to their bKash/bank numbers; the group cascades to members,
+        // expenses, payments and meal counts.
+        try db.execute(sql: "DELETE FROM expense_group WHERE id = ?", arguments: [id])
+        try db.execute(sql: "DELETE FROM sync_outbox WHERE group_id = ?", arguments: [id])
+        try db.execute(sql: "DELETE FROM group_sync WHERE group_id = ?", arguments: [id])
+        try db.execute(sql: "DROP TRIGGER IF EXISTS audit_event_no_delete")
+        try db.execute(sql: "DELETE FROM audit_event WHERE group_id = ?", arguments: [id])
+        try db.execute(sql: """
+            CREATE TRIGGER audit_event_no_delete BEFORE DELETE ON audit_event
+            BEGIN SELECT RAISE(ABORT, 'audit_event is append-only'); END;
+            """)
+    }
+
     // MARK: Helpers
 
     static func audit(_ db: Database, _ event: AuditEvent) throws {
@@ -263,7 +286,8 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
             simplifiesDebts: row["simplify_debts"],
             kind: GroupKind(rawValue: (row["kind"] as String?) ?? "") ?? .standard,
             managerID: (row["manager_id"] as String?).flatMap(UUID.init(uuidString:)).map(MemberID.init),
-            accentHex: row["accent"]
+            accentHex: row["accent"],
+            createdBy: (row["created_by"] as String?).flatMap(UUID.init(uuidString:)).map(MemberID.init)
         )
     }
 }

@@ -4,7 +4,7 @@ import Foundation
 /// these, encrypted on the phone with the group's key before it goes to the relay. The relay
 /// stores only ciphertext and keeps the order changes arrived in.
 public struct SyncChange: Hashable, Codable, Sendable, Identifiable {
-    public enum Entity: String, Codable, Sendable { case group, expense, settlement, meal }
+    public enum Entity: String, Codable, Sendable { case group, expense, settlement, meal, groupDeleted }
 
     /// Random, and also the upload's idempotency key: sending it twice stores it once.
     public let id: UUID
@@ -59,7 +59,23 @@ public struct ApplyResult: Equatable, Sendable {
     /// in relay order. This phone's own changes coming back are not in it. Used for
     /// notifications (docs/adr/0025-group-change-notifications.md).
     public var fromOthers: [AppliedChange] = []
+    /// The group's maker deleted it for everyone; it's gone from this phone too.
+    public var groupDeleted = false
     public init() {}
+}
+
+/// The body of a `.groupDeleted` change: the group's maker deleted it for everyone. Each phone
+/// that receives it deletes the group, and only if `deletedBy` is the group's maker.
+public struct GroupDeletion: Hashable, Codable, Sendable {
+    public let groupID: GroupID
+    public let deletedBy: MemberID
+    public let deletedAt: Date
+
+    public init(groupID: GroupID, deletedBy: MemberID, deletedAt: Date = Date()) {
+        self.groupID = groupID
+        self.deletedBy = deletedBy
+        self.deletedAt = deletedAt
+    }
 }
 
 /// An expense or payment from another phone that was written to this phone's ledger.
