@@ -5,6 +5,7 @@ import TakaDeCore
 /// group. Shown only when signed in to a TakaDe account.
 struct FriendIDSection: View {
     @Environment(Friends.self) private var friends
+    @Environment(AccountModel.self) private var account
     @State private var failure: String?
     @State private var copied = false
     @State private var confirmingReplace = false
@@ -14,7 +15,7 @@ struct FriendIDSection: View {
         Section {
             if let code = friends.myCode {
                 VStack(spacing: Spacing.s) {
-                    QRCodeImage(text: code.url.absoluteString)
+                    QRCodeImage(text: code.url(name: account.profile?.displayName).absoluteString)
                         .frame(maxWidth: 220)
                         .accessibilityLabel(Text("QR code for your TakaDe ID"))
                     Text(verbatim: code.description)
@@ -49,7 +50,7 @@ struct FriendIDSection: View {
         } header: {
             Text("Your TakaDe ID")
         } footer: {
-            Text("Friends with TakaDe can add you to a group by scanning this code or typing your ID. It doesn't show your name, email or phone number.")
+            Text("Friends with TakaDe add you by scanning this code or typing your ID. The code includes your name, so whoever scans it sees it. Your ID alone shows no name, email or phone number.")
         }
         .task { if friends.myCode == nil { await load() } }
         .confirmationDialog(Text("Get a new ID?"), isPresented: $confirmingReplace, titleVisibility: .visible) {

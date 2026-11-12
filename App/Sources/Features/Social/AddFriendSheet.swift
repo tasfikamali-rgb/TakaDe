@@ -6,7 +6,6 @@ import TakaDeCore
 struct AddFriendSheet: View {
     @Environment(SocialModel.self) private var social
     @Environment(Friends.self) private var friends
-    @Environment(AccountModel.self) private var account
     @Environment(\.dismiss) private var dismiss
     let onAdded: (UUID) -> Void
 
@@ -15,6 +14,8 @@ struct AddFriendSheet: View {
     @State private var scanning = false
     @State private var working = false
     @State private var error: String?
+    /// The name their QR code carried, so an unchanged one counts as theirs, not yours.
+    @State private var scannedName: String?
 
     private var trimmedName: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
 
@@ -40,7 +41,7 @@ struct AddFriendSheet: View {
                 } header: {
                     Text("Their name")
                 } footer: {
-                    Text("Only on this phone. TakaDe doesn't share names between accounts.")
+                    Text("Filled in from their QR code. Leave it empty to use the name they set, once they accept.")
                 }
                 Section {
                     Button(action: add) {
@@ -49,7 +50,7 @@ struct AddFriendSheet: View {
                             if working { ProgressView() }
                         }
                     }
-                    .disabled(working || FriendCode(typed: idText) == nil || !PersonName.isValid(trimmedName))
+                    .disabled(working || FriendCode(typed: idText) == nil || !(trimmedName.isEmpty || PersonName.isValid(trimmedName)))
                     if let error {
                         Label {
                             Text(verbatim: error)
@@ -75,6 +76,10 @@ struct AddFriendSheet: View {
                 QRScannerSheet { text in
                     if let code = FriendCode(scanned: text) {
                         idText = code.description
+                        if let shared = FriendCode.sharedName(inScanned: text), trimmedName.isEmpty || trimmedName == scannedName {
+                            name = shared
+                            scannedName = shared
+                        }
                         error = nil
                     } else {
                         error = String(localized: "That QR code isn't a TakaDe ID.", bundle: .appLanguage)
@@ -98,7 +103,8 @@ struct AddFriendSheet: View {
         Task {
             defer { working = false }
             do {
-                let friend = try await social.add(code: code, name: trimmedName, myName: account.profile?.displayName ?? "")
+                let friend = try await social.add(code: code, name: trimmedName.isEmpty ? nil : trimmedName,
+                                                  namedByMe: trimmedName != scannedName)
                 dismiss()
                 onAdded(friend.id)
             } catch {

@@ -33,6 +33,20 @@ Free plan only.
   `typing-` + 16 bytes from HKDF over their shared X25519 secret. At most one signal every
   2.5 seconds while typing; the indicator hides after 6 seconds without one.
 
+## Names and photos (Sabit, 2026-11-12, after testing on iPhone and iPad)
+- Your QR code now carries your own name (`takade://friend?c=…&n=…`), so whoever scans it
+  sees your name at once. It goes camera to camera, never through the server; the typed or
+  shared ID still carries none.
+- A hello carries your name and a 128 px profile photo (16 KB JPEG at most), sealed like a
+  message. When someone accepts you, their phone sends its own name and photo back the same
+  way. Never to someone not accepted, never in answer to a profile, so it can't loop.
+- A name typed on this phone wins; otherwise the friend's own name is used, and their TakaDe
+  ID shows until one arrives. Photos from friends are checked (one JPEG, at most 512 px) and
+  kept on the phone only. Sealed messages may now be up to 40,000 characters.
+- A hello that couldn't be sent is tried again each time the app opens.
+- "Use my Google photo" asks Google in its own sheet and saves the photo on the phone; the
+  sign-in service still gets no name or photo (Sabit chose this over automatic at sign-in).
+
 ## What the server can see
 Who sends a message to whom and when, its size, and when a typing channel is used (not who
 is in it, unless it matches connections to timing). Not names, text or the key to open it.

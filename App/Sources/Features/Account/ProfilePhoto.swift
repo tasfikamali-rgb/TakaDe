@@ -75,8 +75,11 @@ struct ProfileAvatar: View {
             }
         }
         .frame(width: size, height: size)
-        .background(Circle().fill(Color.lilac))
+        // A plain surface with an edge, so the spot stands out on the tinted Account header
+        // instead of blending into it (Sabit, 2026-11-12).
+        .background(Circle().fill(Color.surface))
         .clipShape(Circle())
+        .overlay(Circle().strokeBorder(Color.ink.opacity(photo == nil ? 0.16 : 0.08), lineWidth: 1))
         .accessibilityHidden(true)
     }
 }
@@ -91,17 +94,26 @@ struct ProfilePhotoPicker: View {
     @State private var item: PhotosPickerItem?
     @State private var choosing = false
     @State private var failed = false
+    @State private var fetchingGoogle = false
 
     var body: some View {
         Group {
-            if account.photo == nil {
+            if account.photo == nil && !account.canUseGooglePhoto {
                 Button { choosing = true } label: { badged }
             } else {
                 Menu {
-                    Button("Choose a new photo", systemImage: "photo") { choosing = true }
-                    Button("Remove photo", systemImage: "trash", role: .destructive) { account.removePhoto() }
+                    Button(account.photo == nil ? "Choose a photo" : "Choose a new photo", systemImage: "photo") { choosing = true }
+                    if account.canUseGooglePhoto {
+                        Button("Use my Google photo", systemImage: "person.crop.circle.badge.checkmark", action: useGooglePhoto)
+                    }
+                    if account.photo != nil {
+                        Button("Remove photo", systemImage: "trash", role: .destructive) { account.removePhoto() }
+                    }
                 } label: { badged }
             }
+        }
+        .overlay {
+            if fetchingGoogle { ProgressView() }
         }
         .buttonStyle(PressScaleButtonStyle())
         .photosPicker(isPresented: $choosing, selection: $item, matching: .images, preferredItemEncoding: .compatible)
@@ -119,6 +131,20 @@ struct ProfilePhotoPicker: View {
         }
         .alert("That photo couldn't be used. Try another one.", isPresented: $failed) {}
         .accessibilityLabel(account.photo == nil ? Text("Add a profile photo") : Text("Change profile photo"))
+    }
+
+    private func useGooglePhoto() {
+        fetchingGoogle = true
+        Task {
+            defer { fetchingGoogle = false }
+            do {
+                try await account.useGooglePhoto()
+            } catch is CancellationError {
+                // Closed the Google sheet.
+            } catch {
+                failed = true
+            }
+        }
     }
 
     private var badged: some View {

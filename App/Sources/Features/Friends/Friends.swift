@@ -28,6 +28,9 @@ final class Friends {
         case tooMany
         case offline
         case server
+        /// The server doesn't have this feature's tables or functions yet (its SQL file
+        /// hasn't been run in Supabase).
+        case notSetUp
     }
 
     struct Received: Identifiable, Sendable {
@@ -72,7 +75,7 @@ final class Friends {
             if row.public_key != publicKey {
                 _ = try await call {
                     try await supabase.rest("friend_id?user_id=eq.\(user)", method: "PATCH",
-                                            body: ["public_key": publicKey, "updated_at": Self.now()], prefer: "return=minimal")
+                                            body: ["public_key": publicKey], prefer: "return=minimal")
                 }
             }
             setCode(code, for: user)
@@ -102,7 +105,7 @@ final class Friends {
             do {
                 _ = try await call {
                     try await supabase.rest("friend_id?user_id=eq.\(user)", method: "PATCH",
-                                            body: ["code": code.raw, "updated_at": Self.now()], prefer: "return=minimal")
+                                            body: ["code": code.raw], prefer: "return=minimal")
                 }
                 setCode(code, for: user)
                 return
@@ -213,7 +216,6 @@ final class Friends {
         return FriendCode(randomBytes: bytes)
     }
 
-    private static func now() -> String { ISO8601DateFormatter().string(from: Date()) }
 
     /// Turns service and network errors into the few cases the screens explain.
     func call(_ body: () async throws -> Data) async throws -> Data {
@@ -225,6 +227,8 @@ final class Friends {
             if code == "TK429" { throw Failure.tooMany }
             if code == "P0002" { throw Failure.notFound }
             if code == "28000" || status == 401 { throw Failure.notSignedIn }
+            // PostgREST: no such function or table. Postgres: undefined function or table.
+            if code == "PGRST202" || code == "PGRST205" || code == "42883" || code == "42P01" { throw Failure.notSetUp }
             if code == "23505" { throw SupabaseAuth.Failure.server(status: status, code: code) }
             throw Failure.server
         } catch let error as URLError {
@@ -251,6 +255,8 @@ extension Friends.Failure {
             String(localized: "You're offline. Connect to the internet and try again.", bundle: .appLanguage)
         case .server:
             String(localized: "Something went wrong. Try again in a moment.", bundle: .appLanguage)
+        case .notSetUp:
+            String(localized: "TakaDe's server isn't ready for this yet. Try again later.", bundle: .appLanguage)
         }
     }
 

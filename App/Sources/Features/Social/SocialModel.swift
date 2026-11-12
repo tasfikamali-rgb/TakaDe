@@ -22,6 +22,8 @@ final class SocialModel {
     private(set) var typing: Set<UUID> = []
     /// The chat on screen, if any: its messages count as read when they arrive.
     var openChat: UUID?
+    /// Why the last send failed, in words for the chat screen. Nil after a send that worked.
+    private(set) var sendProblem: String?
 
     @ObservationIgnored private let store: SocialRepository
     @ObservationIgnored private let account: AccountModel
@@ -48,7 +50,10 @@ final class SocialModel {
     var chats: [Friend] { people.filter { $0.status == .friend } }
     var requests: [Friend] { people.filter { $0.status == .request } }
     var blocked: [Friend] { people.filter { $0.status == .blocked } }
-    var unreadTotal: Int { people.filter { $0.status != .blocked }.reduce(0) { $0 + $1.unread } }
+    /// New messages plus waiting requests, for the dot on the Social tab.
+    var unreadTotal: Int {
+        people.filter { $0.status != .blocked }.reduce(0) { $0 + $1.unread } + requests.count
+    }
 
     // MARK: Lifecycle
 
@@ -65,6 +70,7 @@ final class SocialModel {
         if friends.myCode == nil { try? await friends.ensureID() }
         connect(user: user)
         await fetchInbox()
+        await resendPendingHellos()
     }
 
     /// When the app goes to the background. Messages wait on the server until it's back.
@@ -110,32 +116,73 @@ final class SocialModel {
 
     // MARK: Adding people
 
-    /// Adds someone by TakaDe ID with the name typed on this phone, and lets their phone
-    /// know (a sealed "hello" carrying your own name), so you show up in their Social tab.
+    /// Adds someone by TakaDe ID and lets their phone know with a sealed "hello" carrying
+    /// your own name and photo, so you show up under Requests in their Social tab. `name` is
+    /// what you typed, or nil to use the name they give themselves (from their QR code now,
+    /// or from their phone once they accept). If the hello can't be sent, it's tried again
+    /// each time the app opens.
     @discardableResult
-    func add(code: FriendCode, name: String, myName: String,
-             key known: Curve25519.KeyAgreement.PublicKey? = nil) async throws -> Friend {
+    func add(code: FriendCode, name: String?, key known: Curve25519.KeyAgreement.PublicKey? = nil,
+             namedByMe: Bool = true) async throws -> Friend {
         guard let user = friends.userID else { throw Friends.Failure.notSignedIn }
         let key: Curve25519.KeyAgreement.PublicKey
         if let known { key = known } else { key = try await friends.lookUp(code) }
         let publicKey = key.rawRepresentation.base64URLEncoded
+        let typed = name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         var friend = try await store.friend(account: user, code: code)
-            ?? Friend(accountID: user, code: code, publicKey: publicKey, name: name)
-        friend.name = name
+            ?? Friend(accountID: user, code: code, publicKey: publicKey, name: "", namedByMe: false)
+        if !typed.isEmpty {
+            friend.name = typed
+            friend.namedByMe = namedByMe
+        }
         friend.publicKey = publicKey
         friend.status = .friend
         try await store.save(friend)
         await reload()
-        _ = try? await deliver(FriendEnvelope(kind: .hello, fromName: myName), to: friend)
+        await sendHello(to: friend)
         return friend
     }
 
-    /// Someone who wrote first, now in your chats. Their name stays as they gave it.
+    /// Someone who added you, now in your chats. Their name stays as they gave it, and your
+    /// phone sends back your own name and photo so they see who you are.
     func accept(_ friend: Friend) async {
         var friend = friend
         friend.status = .friend
         try? await store.save(friend)
         await reload()
+        _ = try? await deliver(profileEnvelope(.profile), to: friend)
+    }
+
+    private var myName: String { account.profile?.displayName ?? "" }
+
+    private func profileEnvelope(_ kind: FriendEnvelope.Kind) -> FriendEnvelope {
+        FriendEnvelope(kind: kind, fromName: myName, photo: FriendPhotos.mine())
+    }
+
+    private static let pendingHelloKey = "social.pendingHello"
+
+    private func sendHello(to friend: Friend) async {
+        var pending = Set(UserDefaults.standard.stringArray(forKey: Self.pendingHelloKey) ?? [])
+        do {
+            try await deliver(profileEnvelope(.hello), to: friend)
+            pending.remove(friend.id.uuidString)
+        } catch {
+            pending.insert(friend.id.uuidString)
+        }
+        UserDefaults.standard.set(Array(pending), forKey: Self.pendingHelloKey)
+    }
+
+    private func resendPendingHellos() async {
+        let pending = UserDefaults.standard.stringArray(forKey: Self.pendingHelloKey) ?? []
+        for text in pending {
+            guard let id = UUID(uuidString: text), let friend = try? await store.friend(id: id) else {
+                var rest = Set(UserDefaults.standard.stringArray(forKey: Self.pendingHelloKey) ?? [])
+                rest.remove(text)
+                UserDefaults.standard.set(Array(rest), forKey: Self.pendingHelloKey)
+                continue
+            }
+            await sendHello(to: friend)
+        }
     }
 
     /// Stops their messages: the server drops what they send, and it isn't told to them.
@@ -165,6 +212,7 @@ final class SocialModel {
     /// Removes them and the chat from this phone. If they write again, it shows as a request.
     func remove(_ friend: Friend) async {
         try? await store.deleteFriend(friend.id)
+        FriendPhotos.remove(friend.id)
         await reload()
         revision += 1
     }
@@ -208,8 +256,14 @@ final class SocialModel {
     private func sendState(of message: FriendMessage, to friend: Friend, myName: String) async -> FriendMessage.State {
         let envelope = FriendEnvelope(kind: .text, id: message.id, fromName: myName, text: message.text)
         do {
-            return try await deliver(envelope, to: friend) ? .sent : .failed
+            if try await deliver(envelope, to: friend) {
+                sendProblem = nil
+                return .sent
+            }
+            sendProblem = String(localized: "No one has this TakaDe ID any more. They may have a new one.", bundle: .appLanguage)
+            return .failed
         } catch {
+            sendProblem = Friends.Failure.message(for: error)
             return .failed
         }
     }
@@ -296,20 +350,33 @@ final class SocialModel {
             if friend.status == .blocked { return false }
             var notice: String?
             if friend.publicKey != key {
-                notice = String(localized: "\(friend.name) is using TakaDe on a new phone.", bundle: .appLanguage)
+                notice = String(localized: "\(friend.displayName) is using TakaDe on a new phone.", bundle: .appLanguage)
             }
-            if friend.publicKey != key || friend.code != code {
-                friend.publicKey = key
-                friend.code = code
-                try? await store.save(friend)
+            var changed = friend.publicKey != key || friend.code != code
+            friend.publicKey = key
+            friend.code = code
+            // Their own name, unless you typed one for them.
+            if envelope.kind != .text, !friend.namedByMe, let name = Self.cleanName(envelope.fromName), name != friend.name {
+                friend.name = name
+                changed = true
             }
+            if changed { try? await store.save(friend) }
             if let notice {
                 _ = try? await store.save(FriendMessage(friendID: friend.id, direction: .notice, text: notice, at: at, state: .received))
             }
         } else {
-            let name = Self.cleanName(envelope.fromName) ?? code.description
-            friend = Friend(accountID: user, code: code, publicKey: key, name: name, status: .request, addedAt: at)
+            friend = Friend(accountID: user, code: code, publicKey: key, name: Self.cleanName(envelope.fromName) ?? "",
+                            namedByMe: false, status: .request, addedAt: at)
             try? await store.save(friend)
+        }
+        if envelope.kind != .text, let photo = envelope.photo {
+            FriendPhotos.store(base64: photo, for: friend.id)
+        }
+        // They added you after you'd added them: send your name and photo back. Never to
+        // someone you haven't accepted, and never in answer to a profile, so it can't loop.
+        if envelope.kind == .hello, friend.status == .friend {
+            let target = friend
+            Task { _ = try? await self.deliver(self.profileEnvelope(.profile), to: target) }
         }
         hideTyping(friend.id)
         guard envelope.kind == .text, let text = envelope.text.flatMap(FriendMessage.cleaned) else { return true }

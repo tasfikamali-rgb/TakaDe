@@ -38,7 +38,7 @@ struct SocialView: View {
                             titleVisibility: .visible, presenting: removing) { friend in
             Button("Remove", role: .destructive) { Task { await social.remove(friend) } }
         } message: { friend in
-            Text("\(friend.name) and your chat are removed from this phone. If they write again, it shows as a request.")
+            Text("\(friend.displayName) and your chat are removed from this phone. If they write again, it shows as a request.")
         }
         // Signing in or out changes whose friends these are.
         .task(id: account.profile?.accountID) { await social.start() }
@@ -98,7 +98,7 @@ struct SocialView: View {
                         DisclosureGroup {
                             ForEach(social.blocked) { friend in
                                 HStack {
-                                    Text(verbatim: friend.name)
+                                    Text(verbatim: friend.displayName)
                                     Spacer()
                                     Button("Unblock") { unblock(friend) }
                                         .buttonStyle(.borderless)
@@ -148,10 +148,10 @@ private struct FriendRow: View {
 
     var body: some View {
         HStack(spacing: Spacing.s) {
-            Avatar(name: friend.name, size: 44)
+            Avatar(name: friend.name, size: 44, photo: FriendPhotos.image(for: friend.id))
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text(verbatim: friend.name)
+                    Text(verbatim: friend.displayName)
                         .font(AppFont.bodyEmphasis)
                         .foregroundStyle(Color.ink)
                         .lineLimit(1)
@@ -203,11 +203,17 @@ private struct RequestRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             HStack(spacing: Spacing.s) {
-                Avatar(name: friend.name, size: 44)
+                Avatar(name: friend.name, size: 44, photo: FriendPhotos.image(for: friend.id))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: friend.name)
+                    Text(verbatim: friend.displayName)
                         .font(AppFont.bodyEmphasis)
-                    Text(verbatim: friend.lastMessagePreview ?? friend.code.description)
+                    Group {
+                        if let preview = friend.lastMessagePreview {
+                            Text(verbatim: preview)
+                        } else {
+                            Text("Added you on TakaDe")
+                        }
+                    }
                         .font(AppFont.label)
                         .foregroundStyle(Color.inkMuted)
                         .lineLimit(2)

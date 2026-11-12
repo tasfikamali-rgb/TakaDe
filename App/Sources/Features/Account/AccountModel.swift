@@ -316,6 +316,7 @@ final class AccountModel {
         GroupPhotoFile.removeAll()
         MemberPhotoFile.removeAll()
         MemberPhotos.reset()
+        FriendPhotos.removeAll()
         photo = nil
         profile = nil
         identities = []
@@ -323,6 +324,30 @@ final class AccountModel {
     }
 
     // MARK: Profile photo
+
+    /// True when Google can be asked for this person's photo.
+    var canUseGooglePhoto: Bool {
+        google != nil && (profile?.account?.provider == .google || identities.contains { $0.provider == .google })
+    }
+
+    /// "Use my Google photo" (Sabit, 2026-11-12): asks Google directly, in its own sheet, for
+    /// the profile photo and saves it on this phone like a picked one. Nothing goes to
+    /// TakaDe's sign-in service, so the account still holds no name or photo.
+    func useGooglePhoto() async throws {
+        guard let google else { throw GoogleSignInService.Failure.couldNotStart }
+        let identity = try await google.signIn(includeProfile: true)
+        guard let picture = identity.picture, picture.scheme == "https",
+              picture.host?.hasSuffix(".googleusercontent.com") == true else { throw GoogleSignInService.Failure.badResponse }
+        // Google's address ends in a size such as "=s96-c"; ask for a sharper one.
+        let text = picture.absoluteString
+        let sized = text.range(of: "=s\\d+(-c)?$", options: .regularExpression)
+            .map { text.replacingCharacters(in: $0, with: "=s512-c") } ?? text
+        let (data, response) = try await URLSession.shared.data(from: URL(string: sized) ?? picture)
+        guard (response as? HTTPURLResponse)?.statusCode == 200, data.count < 5_000_000 else {
+            throw GoogleSignInService.Failure.badResponse
+        }
+        try await setPhoto(data)
+    }
 
     func setPhoto(_ data: Data) async throws {
         photo = try await ProfilePhotoFile.save(data)
