@@ -13,6 +13,7 @@ struct TakaDeApp: App {
     @State private var lock = AppLock()
     @State private var exchange = ExchangeRateStore()
     @State private var notifications: GroupNotifications
+    @State private var inbox: ActivityInbox
     /// Shown on every open: a cold launch and each return from the background (Sabit,
     /// 2026-11-11). Not after Control Center or a notification pull, which only pass
     /// through .inactive. A new `splashRun` restarts the animation; see LaunchSplash.
@@ -37,7 +38,12 @@ struct TakaDeApp: App {
         // Set before launch finishes, so tapping a notification that opened the app is handled.
         let notifications = GroupNotifications()
         UNUserNotificationCenter.current().delegate = notifications
-        sync.onChangesFromOthers = { [weak notifications] group, changes in
+        let inbox = ActivityInbox()
+        _inbox = State(initialValue: inbox)
+        sync.onChangesFromOthers = { @MainActor [weak notifications, weak inbox] group, changes in
+            // Your own changes made on another phone aren't news to you.
+            let me = model.group(group)?.me?.id
+            inbox?.record(changes.filter { me == nil || $0.changedBy != me }.count)
             await notifications?.changesArrived(changes, in: group, app: model)
         }
         _notifications = State(initialValue: notifications)
@@ -61,6 +67,7 @@ struct TakaDeApp: App {
                 .environment(friends)
                 .environment(social)
                 .environment(notifications)
+                .environment(inbox)
                 .environment(exchange)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {

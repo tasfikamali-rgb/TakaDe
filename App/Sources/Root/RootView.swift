@@ -10,6 +10,8 @@ struct RootView: View {
     @Environment(Friends.self) private var friends
     @Environment(SocialModel.self) private var social
     @Environment(GroupNotifications.self) private var notifications
+    @Environment(ActivityInbox.self) private var inbox
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     // Scene storage, so a language switch (which rebuilds the tabs) or a new window
@@ -29,12 +31,20 @@ struct RootView: View {
         return windowSize.height >= windowSize.width * 1.6
     }
 
+    private func unread(_ tab: AppTab) -> Int {
+        switch tab {
+        case .social: social.unreadTotal
+        case .activity: inbox.unread
+        default: 0
+        }
+    }
+
     var body: some View {
         TabView(selection: $tab) {
             ForEach(AppTab.allCases) { item in
                 TabContent(tab: item)
                     .tabItem { Label(item.title, systemImage: item.systemImage) }
-                    .badge(item == .social ? social.unreadTotal : 0)
+                    .badge(unread(item))
                     .tag(item)
                     .toolbar(usesPillBar ? .hidden : .automatic, for: .tabBar)
             }
@@ -59,7 +69,7 @@ struct RootView: View {
         // overlay and each page reserves room for it (TabContent).
         .overlay(alignment: .bottom) {
             if usesPillBar && !chrome.hidesTabBar {
-                PillTabBar(selection: $tab, unread: [.social: social.unreadTotal])
+                PillTabBar(selection: $tab, unread: [.social: social.unreadTotal, .activity: inbox.unread])
                     .padding(.horizontal, Spacing.screenMargin)
                     .padding(.bottom, Spacing.xs)
                     .background(alignment: .bottom) {
@@ -74,6 +84,21 @@ struct RootView: View {
             }
         }
         .animation(Motion.standard, value: chrome.hidesTabBar)
+        // Activity on screen: what arrives counts as seen, and opening it clears the number.
+        .onChange(of: tab == .activity && scenePhase == .active, initial: true) { _, viewing in
+            inbox.isViewing = viewing
+        }
+        // While the app is open, check shared groups once a minute, so other people's
+        // changes reach Activity and its number without a pull. One small request per shared
+        // group; no live connection (Realtime is kept for open chats, PR #47).
+        .task(id: scenePhase == .active) {
+            guard scenePhase == .active else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(60))
+                guard !Task.isCancelled else { return }
+                await sync.syncAll()
+            }
+        }
         .environment(chrome)
         .fullScreenCover(isPresented: Binding(get: { account.needsOnboarding }, set: { _ in })) {
             OnboardingView().rebuildsOnDynamicType()
@@ -112,5 +137,6 @@ struct RootView: View {
         .environment(sync)
         .environment(friends)
         .environment(GroupNotifications())
+        .environment(ActivityInbox())
         .environment(SocialModel(store: app.social, account: account, friends: friends))
 }
