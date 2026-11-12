@@ -20,3 +20,5 @@ The app icon slot was empty, which blocks App Store upload. The brand uses one a
 
 ## Update 2026-11-12: new palette
 Sabit chose a five-color palette for the whole app: maroon `#780000`, red `#C1121F`, cream `#FDF0D5`, navy `#003049`, steel blue `#669BBC`. The mark keeps its shape and is recolored in flat fills: light icon cream on red, dark icon steel blue on navy, logo red ৳ with navy text (navy background: steel blue ৳ with cream text). Red on navy is only about 2.2:1, so the dark versions use steel blue instead. No gradients or gloss, per "dont use these glossy colourings, they look AI".
+
+Later the same day Sabit found that palette not minimal and the texture too bright, so the app moved to neutral grays with one muted blue accent (`#2B5D8A`, `#7AAAD6` in dark mode). The icon is now a white ৳ on blue, and the dark icon is a light blue ৳ on near-black. The logo is a blue ৳ with ink text.

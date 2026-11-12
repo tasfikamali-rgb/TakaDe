@@ -48,7 +48,7 @@ struct GroupListSheet: View {
         .background(
             TexturedBackground()
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: Radius.sheet, topTrailingRadius: Radius.sheet, style: .continuous))
-                // Cream header over a lighter cream sheet is a small step, so lift the sheet edge in light mode.
+                // Near-white header over a light gray sheet is a small step, so lift the sheet edge in light mode.
                 .shadow(color: .black.opacity(colorScheme == .dark ? 0 : 0.08), radius: 12, y: -4)
         )
         .offset(y: -Radius.sheet)

@@ -1,7 +1,7 @@
 import SwiftUI
 import TakaDeCore
 
-/// The balance header (cream in light mode, navy in dark) with the groups sheet sliding over it.
+/// The balance header (near-white in light mode, dark gray in dark) with the groups sheet sliding over it.
 struct HomeOverview: View {
     @Environment(AppModel.self) private var model
     @Binding var selection: GroupID?

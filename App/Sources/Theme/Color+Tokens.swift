@@ -19,7 +19,7 @@ extension Color {
     static let bkash = Color("bkash")
     static let sheet = Color("sheet")
     static let lilac = Color("lilac")
-    /// Switches when on: steel blue, so "on" never reads as the red accent or as a warning.
+    /// Switches when on: the blue accent, a step softer in dark mode.
     static let toggleOn = Color("toggleOn")
 }
 
@@ -32,8 +32,8 @@ extension Color {
     static let tabBarUnselected = Color.onHeader.opacity(0.78)
 }
 
-/// The moving line texture behind every screen (`FlowingLines`): navy hairlines on cream in
-/// light mode, cream on navy in dark. Its opacity lives in the colorset.
+/// The moving line texture behind every screen (`FlowingLines`): ink hairlines at a few
+/// percent. Its opacity lives in the colorset.
 extension Color {
     static let texture = Color("texture")
 }
