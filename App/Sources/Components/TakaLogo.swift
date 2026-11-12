@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The logo "৳akade" at rest: the split taka sign beside the outlined wordmark, placed
+/// The logo "৳akaDe" at rest: the split taka sign beside the outlined wordmark, placed
 /// exactly as in docs/brand/logo-on-light.svg (TakaLockup). Reads as "TakaDe".
 struct TakaLogo: View {
     var width: CGFloat

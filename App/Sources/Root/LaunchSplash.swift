@@ -3,7 +3,7 @@ import SwiftUI
 /// The opening, on a cold launch and each time the app comes back from the background
 /// (TakaDeApp). It starts exactly like the static launch screen (the whole taka sign on
 /// `launchBackground`, 96 pt, centred), cuts the sign in two with a light tap, then slides
-/// it left while "akade" wipes in beside it, so it ends on the logo "৳akade" (Sabit,
+/// it left while "akaDe" wipes in beside it, so it ends on the logo "৳akaDe" (Sabit,
 /// 2026-11-11). After a short hold it fades to the app. About 1.7 s; the app loads
 /// underneath meanwhile and taps go straight through. With Reduce Motion on, nothing moves:
 /// the sign cross-fades to the logo, then the logo fades out.
