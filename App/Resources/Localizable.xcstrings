@@ -10525,6 +10525,23 @@
         }
       }
     },
+    "Set currency": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুদ্রা বাছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set currency"
+          }
+        }
+      }
+    },
     "Drag to move the photo. Pinch to zoom.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
