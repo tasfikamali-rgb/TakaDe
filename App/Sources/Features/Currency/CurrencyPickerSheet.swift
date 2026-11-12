@@ -60,11 +60,10 @@ struct CurrencyPickerSheet: View {
                     if let flag = CurrencyCatalog.flag(code) {
                         FlagImage(flag, size: 22)
                     } else {
-                        Text(verbatim: CurrencyCatalog.symbol(code))
-                            .font(AppFont.bodyEmphasis)
-                            .foregroundStyle(Color.ink)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.6)
+                        // Never text here: a text badge also shifts the row's separator.
+                        Image(systemName: "banknote")
+                            .font(AppFont.body)
+                            .foregroundStyle(Color.inkMuted)
                     }
                 }
                     .frame(width: 44, height: 36)
