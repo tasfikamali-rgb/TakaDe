@@ -12,6 +12,7 @@ The mark is the Bangladeshi taka sign (৳) cut on a diagonal, with the two halv
 | `icon-mark-dark.svg` | Mark alone, transparent, lime. For dark backgrounds. |
 | `logo-on-light.svg` | The logo, "৳akade": the split ৳ stands in for the t, then "akade" in Inter Display Bold. Green `#1F9D55` ৳ and ink text, for white or light backgrounds. |
 | `logo-on-dark.svg` | The same logo with a lime ৳ and near-white text, for dark backgrounds. |
+| `social-preview.png` | 1280×640 link preview for the GitHub repo (Settings › Social preview) and for sharing links. |
 | `android/res/` | Android launcher icon, ready to copy into the app's `res/`: adaptive icon (lime background, ink foreground, monochrome layer for themed icons) plus legacy PNGs for every density. |
 | `android/play-store-icon-512.png` | Google Play listing icon, 512×512, opaque. Play applies its own corner mask. |
 
