@@ -23,7 +23,7 @@ struct NotificationsSection: View {
             }
         } header: {
             Text("Notifications")
-                .foregroundStyle(Color.inkMuted)
+                .formHeader()
         } footer: {
             Text("When someone adds or changes an expense you're in, or pays you. Your phone writes these itself, so names and amounts aren't sent to any server for them.")
                 .foregroundStyle(Color.inkMuted)
