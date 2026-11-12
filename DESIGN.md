@@ -141,7 +141,7 @@ Register fonts through `Font.custom(_:size:relativeTo:)` so Dynamic Type still s
 
 ## 4. Components
 
-1. **Bottom nav with liquid notch** (from the Figma reference). A `header` pill (white with a soft shadow in light mode, raised dark gray in dark mode) floating above the home indicator, four icons (Home, Activity, Groups, Profile). The selected icon sits in a lime circle that drops into a curved cutout in the bar. On tab change the cutout and circle slide together to the new tab. Build the bar as a custom `Shape` whose notch x position is `animatableData`, and move the circle with `matchedGeometryEffect`. Spring: response 0.4, damping 0.8. Fire `.sensoryFeedback(.selection, trigger:)` on the same frame.
+1. **Bottom nav: compact floating pill** (Sabit, 2026-11-12; replaces the liquid notch bar). A small `tabBarBackground` capsule (white with a soft shadow and hairline in light mode, raised dark gray in dark mode) centered above the home indicator, not full width. Four tabs (Groups, Activity, Account, Settings), each an SF Symbol over a short Inter / Hind Siliguri label. The selected tab sits on a `tabBarIndicator` capsule that springs across to the next tab (`matchedGeometryEffect`, `Motion.tabSwitch`: response 0.34, damping 0.76), its icon switches to the fill variant with a small bounce, and `.sensoryFeedback(.selection, trigger:)` fires on the same frame. Reduce Motion swaps the spring for a short ease and skips the bounce. Colors come only from the `tabBar…` tokens in `Color+Tokens.swift`.
 
 2. **Wallet header**. `header` block at the top of Home (white in light mode, raised dark gray in dark mode) with "Total balance" label, big Inter Display balance, and two pill buttons side by side: Send (filled white) and Request (outlined). Below it a compact Spending or "You are owed" card with stacked avatars.
 
@@ -174,7 +174,8 @@ Follow the apple-design skill. In SwiftUI terms:
 | Use | Animation |
 |---|---|
 | Default UI change | `.spring(response: 0.35, dampingFraction: 1.0)` |
-| Nav notch, flicked cards | `.spring(response: 0.4, dampingFraction: 0.8)` |
+| Tab bar pill | `.spring(response: 0.34, dampingFraction: 0.76)` |
+| Flicked cards | `.spring(response: 0.4, dampingFraction: 0.8)` |
 | Sheets and drawers | `.spring(response: 0.3, dampingFraction: 0.8)` |
 | Press feedback | 0.1s ease out to scale 0.96 |
 

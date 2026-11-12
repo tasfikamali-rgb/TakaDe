@@ -16,10 +16,10 @@ enum AppTab: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .home: "person.3"
-        case .activity: "list.bullet.rectangle"
+        case .home: "person.2"
+        case .activity: "arrow.left.arrow.right"
         case .account: "person.crop.circle"
-        case .settings: "gearshape"
+        case .settings: "slider.horizontal.3"
         }
     }
 }

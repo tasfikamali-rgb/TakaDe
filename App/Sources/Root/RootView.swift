@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// On a tall compact window (an iPhone held upright) the floating notch bar from DESIGN.md
+/// On a tall compact window (an iPhone held upright) the floating pill bar from DESIGN.md
 /// replaces the system tab bar. Everywhere else (iPad, iPhone Duo's displays, landscape,
 /// wide windows) the system tab bar returns so the platform can place and adapt it.
 struct RootView: View {
@@ -18,11 +18,11 @@ struct RootView: View {
 
     @State private var windowSize: CGSize = .zero
 
-    /// The floating notch bar only fits a tall, narrow window: a phone held upright.
+    /// The floating pill bar only fits a tall, narrow window: a phone held upright.
     /// Wider and shorter windows (iPhone Duo's outer display, landscape, the inner display)
     /// get the system tab bar, which the system moves to the side where that saves vertical
     /// space (HIG, Designing for iPhone Duo). Decided from the window, never the device model.
-    private var usesNotchBar: Bool {
+    private var usesPillBar: Bool {
         guard horizontalSizeClass != .regular else { return false }
         guard windowSize.width > 0 else { return true }
         return windowSize.height >= windowSize.width * 1.6
@@ -34,7 +34,7 @@ struct RootView: View {
                 TabContent(tab: item)
                     .tabItem { Label(item.title, systemImage: item.systemImage) }
                     .tag(item)
-                    .toolbar(usesNotchBar ? .hidden : .automatic, for: .tabBar)
+                    .toolbar(usesPillBar ? .hidden : .automatic, for: .tabBar)
             }
         }
         .tint(.ink)
@@ -47,20 +47,20 @@ struct RootView: View {
                           height: proxy.size.height + insets.top + insets.bottom)
         } action: { size in
             windowSize = size
-            chrome.showsNotchBar = usesNotchBar
+            chrome.showsPillBar = usesPillBar
         }
-        .onChange(of: horizontalSizeClass) { chrome.showsNotchBar = usesNotchBar }
+        .onChange(of: horizontalSizeClass) { chrome.showsPillBar = usesPillBar }
         // A TabView doesn't pass a safe area inset down to its pages, so the bar floats in an
         // overlay and each page reserves room for it (TabContent).
         .overlay(alignment: .bottom) {
-            if usesNotchBar && !chrome.hidesTabBar {
-                NotchTabBar(selection: $tab)
+            if usesPillBar && !chrome.hidesTabBar {
+                PillTabBar(selection: $tab)
                     .padding(.horizontal, Spacing.screenMargin)
                     .padding(.bottom, Spacing.xs)
                     .background(alignment: .bottom) {
                         // Content scrolls under the bar and fades out instead of being cut off.
                         LinearGradient(colors: [Color.canvas.opacity(0), Color.canvas], startPoint: .top, endPoint: .bottom)
-                            .frame(height: NotchTabBar.reservedHeight + Spacing.xl)
+                            .frame(height: PillTabBar.reservedHeight + Spacing.xl)
                             .ignoresSafeArea()
                             .allowsHitTesting(false)
                     }
