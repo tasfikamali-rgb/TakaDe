@@ -95,10 +95,9 @@ struct AddExpenseView: View {
                 AmountKeypadSheet(expression: $draft.amountExpression, currency: draft.group.currency)
                     .presentationDetents([.large])
             }
-            .confirmationDialog("Delete this expense?", isPresented: $confirmingDelete, titleVisibility: .visible) {
-                Button("Delete", role: .destructive, action: deleteExpense)
-            } message: {
-                Text("You can undo right after")
+            .alert("Delete this expense?", isPresented: $confirmingDelete) {
+                Button("Yes", role: .destructive, action: deleteExpense)
+                Button("No", role: .cancel) {}
             }
             .interactiveDismissDisabled(draft.hasContent)
         }

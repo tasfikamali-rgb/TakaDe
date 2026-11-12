@@ -137,26 +137,22 @@ struct GroupDetailContent: View {
             // The sheet asks first, then closes itself.
             MemberPaymentSheet(group: group, member: member) { remove(member) }
         }
-        .confirmationDialog(
+        // Deletes ask with a short centred Yes / No alert, not a dialog anchored to the
+        // button (Sabit, 2026-11-12).
+        .alert(
             Text("Remove \(removingMember.map { group.displayName(of: $0.id) } ?? "") from this group?"),
             isPresented: Binding(get: { removingMember != nil }, set: { if !$0 { removingMember = nil } }),
-            titleVisibility: .visible,
             presenting: removingMember
         ) { member in
-            Button("Remove", role: .destructive) { remove(member) }
+            Button("Yes", role: .destructive) { remove(member) }
+            Button("No", role: .cancel) {}
         }
-        .confirmationDialog(
-            Text("Delete \(group.name)?"),
-            isPresented: $confirmingDelete,
-            titleVisibility: .visible
+        .alert(
+            sync.isShared(group.id) ? Text("Delete this group for everyone?") : Text("Delete this group?"),
+            isPresented: $confirmingDelete
         ) {
-            Button("Delete group", role: .destructive, action: deleteGroup)
-        } message: {
-            if sync.isShared(group.id) {
-                Text("The group, its expenses, payments and history are deleted for everyone in it. This can't be undone.")
-            } else {
-                Text("The group, its expenses, payments and history are deleted from this phone. This can't be undone.")
-            }
+            Button("Yes", role: .destructive, action: deleteGroup)
+            Button("No", role: .cancel) {}
         }
         .alert("Add a person", isPresented: $showingAddMember) {
             TextField("Name", text: $newMemberName)
