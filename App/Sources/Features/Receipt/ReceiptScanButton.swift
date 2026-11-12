@@ -20,6 +20,12 @@ struct ReceiptScanButton: View {
     @State private var image: CGImage?
     @State private var isReading = false
     @State private var error: String?
+    @Environment(AccountModel.self) private var account
+    @AppStorage(StoreNameSharing.askedKey) private var askedStoreNames = false
+    @AppStorage(StoreNameSharing.storageKey) private var sharingStoreNames = false
+    /// The first confirmed shop name, held until the person answers "Share shop names?".
+    @State private var pendingStoreName: String?
+    @State private var askingStoreNames = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
@@ -44,11 +50,26 @@ struct ReceiptScanButton: View {
         .fullScreenCover(isPresented: $showingCamera) {
             DocumentScanner(onFinish: scanned, onCancel: closeCamera).ignoresSafeArea()
         }
-        .sheet(item: $suggestion) { s in
+        .sheet(item: $suggestion, onDismiss: askAboutStoreNames) { s in
             ReceiptReviewView(suggestion: s, image: image) { merchant, total, date in
                 onReviewed(merchant, total, date)
                 if let image { onPhoto?(image) }
+                reviewedStoreName(merchant)
             }
+        }
+        .alert("Share shop names?", isPresented: $askingStoreNames) {
+            Button("Share shop names") {
+                askedStoreNames = true
+                sharingStoreNames = true
+                StoreNameSharing.send(pendingStoreName, account: account)
+                pendingStoreName = nil
+            }
+            Button("Don't share", role: .cancel) {
+                askedStoreNames = true
+                pendingStoreName = nil
+            }
+        } message: {
+            Text("TakaDe would count the shop names from receipts you scan, with your country and the month, to learn which shops people use and plan ads. It isn't linked to you: your name, email, account, amounts, items and photo aren't sent. You can change this in Settings > Data and export.")
         }
         .onChange(of: photo) { _, item in
             guard let item else { return }
@@ -83,6 +104,20 @@ struct ReceiptScanButton: View {
         .buttonStyle(.plain)
         Button(action: onEnterAmount) { ChoiceTile(title: "Enter amount", systemImage: "number") }
             .buttonStyle(.plain)
+    }
+
+    /// Sends the confirmed shop name when sharing is on; the first time, holds it to ask.
+    private func reviewedStoreName(_ merchant: String?) {
+        guard StoreName.normalized(merchant) != nil, StoreNameSharing.canSend(account) else { return }
+        if askedStoreNames {
+            StoreNameSharing.send(merchant, account: account)
+        } else {
+            pendingStoreName = merchant
+        }
+    }
+
+    private func askAboutStoreNames() {
+        if pendingStoreName != nil, !askedStoreNames { askingStoreNames = true }
     }
 
     private func openCamera() { showingCamera = true }

@@ -16,6 +16,10 @@
   invite link only). The service sees ciphertext, group ids, an anonymous sharing user id,
   sizes and times. Whether this needs a label entry is a release check in ADR 0019; until a
   security review, nothing here or in the store listing may call it end-to-end encrypted.
+  Shop names (ADR 0032): only after the person says yes (off by default), the shop name they
+  confirm on the receipt review screen is sent with their home country and counted by month.
+  The count holds no user id, email, amount, items or photo, so it is declared Purchase
+  History, not linked, not tracking, for Analytics and Developer's Advertising or Marketing.
   If analytics or crash reporting is added, update NSPrivacyCollectedDataTypes and the App
   Store privacy label together.
 -->
@@ -27,6 +31,19 @@
 	<array/>
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypePurchaseHistory</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAnalytics</string>
+				<string>NSPrivacyCollectedDataTypePurposeDeveloperAdvertising</string>
+			</array>
+		</dict>
 		<dict>
 			<key>NSPrivacyCollectedDataType</key>
 			<string>NSPrivacyCollectedDataTypeEmailAddress</string>

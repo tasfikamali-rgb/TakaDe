@@ -64,7 +64,10 @@ struct SettingsView: View {
 /// Settings > Data and export: what's stored where, export everything, delete everything.
 struct DataAndExportView: View {
     var body: some View {
-        AppForm { YourDataSection() }
+        AppForm {
+            YourDataSection()
+            StoreNamesSection()
+        }
             .readableWidth()
             .navigationTitle("Data and export")
             .navigationBarTitleDisplayMode(.inline)

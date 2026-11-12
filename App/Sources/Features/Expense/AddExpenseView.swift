@@ -138,4 +138,5 @@ struct AddExpenseView: View {
     let group = ExpenseGroup(name: "Sajek trip", members: [Member(displayName: "Sabit", isMe: true), Member(displayName: "Rishan"), Member(displayName: "Nafisa")])
     let app = AppModel.preview()
     return AddExpenseView(group: group).environment(app).environment(GroupSync(app: app, config: nil))
+        .environment(AccountModel(store: app.profiles, google: nil))
 }
