@@ -3,6 +3,7 @@ import Foundation
 import Observation
 import TakaDeCore
 import UIKit
+import UserNotifications
 
 /// The device owner's profile and their sign-in.
 ///
@@ -304,9 +305,13 @@ final class AccountModel {
         SyncKeychain.deleteAll()
         ReceiptPhotos.deleteAll()
         try await store.eraseEverything()
-        for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey, HomeRegion.storageKey] {
+        for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey, HomeRegion.storageKey,
+                    GroupNotifications.enabledKey, GroupNotifications.promptDismissedKey] {
             UserDefaults.standard.removeObject(forKey: key)
         }
+        // Notifications already shown can name people and amounts.
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         ProfilePhotoFile.remove()
         GroupPhotoFile.removeAll()
         MemberPhotoFile.removeAll()

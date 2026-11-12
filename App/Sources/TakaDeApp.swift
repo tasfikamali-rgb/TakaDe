@@ -1,5 +1,7 @@
+import BackgroundTasks
 import SwiftUI
 import TakaDeCore
+import UserNotifications
 
 @main
 struct TakaDeApp: App {
@@ -8,6 +10,7 @@ struct TakaDeApp: App {
     @State private var sync: GroupSync
     @State private var friends: Friends
     @State private var lock = AppLock()
+    @State private var notifications: GroupNotifications
     /// Shown on every open: a cold launch and each return from the background (Sabit,
     /// 2026-11-11). Not after Control Center or a notification pull, which only pass
     /// through .inactive. A new `splashRun` restarts the animation; see LaunchSplash.
@@ -26,12 +29,21 @@ struct TakaDeApp: App {
         _account = State(initialValue: account)
         _sync = State(initialValue: sync)
         _friends = State(initialValue: Friends(account: account, sync: sync))
+        // Set before launch finishes, so tapping a notification that opened the app is handled.
+        let notifications = GroupNotifications()
+        UNUserNotificationCenter.current().delegate = notifications
+        sync.onChangesFromOthers = { [weak notifications] group, changes in
+            await notifications?.changesArrived(changes, in: group, app: model)
+        }
+        _notifications = State(initialValue: notifications)
         // Switches take the app tint (ink), which is near-white in dark mode: a white knob
         // on a white track, so on and off looked alike. Lime "on" reads in both modes.
         UISwitch.appearance().onTintColor = UIColor(named: "toggleOn")
     }
 
     var body: some Scene {
+        // Captured once for the background refresh below, which runs without any window.
+        let sync = sync
         WindowGroup {
             RootView()
                 // Rebuild the tree on a language change so every string re-resolves.
@@ -41,6 +53,7 @@ struct TakaDeApp: App {
                 .environment(lock)
                 .environment(sync)
                 .environment(friends)
+                .environment(notifications)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
                     await account.load()
@@ -55,7 +68,10 @@ struct TakaDeApp: App {
                 }
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     lock.scenePhaseChanged(to: phase)
-                    if phase == .background { wasInBackground = true }
+                    if phase == .background {
+                        wasInBackground = true
+                        Self.scheduleRefresh()
+                    }
                     if phase == .active, wasInBackground {
                         wasInBackground = false
                         splashRun += 1
@@ -82,5 +98,22 @@ struct TakaDeApp: App {
                     }
                 }
         }
+        // While TakaDe is closed, iOS wakes it now and then to pull shared groups' changes,
+        // which is when group notifications can arrive without push. iOS picks the times.
+        .backgroundTask(.appRefresh(Self.refreshTaskID)) {
+            Self.scheduleRefresh()
+            await sync.syncAll()
+        }
+    }
+
+    /// Also in Info.plist under BGTaskSchedulerPermittedIdentifiers.
+    nonisolated static let refreshTaskID = "app.takade.refresh"
+
+    /// Asks iOS for a background refresh in about 15 minutes or later. Only shared groups
+    /// are synced in it, so there's nothing to do for someone who shares nothing.
+    nonisolated static func scheduleRefresh() {
+        let request = BGAppRefreshTaskRequest(identifier: refreshTaskID)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
+        try? BGTaskScheduler.shared.submit(request)
     }
 }

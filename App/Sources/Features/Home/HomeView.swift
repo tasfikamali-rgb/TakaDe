@@ -84,5 +84,5 @@ struct HomeView: View {
 
 #Preview {
     let app = AppModel.preview()
-    return HomeView().environment(app).environment(AppChrome()).environment(GroupSync(app: app, config: nil))
+    return HomeView().environment(app).environment(AppChrome()).environment(GroupSync(app: app, config: nil)).environment(GroupNotifications())
 }
