@@ -23,6 +23,23 @@ enum AppFont {
             ?? .system(size: size, weight: .semibold)
     }
 
+    /// Figures for amounts and counts. Bengali digits (০-৯) use Anek Bangla, whose figures
+    /// Sabit preferred to Hind Siliguri's (2026-11-12, ADR 23); Bengali words stay in Hind.
+    /// Latin digits keep the display or interface face. Falls back to Hind Siliguri when
+    /// the file isn't bundled.
+    static func figures(_ size: CGFloat, _ weight: Font.Weight, relativeTo style: Font.TextStyle, display isDisplay: Bool = false,
+                        bengali: Bool = AppLanguage.usesBengaliScript) -> Font {
+        if bengali {
+            let face: String
+            switch weight {
+            case .semibold, .bold, .heavy, .black: face = "AnekBangla-SemiBold"
+            default: face = "AnekBangla-Medium"
+            }
+            if let font = custom(face, size, style) { return font }
+        }
+        return isDisplay ? display(size, relativeTo: style, bengali: bengali) : text(size, weight, relativeTo: style, bengali: bengali)
+    }
+
     /// Interface face. Pass `bengali` for text in Bengali script.
     static func text(_ size: CGFloat, _ weight: Font.Weight, relativeTo style: Font.TextStyle, bengali: Bool = AppLanguage.usesBengaliScript) -> Font {
         let family = bengali ? "HindSiliguri" : "Inter"

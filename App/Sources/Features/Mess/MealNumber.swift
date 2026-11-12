@@ -12,7 +12,7 @@ enum MealNumber {
 /// A meal count in the person's digits, read aloud as "one and a half meals".
 struct MealNumberText: View {
     let halfMeals: Int
-    var font: Font = AppFont.bodyEmphasis
+    var font: Font = AppFont.figures(16, .medium, relativeTo: .body)
 
     @Environment(\.locale) private var locale
 
