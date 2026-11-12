@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Account > Your data: what's stored where, export everything, delete everything.
+/// Settings > Data and export: what's stored where, export everything, delete everything.
 struct YourDataSection: View {
     @Environment(AccountModel.self) private var account
     @Environment(AppModel.self) private var app

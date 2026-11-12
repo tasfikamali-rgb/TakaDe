@@ -48,6 +48,7 @@ final class AccessibilityAuditTests: XCTestCase {
     func testSettingsScreen() throws {
         let app = launch()
         completeOnboardingIfNeeded(app)
+        app.buttons["Account"].firstMatch.tap()
         app.buttons["Settings"].firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
         try audit(app)

@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum AppTab: String, CaseIterable, Identifiable {
-    case home, activity, account, settings
+    case home, activity, account
 
     var id: String { rawValue }
 
@@ -10,7 +10,6 @@ enum AppTab: String, CaseIterable, Identifiable {
         case .home: "Groups"
         case .activity: "Activity"
         case .account: "Account"
-        case .settings: "Settings"
         }
     }
 
@@ -19,7 +18,6 @@ enum AppTab: String, CaseIterable, Identifiable {
         case .home: "person.2"
         case .activity: "arrow.left.arrow.right"
         case .account: "person.crop.circle"
-        case .settings: "slider.horizontal.3"
         }
     }
 }

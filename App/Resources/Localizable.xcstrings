@@ -8603,6 +8603,40 @@
           }
         }
       }
+    },
+    "Data and export": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ডেটা ও এক্সপোর্ট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data and export"
+          }
+        }
+      }
+    },
+    "Export a copy of your groups, or delete everything from this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার গ্রুপগুলোর একটি কপি এক্সপোর্ট করুন, অথবা এই ফোন থেকে সবকিছু মুছে ফেলুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export a copy of your groups, or delete everything from this phone."
+          }
+        }
+      }
     }
   }
 }

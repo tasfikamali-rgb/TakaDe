@@ -1,8 +1,8 @@
 import SwiftUI
 import TakaDeCore
 
-/// The Account tab: who you are, how you sign in, and your data. Settings (language,
-/// appearance, app lock) has its own tab. The name is shown, not edited: it's set once
+/// The Account tab: who you are and how you sign in. Settings (language, appearance,
+/// app lock, data and export) opens from the gear at the top (Sabit, 2026-11-12). The name is shown, not edited: it's set once
 /// at first launch and can't be removed or changed (Sabit, 2026-11-12).
 struct AccountView: View {
     @Environment(AccountModel.self) private var account
@@ -55,7 +55,6 @@ struct AccountView: View {
             } else {
                 signedOutSection
             }
-            YourDataSection()
             if let errorMessage {
                 Section { Text(verbatim: errorMessage).foregroundStyle(Color.owe) }
             }
@@ -68,6 +67,18 @@ struct AccountView: View {
         }
         .readableWidth()
         .navigationTitle("Account")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    SettingsView()
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(Color.ink)
+                }
+                .accessibilityLabel(Text("Settings"))
+            }
+        }
         .refreshable { await account.refreshAccount() }
         .sheet(item: $flow) { mode in
             AccountFlowSheet(mode: mode) { flow = nil }.rebuildsOnDynamicType()
