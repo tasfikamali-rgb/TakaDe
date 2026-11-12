@@ -6,11 +6,11 @@ struct TabContent: View {
 
     var body: some View {
         content
-            // Room for the floating notch bar, so the last row and pinned buttons stay reachable.
-            .safeAreaPadding(.bottom, reservesBar ? NotchTabBar.reservedHeight : 0)
+            // Room for the floating pill bar, so the last row and pinned buttons stay reachable.
+            .safeAreaPadding(.bottom, reservesBar ? PillTabBar.reservedHeight : 0)
     }
 
-    private var reservesBar: Bool { chrome.showsNotchBar && !chrome.hidesTabBar }
+    private var reservesBar: Bool { chrome.showsPillBar && !chrome.hidesTabBar }
 
     @ViewBuilder private var content: some View {
         switch tab {
