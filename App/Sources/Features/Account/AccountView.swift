@@ -35,7 +35,7 @@ struct AccountView: View {
                         .disabled(!PersonName.isValid(trimmedNewName))
                 } header: {
                     Text("Your name")
-                        .foregroundStyle(Color.inkMuted)
+                        .formHeader()
                 } footer: {
                     VStack(alignment: .leading, spacing: Spacing.xxs) {
                         NameRuleText(newName)
@@ -132,7 +132,7 @@ struct AccountView: View {
             }
         } header: {
             Text("Sign-in methods")
-                .foregroundStyle(Color.inkMuted)
+                .formHeader()
         } footer: {
             Group {
                 Text(account.usesAccountService

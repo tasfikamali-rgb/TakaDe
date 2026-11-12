@@ -12,7 +12,7 @@ struct AppLockSection: View {
             .disabled(!lock.isAvailable && !lock.isEnabled)
         } header: {
             Text("Lock")
-                .foregroundStyle(Color.inkMuted)
+                .formHeader()
         } footer: {
             Group {
                 if lock.isAvailable {

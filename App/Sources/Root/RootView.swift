@@ -1,4 +1,5 @@
 import SwiftUI
+import TakaDeCore
 
 /// On a tall compact window (an iPhone held upright) the floating pill bar from DESIGN.md
 /// replaces the system tab bar. Everywhere else (iPad, iPhone Duo's displays, landscape,
@@ -31,6 +32,11 @@ struct RootView: View {
         return windowSize.height >= windowSize.width * 1.6
     }
 
+    private func openGroup(_ id: GroupID) {
+        tab = .home
+        model.requestedGroup = id
+    }
+
     private func unread(_ tab: AppTab) -> Int {
         switch tab {
         case .social: social.unreadTotal
@@ -49,8 +55,7 @@ struct RootView: View {
                     .toolbar(usesPillBar ? .hidden : .automatic, for: .tabBar)
             }
         }
-        .tint(.ink)
-        .toggleStyle(AppSwitchStyle())
+        .appControls()
         // Fonts and strings are fixed when built, so rebuild the tabs on a text size or
         // language change. Only the tabs: the onboarding cover and invite sheet below hang off
         // this view and must not close and reopen when the language changes.
@@ -120,6 +125,15 @@ struct RootView: View {
                 model.requestedGroup = id
             }
             .rebuildsOnDynamicType()
+            .appControls()
+        }
+        // Shown from here, not from the Groups tab, so a text size or language change
+        // (which rebuilds the tabs) doesn't close them. A new or joined group opens on Groups.
+        .sheet(isPresented: $chrome.showsNewGroup) {
+            NewGroupView(onCreated: openGroup).rebuildsOnDynamicType().appControls()
+        }
+        .sheet(isPresented: $chrome.showsJoin) {
+            JoinGroupSheet(invite: nil, onJoined: openGroup).rebuildsOnDynamicType().appControls()
         }
         // A tapped group notification opens that group.
         .onChange(of: notifications.tappedGroup, initial: true) { _, id in
@@ -147,4 +161,12 @@ struct RootView: View {
         .environment(GroupNotifications())
         .environment(ActivityInbox())
         .environment(SocialModel(store: app.social, account: account, friends: friends))
+}
+
+private extension View {
+    /// Ink buttons and the app's switches. Sheets shown from RootView sit outside the tabs,
+    /// so they don't inherit these and need them set again (else buttons turn system blue).
+    func appControls() -> some View {
+        tint(.ink).toggleStyle(AppSwitchStyle())
+    }
 }

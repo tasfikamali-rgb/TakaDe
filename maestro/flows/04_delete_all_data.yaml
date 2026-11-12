@@ -28,10 +28,17 @@ tags:
 - tapOn:
     id: "newGroup.memberSearch"
 - inputText: "Kate"
-- tapOn: "Add Kate Bell"
+# The search box scrolls to the top so matches sit above the keyboard; contacts
+# load in the background, so wait for her row.
 - extendedWaitUntil:
-    visible: "From contacts"
-    timeout: 5000
+    visible: "Add Kate Bell"
+    timeout: 10000
+- tapOn: "Add Kate Bell"
+# Her row goes in "Who's in it", above the search: scroll up until it shows.
+- scrollUntilVisible:
+    element: "From contacts"
+    direction: UP
+    timeout: 10000
 - tapOn: "Create"
 - extendedWaitUntil:
     visible: "Add expense"
