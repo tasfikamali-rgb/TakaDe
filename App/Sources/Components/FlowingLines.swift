@@ -13,32 +13,14 @@ struct FlowingLines: View {
     /// Seconds for one full ripple cycle.
     private let period: Double = 18
     private let spacing: CGFloat = 14
+    private let step: CGFloat = 6
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 30, paused: paused)) { timeline in
-            let t = reduceMotion ? 0 : timeline.date.timeIntervalSinceReferenceDate / period * 2 * .pi
             Canvas { context, size in
-                let count = Int(size.height / spacing) + 2
-                let step: CGFloat = 6
-                for row in 0..<count {
-                    let baseY = CGFloat(row) * spacing
-                    // Each line bends a little more towards the bottom, and its crest drifts
-                    // sideways, so the sheet seems to fold rather than scroll.
-                    let depth = 0.35 + 0.65 * baseY / max(size.height, 1)
-                    var path = Path()
-                    var x: CGFloat = 0
-                    while x <= size.width + step {
-                        let u = x / max(size.width, 1)
-                        let wave = sin(Double(u) * 2.2 * .pi + t + Double(row) * 0.18)
-                            + 0.5 * sin(Double(u) * 4.1 * .pi - t * 0.6)
-                        let y = baseY + CGFloat(wave) * 7 * depth
-                        if x == 0 { path.move(to: CGPoint(x: x, y: y)) } else { path.addLine(to: CGPoint(x: x, y: y)) }
-                        x += step
-                    }
-                    context.stroke(path, with: .color(.headerTexture), lineWidth: 1 / displayScale * 1.5)
-                }
+                draw(in: &context, size: size, phase: phase(at: timeline.date))
             }
-            // Fade the lines out towards the balance so the numbers sit on clean colour.
+            // Fade the lines out towards the top so the screen edge stays clean.
             .mask(LinearGradient(colors: [.black.opacity(0.25), .black], startPoint: .top, endPoint: .bottom))
         }
         .background(Color.header)
@@ -46,6 +28,37 @@ struct FlowingLines: View {
         .accessibilityHidden(true)
         .onAppear { isVisible = true }
         .onDisappear { isVisible = false }
+    }
+
+    private func phase(at date: Date) -> Double {
+        guard !reduceMotion else { return 0 }
+        return date.timeIntervalSinceReferenceDate / period * 2 * Double.pi
+    }
+
+    private func draw(in context: inout GraphicsContext, size: CGSize, phase t: Double) {
+        let count = Int(size.height / spacing) + 2
+        let width = max(size.width, 1)
+        let height = max(size.height, 1)
+        let lineWidth: CGFloat = 1.5 / displayScale
+        for row in 0..<count {
+            let baseY = CGFloat(row) * spacing
+            // Lines bend a little more towards the bottom, and the crest drifts sideways,
+            // so the page seems to fold rather than scroll.
+            let depth: CGFloat = 0.35 + 0.65 * baseY / height
+            let rowShift = Double(row) * 0.18
+            var path = Path()
+            var x: CGFloat = 0
+            while x <= width + step {
+                let u = Double(x / width)
+                let first: Double = sin(u * 2.2 * Double.pi + t + rowShift)
+                let second: Double = 0.5 * sin(u * 4.1 * Double.pi - t * 0.6)
+                let y: CGFloat = baseY + CGFloat(first + second) * 7 * depth
+                let point = CGPoint(x: x, y: y)
+                if x == 0 { path.move(to: point) } else { path.addLine(to: point) }
+                x += step
+            }
+            context.stroke(path, with: .color(.headerTexture), lineWidth: lineWidth)
+        }
     }
 
     private var paused: Bool { reduceMotion || !isVisible || scenePhase != .active }
