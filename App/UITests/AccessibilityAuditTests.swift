@@ -151,6 +151,11 @@ final class AccessibilityAuditTests: XCTestCase {
                 shot.name = "audit-\(self.name)-\(issue.compactDescription)"
                 shot.lifetime = .keepAlways
                 self.add(shot)
+                // Every element with its frame, to find the one the audit means.
+                let tree = XCTAttachment(string: app.debugDescription)
+                tree.name = "tree-\(self.name)"
+                tree.lifetime = .keepAlways
+                self.add(tree)
             }
             // Report each issue with the element it's on, so CI logs say what to fix.
             let type = issue.element.map { String(describing: $0.elementType) } ?? "?"
