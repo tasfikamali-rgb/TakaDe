@@ -1,0 +1,87 @@
+# Codemagic: free alternative to GitHub Actions' macOS runners.
+# A personal Codemagic account gets 500 free macOS M2 minutes a month (reset on the 1st).
+# Teams get no free minutes, so connect the repo from a personal account.
+# Same scripts as .github/workflows; see docs/testing.md.
+#
+# Budget: "checks" (~6-8 min) runs on every PR update and push to main.
+# "ui-tests" (~20 min) runs on push to main or when started by hand in Codemagic.
+
+definitions:
+  env: &env
+    xcode: latest
+    vars:
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: "240000"
+      MAESTRO_CLI_NO_ANALYTICS: "1"
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+
+workflows:
+  checks:
+    name: Ledger tests, store check, app build
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment: *env
+    triggering:
+      events: [push, pull_request]
+      branch_patterns:
+        - pattern: "*"
+      cancel_previous_builds: true
+    scripts:
+      - name: Ledger and storage tests
+        script: cd Packages/TakaDeKit && swift test --parallel
+      - name: Store readiness and adaptive layout (source)
+        script: |
+          python3 scripts/ci/store_check.py
+          python3 scripts/ci/adaptive_check.py
+      - name: Build simulator app and check it
+        script: |
+          scripts/ci/build-sim-app.sh
+          python3 scripts/ci/store_check.py --app build/TakaDe.app
+
+  ui-tests:
+    name: Accessibility audit and UI flows
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment: *env
+    triggering:
+      events: [push]
+      branch_patterns:
+        - pattern: main
+    scripts:
+      - name: Build app and UI tests
+        script: |
+          brew install xcodegen && xcodegen generate --quiet
+          UDID=$(scripts/ci/boot-simulator.sh "iPhone")
+          echo "UDID=$UDID" >> "$CM_ENV"
+          xcodebuild build-for-testing -project TakaDe.xcodeproj -scheme TakaDe \
+            -destination "id=$UDID" -derivedDataPath build/DerivedData -quiet
+      - name: Accessibility audit and launch tests
+        # Records a failure instead of stopping, so the flows and screenshots still run.
+        script: |
+          xcodebuild test-without-building -project TakaDe.xcodeproj -scheme TakaDe \
+            -destination "id=$UDID" -derivedDataPath build/DerivedData \
+            -resultBundlePath build/UITests.xcresult -quiet \
+          || { xcrun xcresulttool get test-results summary --path build/UITests.xcresult --compact \
+                 | python3 scripts/ci/xcresult_failures.py; touch build/a11y-failed; }
+      - name: Maestro flows on iPhone and iPad, light and dark
+        script: |
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          export PATH="$PATH:$HOME/.maestro/bin"
+          app=$(find build/DerivedData/Build/Products -maxdepth 2 -name TakaDe.app -path "*iphonesimulator*" | head -1)
+          status=0
+          for device in "iPhone" "iPad Pro"; do
+            udid=$(scripts/ci/boot-simulator.sh "$device")
+            xcrun simctl install "$udid" "$app"
+            slug=$(echo "$device" | tr ' A-Z' '-a-z')
+            for mode in light dark; do
+              xcrun simctl ui "$udid" appearance "$mode"
+              out="maestro-results/$slug-$mode"; mkdir -p "$out"
+              maestro --device "$udid" test -e OUT="$out" --format junit \
+                --output "$out/report.xml" maestro/flows || status=1
+            done
+            xcrun simctl shutdown "$udid" || true
+          done
+          [ -f build/a11y-failed ] && { echo "Accessibility audit failed (see above)."; status=1; }
+          exit $status
+    artifacts:
+      - maestro-results/**  # failure debug output only
+      - build/UITests.xcresult

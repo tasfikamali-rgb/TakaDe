@@ -16,13 +16,18 @@ tags:
 - inputText: "Rishan"
 - tapOn: "Create"
 - extendedWaitUntil:
-    visible: "Settle up"
+    visible: "Add expense"
     timeout: 10000
+# On iPhone the tab bar hides inside a group; go back to reach the tabs.
+- runFlow:
+    when:
+      visible: "Back"
+    commands:
+      - tapOn: "Back"
 - tapOn: "Account"
 - scrollUntilVisible:
     element: "Delete all my data"
     direction: DOWN
-- takeScreenshot: ${OUT}/11-your-data
 - tapOn: "Delete all my data"
 - tapOn: "Delete everything"
 # Back to first launch, and the group is gone.

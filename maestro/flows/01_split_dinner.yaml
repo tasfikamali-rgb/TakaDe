@@ -9,19 +9,16 @@ tags:
 - launchApp:
     clearState: true
 - runFlow: ../subflows/onboarding.yaml
-- takeScreenshot: ${OUT}/01-groups-empty
 - tapOn: "Create a group"
 - tapOn: "Group name"
 - inputText: "Sajek trip"
 # "Your name" is prefilled from onboarding.
 - tapOn: "Name"
 - inputText: "Rishan"
-- takeScreenshot: ${OUT}/02-new-group
 - tapOn: "Create"
 - extendedWaitUntil:
     visible: "Add expense"
     timeout: 10000
-- takeScreenshot: ${OUT}/03-group
 - tapOn: "Add expense"
 # The keypad opens by itself when the amount is empty.
 - extendedWaitUntil:
@@ -31,15 +28,11 @@ tags:
 - tapOn: "2"
 - tapOn: "0"
 - tapOn: "0"
-- takeScreenshot: ${OUT}/04-keypad
 - tapOn: "Done"
 - tapOn: "What was it for?"
 - inputText: "Dinner"
-- takeScreenshot: ${OUT}/05-add-expense
 - tapOn: "Save"
 - extendedWaitUntil:
     visible: "Dinner"
     timeout: 10000
-- takeScreenshot: ${OUT}/06-group-with-expense
 - tapOn: "Settle up"
-- takeScreenshot: ${OUT}/07-settle-up
