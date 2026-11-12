@@ -6,12 +6,14 @@ import TakaDeCore
 struct GroupDetailContent: View {
     @Environment(AppModel.self) private var app
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverOn
+    @Environment(GroupSync.self) private var sync
     let group: ExpenseGroup
 
     @State private var model = GroupDetailModel()
     @State private var showingAddExpense = false
     @State private var showingSettle = false
     @State private var showingAddMember = false
+    @State private var showingInvite = false
     @State private var pickingContacts = false
     @State private var newMemberName = ""
     @State private var duplicateMember: String?
@@ -23,7 +25,9 @@ struct GroupDetailContent: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                GroupHeader(group: group, myNet: model.myNet(in: group), onAddExpense: addExpense)
+                GroupHeader(group: group, myNet: model.myNet(in: group), onAddExpense: addExpense) {
+                    SyncStatusLabel(groupID: group.id)
+                }
                 GroupSheet(
                     group: group,
                     model: model,
@@ -45,7 +49,10 @@ struct GroupDetailContent: View {
         .toolbar {
             // The header already shows the name large; keep the title for Back and VoiceOver only.
             ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1).accessibilityHidden(true) }
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                if sync.isAvailable {
+                    Button("Invite people", systemImage: "person.crop.circle.badge.plus") { showingInvite = true }
+                }
                 if let balances = model.balances {
                     GroupShareButton(group: group, balances: balances)
                 }
@@ -80,6 +87,18 @@ struct GroupDetailContent: View {
                         try? await Task.sleep(for: .seconds(8))
                         withAnimation(Motion.standard) { self.recentlyDeleted = nil }
                     }
+            }
+        }
+        .sheet(isPresented: $showingInvite) {
+            InviteSheet(group: group)
+        }
+        .refreshable { await sync.sync(group.id) }
+        // While a shared group is open, others' changes show up within about 20 seconds.
+        .task(id: group.id) {
+            await sync.loadStates()
+            while !Task.isCancelled {
+                if sync.isShared(group.id) { await sync.sync(group.id) }
+                try? await Task.sleep(for: .seconds(20))
             }
         }
         .sheet(isPresented: $showingAddExpense) {

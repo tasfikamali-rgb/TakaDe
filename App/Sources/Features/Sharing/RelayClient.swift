@@ -1,0 +1,215 @@
+import Foundation
+import TakaDeCore
+
+/// The encrypted relay on Supabase (supabase/migrations/20261112000000_shared_groups.sql),
+/// over its REST API with URLSession, like SupabaseAuth: no Supabase SDK.
+///
+/// Sharing uses its own sign-in, separate from the TakaDe account: an anonymous Supabase
+/// user made the first time this phone shares or joins. Friends can join without an
+/// account, and the relay can't link a group to anyone's email or name.
+actor RelayClient {
+    enum Failure: Error, Equatable {
+        case offline
+        case inviteNotValid
+        /// The group is gone from the relay (idle for 90 days) or this phone was never in it.
+        case notInGroup
+        case guestSignInOff
+        case server(status: Int, code: String?)
+    }
+
+    struct Row: Decodable, Sendable {
+        let seq: Int64
+        let change_id: UUID
+        let ciphertext: String
+    }
+
+    private struct Session: Codable, Sendable {
+        var accessToken: String
+        var refreshToken: String
+        var expiresAt: Date
+        var userID: String
+        var isExpiring: Bool { expiresAt.timeIntervalSinceNow < 60 }
+    }
+
+    private static let sessionKey = "relay.session"
+    private let config: SupabaseConfig
+    private var session: Session?
+    private var signingIn: Task<Session, Error>?
+
+    init(config: SupabaseConfig) {
+        self.config = config
+        session = SyncKeychain.get(Self.sessionKey).flatMap { try? JSONDecoder().decode(Session.self, from: Data($0.utf8)) }
+    }
+
+    private var restURL: URL { config.baseURL.appendingPathComponent("rest/v1") }
+
+    // MARK: Groups and invites
+
+    /// Registers a group on the relay; this phone becomes its first member. Doing it twice is fine.
+    func createGroup(_ id: GroupID) async throws {
+        do {
+            _ = try await send("sync_group", method: "POST", body: ["id": id.description], prefer: "return=minimal")
+        } catch Failure.server(let status, _) where status == 409 {
+            // Already there from an earlier try.
+        }
+    }
+
+    func createInvite(for group: GroupID, tokenHash: String, expiresAt: Date) async throws {
+        let body: [String: Any] = ["token_hash": tokenHash, "group_id": group.description,
+                                   "expires_at": ISO8601DateFormatter().string(from: expiresAt)]
+        _ = try await send("sync_invite", method: "POST", body: body, prefer: "return=minimal")
+    }
+
+    /// Stops every link to the group made so far. People already in the group stay in.
+    func stopInvites(for group: GroupID) async throws {
+        let now = ISO8601DateFormatter().string(from: Date())
+        _ = try await send("sync_invite?group_id=eq.\(group)&revoked_at=is.null", method: "PATCH",
+                           body: ["revoked_at": now], prefer: "return=minimal")
+    }
+
+    /// Joins with an invite token and returns the group it's for.
+    func join(token: String) async throws -> GroupID {
+        let data: Data
+        do {
+            data = try await send("rpc/join_sync_group", method: "POST", body: ["p_token": token])
+        } catch Failure.server(let status, let code) where code == "P0002" || status == 404 {
+            throw Failure.inviteNotValid
+        }
+        guard let text = try? JSONDecoder().decode(String.self, from: data), let id = UUID(uuidString: text) else {
+            throw Failure.server(status: 200, code: nil)
+        }
+        return GroupID(id)
+    }
+
+    func isMember(of group: GroupID) async throws -> Bool {
+        let data = try await send("sync_group?id=eq.\(group)&select=id", method: "GET", body: nil)
+        let rows = (try? JSONSerialization.jsonObject(with: data)) as? [Any] ?? []
+        return !rows.isEmpty
+    }
+
+    func leave(_ group: GroupID) async throws {
+        let user = try await currentSession().userID
+        _ = try await send("sync_member?group_id=eq.\(group)&user_id=eq.\(user)", method: "DELETE", body: nil, prefer: "return=minimal")
+    }
+
+    // MARK: Changes
+
+    /// Uploads sealed changes. A change already on the relay (a retry) is skipped there.
+    func push(_ items: [(id: UUID, ciphertext: String)], to group: GroupID) async throws {
+        guard !items.isEmpty else { return }
+        let body = items.map { ["change_id": $0.id.uuidString, "group_id": group.description, "ciphertext": $0.ciphertext] }
+        do {
+            _ = try await send("sync_change?on_conflict=change_id", method: "POST", body: body,
+                               prefer: "resolution=ignore-duplicates,return=minimal")
+        } catch Failure.server(let status, let code) where status == 403 || code == "42501" || code == "23503" {
+            throw Failure.notInGroup
+        }
+    }
+
+    func pull(_ group: GroupID, after cursor: Int64, limit: Int) async throws -> [Row] {
+        let path = "sync_change?group_id=eq.\(group)&seq=gt.\(cursor)&order=seq.asc&limit=\(limit)&select=seq,change_id,ciphertext"
+        let data = try await send(path, method: "GET", body: nil)
+        return try JSONDecoder().decode([Row].self, from: data)
+    }
+
+    /// For "Delete all my data": leaves nothing to sign in with.
+    func forget() {
+        session = nil
+        SyncKeychain.delete(Self.sessionKey)
+    }
+
+    // MARK: Requests
+
+    private func send(_ path: String, method: String, body: Any?, prefer: String? = nil, retried: Bool = false) async throws -> Data {
+        guard let url = URL(string: restURL.absoluteString + "/" + path) else { throw Failure.server(status: 0, code: nil) }
+        let token = try await currentSession().accessToken
+        var request = URLRequest(url: url, timeoutInterval: 20)
+        request.httpMethod = method
+        request.setValue(config.anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let prefer { request.setValue(prefer, forHTTPHeaderField: "Prefer") }
+        if let body { request.httpBody = try JSONSerialization.data(withJSONObject: body) }
+        let (data, response) = try await load(request)
+        guard (200..<300).contains(response.statusCode) else {
+            let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
+            let code = json["code"] as? String
+            // An expired token: refresh once (or, if the guest user was cleaned up, start a
+            // new one) and try again.
+            if response.statusCode == 401 || code == "PGRST301" || code == "PGRST303", !retried {
+                session?.expiresAt = .distantPast
+                return try await send(path, method: method, body: body, prefer: prefer, retried: true)
+            }
+            throw Failure.server(status: response.statusCode, code: code)
+        }
+        return data
+    }
+
+    private func load(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let http = response as? HTTPURLResponse else { throw Failure.server(status: 0, code: nil) }
+            return (data, http)
+        } catch let error as URLError {
+            switch error.code {
+            case .notConnectedToInternet, .networkConnectionLost, .timedOut, .cannotFindHost, .cannotConnectToHost,
+                 .dataNotAllowed, .internationalRoamingOff:
+                throw Failure.offline
+            default:
+                throw error
+            }
+        }
+    }
+
+    // MARK: Sign-in
+
+    private func currentSession() async throws -> Session {
+        // "Delete all my data" clears the Keychain; don't keep using the old sign-in.
+        if session != nil, SyncKeychain.get(Self.sessionKey) == nil { session = nil }
+        if let session, !session.isExpiring { return session }
+        if let signingIn { return try await signingIn.value }
+        let previous = session
+        let task = Task { try await self.signIn(refreshing: previous) }
+        signingIn = task
+        defer { signingIn = nil }
+        let fresh = try await task.value
+        session = fresh
+        if let data = try? JSONEncoder().encode(fresh), let text = String(data: data, encoding: .utf8) {
+            SyncKeychain.set(text, for: Self.sessionKey)
+        }
+        return fresh
+    }
+
+    private func signIn(refreshing previous: Session?) async throws -> Session {
+        if let previous {
+            do {
+                return try await auth("token?grant_type=refresh_token", body: ["refresh_token": previous.refreshToken])
+            } catch Failure.server(let status, _) where (400...401).contains(status) {
+                // Refresh token used up or the guest user was cleaned up: start a new one.
+            }
+        }
+        do {
+            return try await auth("signup", body: [:])
+        } catch Failure.server(let status, _) where (400...422).contains(status) {
+            throw Failure.guestSignInOff
+        }
+    }
+
+    private func auth(_ path: String, body: [String: Any]) async throws -> Session {
+        guard let url = URL(string: config.authURL.absoluteString + "/" + path) else { throw Failure.server(status: 0, code: nil) }
+        var request = URLRequest(url: url, timeoutInterval: 20)
+        request.httpMethod = "POST"
+        request.setValue(config.anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (data, response) = try await load(request)
+        let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
+        guard (200..<300).contains(response.statusCode) else {
+            throw Failure.server(status: response.statusCode, code: (json["error_code"] as? String) ?? (json["code"] as? String))
+        }
+        guard let access = json["access_token"] as? String, let refresh = json["refresh_token"] as? String,
+              let user = (json["user"] as? [String: Any])?["id"] as? String else { throw Failure.server(status: response.statusCode, code: nil) }
+        let expiresIn = (json["expires_in"] as? Double) ?? 3600
+        return Session(accessToken: access, refreshToken: refresh, expiresAt: Date().addingTimeInterval(expiresIn), userID: user)
+    }
+}

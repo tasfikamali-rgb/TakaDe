@@ -1,4 +1,4 @@
-# Supabase (accounts only)
+# Supabase (accounts and shared groups)
 
 TakaDe uses Supabase Auth for accounts: Create an account and Sign in with email (6-digit
 code), Apple, Google or Microsoft. See docs/adr/0016-accounts-on-supabase.md. Supabase holds
@@ -32,3 +32,13 @@ region; the host is in `Config/TakaDe.xcconfig`). Nothing is deployed yet. Remai
    - To refresh the list: `python3 scripts/update-disposable-domains.py`, commit both
      generated files, and run the seed SQL again.
 6. Tell the coding thread, which then checks every flow on a phone.
+
+## Shared groups (ADR 0019)
+
+Only groups someone invites others to are stored here, encrypted on the phone. Steps:
+
+1. **SQL editor:** run `migrations/20261112000000_shared_groups.sql` once. It creates the
+   relay tables with row-level security, the join function, and a nightly cleanup job.
+2. **Authentication > Sign In / Providers:** turn on **Allow anonymous sign-ins**, so friends
+   can join a group without making an account. Before launch, also turn on CAPTCHA.
+3. Check space used at any time: `select * from public.sync_storage();`

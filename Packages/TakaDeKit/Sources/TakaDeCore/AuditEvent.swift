@@ -4,8 +4,8 @@ import Foundation
 public struct AuditEvent: Hashable, Codable, Sendable, Identifiable {
     public enum Entity: String, Codable, Sendable { case group, member, expense, settlement, meal }
     public enum Action: String, Codable, Sendable { case created, edited, deleted, restored, statusChanged = "status_changed" }
-    /// Where the change came from. Only `.local` exists today.
-    public enum Source: String, Codable, Sendable { case local }
+    /// Where the change came from: this phone, or another phone in a shared group.
+    public enum Source: String, Codable, Sendable { case local, sync }
 
     public let id: UUID
     public let groupID: GroupID

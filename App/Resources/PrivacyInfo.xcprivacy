@@ -11,8 +11,13 @@
   types and the account's user id are held by TakaDe's sign-in service (Supabase), linked
   to the person, for account management (App Functionality). Sign-in tokens stay in the
   Keychain. Without an account, nothing is collected.
-  If sync, analytics or crash reporting is added, update NSPrivacyCollectedDataTypes and
-  the App Store privacy label together.
+  Shared groups (ADR 0019): only groups the person invites others to are sent, encrypted
+  on the phone with a key the service never receives (AES-GCM, key in the Keychain and the
+  invite link only). The service sees ciphertext, group ids, an anonymous sharing user id,
+  sizes and times. Whether this needs a label entry is a release check in ADR 0019; until a
+  security review, nothing here or in the store listing may call it end-to-end encrypted.
+  If analytics or crash reporting is added, update NSPrivacyCollectedDataTypes and the App
+  Store privacy label together.
 -->
 <plist version="1.0">
 <dict>

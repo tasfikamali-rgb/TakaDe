@@ -136,6 +136,28 @@ enum Schema {
                 t.uniqueKey(["provider", "provider_user_id"])
             }
         }
+        // Shared groups (docs/adr/0019-shared-groups.md). Changes to a shared group are
+        // queued in sync_outbox in the same transaction as the change itself, so nothing is
+        // lost if the app quits before uploading. Group keys are in the Keychain, never here.
+        migrator.registerMigration("v6_group_sync") { db in
+            try db.create(table: "group_sync") { t in
+                // No foreign key: a group being joined has no row in expense_group yet.
+                t.primaryKey("group_id", .text)
+                t.column("cursor", .integer).notNull().defaults(to: 0)
+                t.column("shared_at", .datetime).notNull()
+                t.column("last_synced_at", .datetime)
+            }
+            try db.create(table: "sync_outbox") { t in
+                t.primaryKey("change_id", .text)
+                t.column("group_id", .text).notNull().indexed()
+                t.column("entity", .text).notNull()
+                t.column("body", .blob).notNull()
+                t.column("made_at", .datetime).notNull()
+                // Set once the relay has it. The row stays until the change comes back from
+                // the relay, so this phone knows it's its own and doesn't log it twice.
+                t.column("uploaded_at", .datetime)
+            }
+        }
         return migrator
     }
 }

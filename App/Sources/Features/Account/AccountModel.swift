@@ -278,6 +278,8 @@ final class AccountModel {
         // Signs out of the account here; the account itself stays until "Delete account".
         await supabase?.signOut()
         KeychainStore.deleteAll()
+        // Shared groups' keys and the sharing sign-in go too.
+        SyncKeychain.deleteAll()
         try await store.eraseEverything()
         for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey] {
             UserDefaults.standard.removeObject(forKey: key)
