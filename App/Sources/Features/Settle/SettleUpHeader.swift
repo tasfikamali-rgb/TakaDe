@@ -13,17 +13,19 @@ struct SettleUpHeader: View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
             if let transfer {
                 Text(verbatim: describe(transfer))
-                    .font(AppFont.label)
-                    .foregroundStyle(Color.ink.opacity(0.72))
+                    .font(AppFont.headline)
+                    .foregroundStyle(Color.ink.opacity(0.8))
                 AmountText(money: transfer.amount, size: .balance, color: .ink, minorColor: .ink.opacity(0.6))
+                    // Full height: only a very long amount shrinks, to fit the width.
+                    .fixedSize(horizontal: false, vertical: true)
             } else {
                 Text(isSettled ? LocalizedStringKey("You're settled up in this group") : LocalizedStringKey("Pick a payment below"))
                     .font(AppFont.title)
                     .foregroundStyle(Color.ink)
             }
             Text("TakaDe doesn't send money. Pay with cash, bKash or your bank as usual, then record it here.")
-                .font(AppFont.caption)
-                .foregroundStyle(Color.ink.opacity(0.72))
+                .font(AppFont.body)
+                .foregroundStyle(Color.ink.opacity(0.8))
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, Spacing.xxs)
         }
