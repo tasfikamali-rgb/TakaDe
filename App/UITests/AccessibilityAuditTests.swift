@@ -39,6 +39,11 @@ final class AccessibilityAuditTests: XCTestCase {
         app.buttons["Create a group"].tap()
         let sheetBar = app.navigationBars["New group"]
         XCTAssertTrue(sheetBar.waitForExistence(timeout: 5))
+        // The sheet must stay open: on CI it has closed by itself within a second or two of
+        // opening right after onboarding, and the audit then measured the Groups screen
+        // fading back in. Fail plainly if that happens instead of reporting contrast.
+        sleep(2)
+        XCTAssertTrue(sheetBar.exists, "New group sheet closed by itself after opening")
         // The Groups screen shows above the sheet under the system dimming. The audit
         // measures that dimmed text too; only the sheet's own elements count here.
         try audit(app, ignoringContrastAbove: sheetBar.frame.minY)
