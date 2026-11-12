@@ -79,21 +79,6 @@ final class AccessibilityAuditTests: XCTestCase {
         try audit(app, for: [.textClipped, .sufficientElementDescription])
     }
 
-    /// Temporary diagnostic: Bengali "Text clipped" names no element on Groups. The
-    /// Account tab has the same tab bar but no greeting, so this tells the two apart.
-    /// Remove once known.
-    @MainActor
-    func testBengaliAccountTab() throws {
-        let app = XCUIApplication()
-        app.launchArguments += ["-appLanguage", "bn", "-AppleLanguages", "(bn)", "-AppleLocale", "bn_BD", "-holdTexture", "YES"]
-        app.launch()
-        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
-        let account = app.buttons["অ্যাকাউন্ট"]
-        XCTAssertTrue(account.waitForExistence(timeout: 5))
-        account.tap()
-        try audit(app, for: [.textClipped])
-    }
-
     // MARK: Helpers
 
     @MainActor
