@@ -165,6 +165,13 @@ enum Schema {
                 t.add(column: "nickname", .text)
             }
         }
+        // The group's colour, from its photo (Sabit, 2026-11-12). The photo itself is a file
+        // on the phone, not in the database.
+        migrator.registerMigration("v8_group_accent") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "accent", .text)
+            }
+        }
         return migrator
     }
 }

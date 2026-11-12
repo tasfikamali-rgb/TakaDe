@@ -42,12 +42,12 @@ struct GroupDetailContent: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .background(alignment: .top) { Color.lilac.frame(height: 480).ignoresSafeArea() }
+        .background(alignment: .top) { GroupTint.color(for: group).frame(height: 480).ignoresSafeArea() }
         .background(Color.canvas)
         .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
         .navigationTitle(Text(verbatim: group.name))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color.lilac, for: .navigationBar)
+        .toolbarBackground(GroupTint.color(for: group), for: .navigationBar)
         .toolbar {
             // The header already shows the name large; keep the title for Back and VoiceOver only.
             ToolbarItem(placement: .principal) { Color.clear.frame(width: 1, height: 1).accessibilityHidden(true) }

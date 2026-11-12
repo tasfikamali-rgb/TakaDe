@@ -40,8 +40,11 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
     public var kind: GroupKind
     /// Who keeps a mess's books: meals, bazar and deposits. Nil for standard groups.
     public var managerID: MemberID?
+    /// The group's colour, taken from its photo, as "#RRGGBB". Screens turn it into a soft
+    /// tint that stays readable in light and dark. Nil means the standard lilac.
+    public var accentHex: String?
 
-    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil) {
+    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil, accentHex: String? = nil) {
         self.id = id
         self.name = name
         self.currency = currency
@@ -51,12 +54,13 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         self.simplifiesDebts = simplifiesDebts
         self.kind = kind
         self.managerID = managerID
+        self.accentHex = accentHex
     }
 
     public var isMess: Bool { kind == .mess }
 
     private enum CodingKeys: String, CodingKey {
-        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID
+        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID, accentHex
     }
 
     /// Older snapshots have no `simplifiesDebts`; they decode with it on.
@@ -71,6 +75,7 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         simplifiesDebts = try c.decodeIfPresent(Bool.self, forKey: .simplifiesDebts) ?? true
         kind = try c.decodeIfPresent(GroupKind.self, forKey: .kind) ?? .standard
         managerID = try c.decodeIfPresent(MemberID.self, forKey: .managerID)
+        accentHex = try c.decodeIfPresent(String.self, forKey: .accentHex)
     }
 }
 

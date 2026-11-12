@@ -23,7 +23,8 @@ tags:
     timeout: 10000
 - takeScreenshot: ${OUT}/03-group
 - tapOn: "Add expense"
-# The keypad opens by itself when the amount is empty.
+# A new expense starts on Scan receipt, From photos and Enter amount.
+- tapOn: "Enter amount"
 - extendedWaitUntil:
     visible: "Done"
     timeout: 5000

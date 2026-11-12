@@ -35,6 +35,18 @@ final class SQLiteLedgerRepositoryTests: XCTestCase {
         XCTAssertNil(cleared?.members[1].nickname)
     }
 
+    func testGroupAccentRoundTrips() async throws {
+        let repo = try SQLiteLedgerRepository()
+        var group = ExpenseGroup(name: "Sajek", members: [Member(displayName: "Sabit", isMe: true), Member(displayName: "Zawad")])
+        try await repo.save(group, actor: group.members[0].id)
+        let plain = try await repo.group(group.id)
+        XCTAssertNil(plain?.accentHex)
+        group.accentHex = "#2E7D5B"
+        try await repo.save(group, actor: group.members[0].id)
+        let tinted = try await repo.group(group.id)
+        XCTAssertEqual(tinted?.accentHex, "#2E7D5B")
+    }
+
     func testRemovingAMemberOnlyWhileNothingMentionsThem() async throws {
         let repo = try SQLiteLedgerRepository()
         let me = Member(displayName: "Sabit", isMe: true)

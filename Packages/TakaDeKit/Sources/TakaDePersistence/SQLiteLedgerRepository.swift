@@ -58,12 +58,12 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
         try await db.write { db in
             let exists = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM expense_group WHERE id = ?)", arguments: [group.id.description]) ?? false
             try db.execute(sql: """
-                INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id, accent)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET name = excluded.name, archived_at = excluded.archived_at,
-                    simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id
+                    simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id, accent = excluded.accent
                 """, arguments: [group.id.description, group.name, group.currency.code, group.currency.minorUnitDigits, group.createdAt, group.archivedAt,
-                                 group.simplifiesDebts, group.kind.rawValue, group.managerID?.description])
+                                 group.simplifiesDebts, group.kind.rawValue, group.managerID?.description, group.accentHex])
             // Members: upsert listed members. Nobody is deleted here; `removeMember` does that,
             // and only for someone nothing in the group mentions.
             let profileID = try String.fetchOne(db, sql: "SELECT id FROM local_profile LIMIT 1")
@@ -247,7 +247,8 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
             archivedAt: row["archived_at"],
             simplifiesDebts: row["simplify_debts"],
             kind: GroupKind(rawValue: (row["kind"] as String?) ?? "") ?? .standard,
-            managerID: (row["manager_id"] as String?).flatMap(UUID.init(uuidString:)).map(MemberID.init)
+            managerID: (row["manager_id"] as String?).flatMap(UUID.init(uuidString:)).map(MemberID.init),
+            accentHex: row["accent"]
         )
     }
 }

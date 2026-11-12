@@ -16,6 +16,9 @@ struct NewGroupView: View {
     @State private var note: String?
     @State private var error: String?
     @State private var pickingContacts = false
+    /// An optional group photo; its main colour becomes the group's colour.
+    @State private var photoData: Data?
+    @State private var photoPreview: UIImage?
     @FocusState private var focus: Field?
 
     private enum Field: Hashable { case group, newPerson }
@@ -23,6 +26,36 @@ struct NewGroupView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    GroupPhotoPicker(hasPhoto: photoPreview != nil, onPick: pickPhoto, onRemove: clearPhoto) {
+                        VStack(spacing: Spacing.xs) {
+                            Group {
+                                if let photoPreview {
+                                    Image(uiImage: photoPreview).resizable().scaledToFill()
+                                } else {
+                                    Image(systemName: "camera")
+                                        .font(.title2)
+                                        .foregroundStyle(Color.ink)
+                                }
+                            }
+                            .frame(width: 88, height: 88)
+                            .background(Circle().fill(Color.lilac))
+                            .clipShape(Circle())
+                            Text(photoPreview == nil ? LocalizedStringKey("Add a group photo") : LocalizedStringKey("Change photo"))
+                                .font(AppFont.label)
+                                .foregroundStyle(Color.ink)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .listRowBackground(Color.clear)
+                } footer: {
+                    Text("Optional. The group takes its colour from the photo.")
+                        .foregroundStyle(Color.inkMuted)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                }
                 Section {
                     Picker("Kind of group", selection: $kind) {
                         Text("Trip or flat").tag(GroupKind.standard)
@@ -173,6 +206,16 @@ struct NewGroupView: View {
         note = skipped.isEmpty ? nil : String(localized: "\(skipped.formatted(.list(type: .and))) is already in it.", bundle: .appLanguage)
     }
 
+    private func pickPhoto(_ data: Data) {
+        photoData = data
+        photoPreview = UIImage(data: data)
+    }
+
+    private func clearPhoto() {
+        photoData = nil
+        photoPreview = nil
+    }
+
     private func cancel() { dismiss() }
 
     private func create() {
@@ -182,7 +225,8 @@ struct NewGroupView: View {
                     name: name.trimmingCharacters(in: .whitespacesAndNewlines),
                     myName: trimmedMyName,
                     otherNames: allOthers,
-                    kind: kind)
+                    kind: kind,
+                    photo: photoData)
                 dismiss()
                 onCreated(group.id)
             } catch {

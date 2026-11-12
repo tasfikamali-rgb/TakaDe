@@ -307,6 +307,7 @@ final class AccountModel {
             UserDefaults.standard.removeObject(forKey: key)
         }
         ProfilePhotoFile.remove()
+        GroupPhotoFile.removeAll()
         photo = nil
         profile = nil
         identities = []

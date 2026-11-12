@@ -30,10 +30,16 @@ struct AddExpenseView: View {
                         .foregroundStyle(Color.ink.opacity(0.72))
                         .lineLimit(1)
                     AmountField(draft: draft, size: .balance, onTap: openKeypad)
-                    // Up top, next to the amount it fills, so it's never under the keypad.
-                    ReceiptScanButton(onReviewed: draft.apply)
-                        .font(AppFont.label)
-                        .tint(Color.ink)
+                    // A new expense with no amount starts on three big choices; after
+                    // that, scanning stays one small row under the amount.
+                    if startsWithChoices {
+                        ReceiptScanButton(onReviewed: draft.apply, onEnterAmount: openKeypad)
+                            .padding(.top, Spacing.xs)
+                    } else {
+                        ReceiptScanButton(onReviewed: draft.apply)
+                            .font(AppFont.label)
+                            .tint(Color.ink)
+                    }
                 }
             } content: {
                 Section {
@@ -84,15 +90,14 @@ struct AddExpenseView: View {
             } message: {
                 Text("You can undo right after")
             }
-            .onAppear(perform: openKeypadIfEmpty)
             .interactiveDismissDisabled(draft.hasContent)
         }
     }
 
     private func openKeypad() { showingKeypad = true }
 
-    private func openKeypadIfEmpty() {
-        if draft.amountExpression.isEmpty { showingKeypad = true }
+    private var startsWithChoices: Bool {
+        !draft.isEditing && draft.amountExpression.isEmpty
     }
 
     private func cancel() { dismiss() }
