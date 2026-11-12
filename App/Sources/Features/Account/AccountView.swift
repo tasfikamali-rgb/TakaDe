@@ -74,6 +74,10 @@ struct AccountView: View {
         // Changing the language rebuilds the whole app so every string switches. Scene
         // storage keeps Settings open through that, instead of dropping back to Account.
         .navigationDestination(isPresented: $showingSettings) { SettingsView() }
+        // Deleting all data starts over at onboarding; Settings shouldn't be open after it.
+        .onChange(of: account.needsOnboarding) { _, needsOnboarding in
+            if needsOnboarding { showingSettings = false }
+        }
         .refreshable { await account.refreshAccount() }
         // Signed in or linked Google in the sheet: ask about the Google photo once it closes.
         .sheet(item: $flow, onDismiss: { account.offerGooglePhotoIfNeeded() }) { mode in
