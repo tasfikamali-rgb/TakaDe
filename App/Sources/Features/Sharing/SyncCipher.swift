@@ -31,6 +31,22 @@ enum SyncCipher {
         return change
     }
 
+    /// Receipt photos are already JPEG, so they're sealed without compressing again.
+    static func sealReceipt(_ jpeg: Data, id: UUID, groupID: GroupID, with key: SymmetricKey) throws -> String {
+        let box = try AES.GCM.seal(jpeg, using: key, authenticating: receiptContext(groupID, id))
+        guard let combined = box.combined else { throw Failure.malformed }
+        return prefix + combined.base64EncodedString()
+    }
+
+    static func openReceipt(_ text: String, id: UUID, groupID: GroupID, with key: SymmetricKey) throws -> Data {
+        guard text.hasPrefix(prefix), let combined = Data(base64Encoded: String(text.dropFirst(prefix.count))) else { throw Failure.malformed }
+        return try AES.GCM.open(AES.GCM.SealedBox(combined: combined), using: key, authenticating: receiptContext(groupID, id))
+    }
+
+    private static func receiptContext(_ group: GroupID, _ id: UUID) -> Data {
+        Data("takade.receipt.v1|\(group)|\(id.uuidString)".utf8)
+    }
+
     private static func context(_ group: GroupID, _ change: UUID) -> Data {
         Data("takade.sync.v1|\(group)|\(change.uuidString)".utf8)
     }

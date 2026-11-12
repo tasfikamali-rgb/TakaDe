@@ -87,8 +87,11 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
     public var repeatsMonthly: Bool
     /// For a monthly copy: the expense it was copied from.
     public var repeatOf: ExpenseID?
+    /// A photo of the receipt, kept as a file on the phone (and, in a shared group,
+    /// encrypted on the relay). Nil when there's no photo.
+    public var receiptID: UUID?
 
-    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, category: ExpenseCategory? = nil, version: Int = 1, deletedAt: Date? = nil, repeatsMonthly: Bool = false, repeatOf: ExpenseID? = nil) throws {
+    public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, category: ExpenseCategory? = nil, version: Int = 1, deletedAt: Date? = nil, repeatsMonthly: Bool = false, repeatOf: ExpenseID? = nil, receiptID: UUID? = nil) throws {
         self.id = id
         self.groupID = groupID
         self.title = title
@@ -103,11 +106,12 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
         self.deletedAt = deletedAt
         self.repeatsMonthly = repeatsMonthly
         self.repeatOf = repeatOf
+        self.receiptID = receiptID
         try validate()
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, groupID, title, total, paidBy, splitRule, allocation, occurredAt, note, category, version, deletedAt, repeatsMonthly, repeatOf
+        case id, groupID, title, total, paidBy, splitRule, allocation, occurredAt, note, category, version, deletedAt, repeatsMonthly, repeatOf, receiptID
     }
 
     /// Expenses saved before monthly repeats decode as not repeating.
@@ -127,6 +131,7 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
         deletedAt = try c.decodeIfPresent(Date.self, forKey: .deletedAt)
         repeatsMonthly = try c.decodeIfPresent(Bool.self, forKey: .repeatsMonthly) ?? false
         repeatOf = try c.decodeIfPresent(ExpenseID.self, forKey: .repeatOf)
+        receiptID = try c.decodeIfPresent(UUID.self, forKey: .receiptID)
     }
 
     public func validate() throws {

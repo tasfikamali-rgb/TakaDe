@@ -7090,6 +7090,74 @@
           }
         }
       }
+    },
+    "The photo isn't on this phone yet. Check your connection.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবিটি এখনো এই ফোনে আসেনি। সংযোগ দেখে নিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The photo isn't on this phone yet. Check your connection."
+          }
+        }
+      }
+    },
+    "Shows the photo full size": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবিটি পুরো আকারে দেখায়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows the photo full size"
+          }
+        }
+      }
+    },
+    "Remove photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি সরান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove photo"
+          }
+        }
+      }
+    },
+    "In a shared group, everyone in it can see this photo. It's encrypted on the phone before it's sent.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শেয়ার করা গ্রুপে সবাই এই ছবি দেখতে পারবেন। পাঠানোর আগে ছবিটি ফোনেই এনক্রিপ্ট করা হয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In a shared group, everyone in it can see this photo. It's encrypted on the phone before it's sent."
+          }
+        }
+      }
     }
   }
 }
