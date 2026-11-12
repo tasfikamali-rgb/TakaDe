@@ -1,4 +1,4 @@
-# 27. Shared groups get the receipt's text, not its photo; quiet groups kept a year
+# 28. Shared groups get the receipt's text, not its photo; quiet groups kept a year
 
 Status: accepted (Sabit, 2026-11-12: "when we scan it... turn it into... a text file, so that
 it's smaller, and use a compression system wherever you feel you can"; "Just keep it like

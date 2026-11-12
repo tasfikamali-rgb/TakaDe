@@ -72,7 +72,7 @@ enum ReceiptPhotos {
     // MARK: Receipt text
 
     /// The text read from a receipt, next to its photo. In a shared group this, not the photo,
-    /// is what the other phones get (ADR 27), and it's all they keep.
+    /// is what the other phones get (ADR 28), and it's all they keep.
     static func textURL(for id: UUID) -> URL? {
         folder?.appendingPathComponent(id.uuidString + ".receipt")
     }

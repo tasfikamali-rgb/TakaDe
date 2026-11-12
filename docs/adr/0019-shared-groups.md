@@ -64,7 +64,7 @@ works on the phone and the group screen says changes will go up later.
 ## Storage (Supabase free plan, 500 MB)
 - A compressed, encrypted expense is about 0.5 KB. Rough sizing: 10,000 active people adding
   about 20 shared expenses a month is about 100 MB a month.
-- Nightly `pg_cron` job `takade-sync-cleanup`: drops groups with no change for 365 days (90 until ADR 27) (the
+- Nightly `pg_cron` job `takade-sync-cleanup`: drops groups with no change for 365 days (90 until ADR 28) (the
   phones keep everything and show "No longer shared", and inviting again re-uploads), invites
   that expired over a week ago, and anonymous users in no group.
 - `select * from public.sync_storage();` in the SQL editor shows sizes.

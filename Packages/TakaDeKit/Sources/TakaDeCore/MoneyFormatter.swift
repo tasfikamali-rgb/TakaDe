@@ -30,9 +30,10 @@ public enum MoneyFormatter {
         _ money: Money,
         digits: DigitStyle = .latin,
         grouping: Grouping = .lakh,
-        showsZeroFraction: Bool = true
+        showsZeroFraction: Bool = true,
+        symbol customSymbol: String? = nil
     ) -> FormattedMoney {
-        let symbol = money.currency.code == "BDT" ? "৳" : money.currency.code
+        let symbol = customSymbol ?? (money.currency.code == "BDT" ? "৳" : money.currency.code)
         let sign = money.isNegative ? "\u{2212}" : ""
         let whole = group(String(Swift.abs(money.majorPart)), grouping)
         var fraction = ""

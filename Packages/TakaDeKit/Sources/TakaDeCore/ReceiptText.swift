@@ -1,7 +1,7 @@
 import Foundation
 
 /// The text read from a receipt photo, as it travels to the other phones in a shared group
-/// (docs/adr/0027-receipt-text-instead-of-photos.md). A photo is 100 to 240 KB on the relay;
+/// (docs/adr/0028-receipt-text-instead-of-photos.md). A photo is 100 to 240 KB on the relay;
 /// its text, compressed, is usually under 1 KB, so the free database lasts far longer.
 ///
 /// The format is small JSON (`{"v":1,"lines":[...]}`) compressed with zlib, which Android can

@@ -1,6 +1,6 @@
 # 20. Receipt photos on expenses
 
-Status: superseded in part by ADR 27 (shared groups now get the receipt text, not the photo).
+Status: superseded in part by ADR 28 (shared groups now get the receipt text, not the photo).
 Originally accepted (Sabit, 2026-11-12: "you should also have the receipt uploaded so that other
 people can trust how much you actually paid"; keep within the Supabase free plan). Builds on
 ADR 8 (on-device receipt reading) and ADR 19 (shared groups).

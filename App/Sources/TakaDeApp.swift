@@ -11,6 +11,7 @@ struct TakaDeApp: App {
     @State private var friends: Friends
     @State private var social: SocialModel
     @State private var lock = AppLock()
+    @State private var exchange = ExchangeRateStore()
     @State private var notifications: GroupNotifications
     /// Shown on every open: a cold launch and each return from the background (Sabit,
     /// 2026-11-11). Not after Control Center or a notification pull, which only pass
@@ -21,6 +22,7 @@ struct TakaDeApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
+    @AppStorage(CurrencyCatalog.showsForeignKey) private var showsForeignCurrency = false
 
     init() {
         let model = AppModel.live()
@@ -59,6 +61,7 @@ struct TakaDeApp: App {
                 .environment(friends)
                 .environment(social)
                 .environment(notifications)
+                .environment(exchange)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
                     await account.load()
@@ -89,6 +92,9 @@ struct TakaDeApp: App {
                     if phase == .active {
                         appearance.apply(animated: false)
                         // Rent due today shows up when the app comes back, not only at launch.
+                        // Fresh exchange rates on every open, straight from the public source,
+                        // only for people who show their balance in another currency (ADR 28).
+                        if showsForeignCurrency { Task { await exchange.refresh() } }
                         Task {
                             await model.addDueRepeats()
                             await sync.syncAll()

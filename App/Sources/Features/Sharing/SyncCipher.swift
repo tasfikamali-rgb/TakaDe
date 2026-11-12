@@ -34,7 +34,7 @@ enum SyncCipher {
 
     // MARK: Receipts
 
-    /// What a shared receipt turned out to be. New uploads are always text (ADR 27); photos
+    /// What a shared receipt turned out to be. New uploads are always text (ADR 28); photos
     /// are what older versions of the app sent.
     enum Receipt {
         case photo(Data)

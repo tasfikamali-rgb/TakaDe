@@ -17,9 +17,12 @@ struct AmountText: View {
     var body: some View {
         let digits = DigitPreference.style(for: locale)
         let bengali = digits == .bengali
-        let f = MoneyFormatter.format(money, digits: digits, showsZeroFraction: showsZeroFraction)
+        let isTaka = money.currency.code == Currency.bdt.code
+        // Lakh grouping is for taka; a converted amount (£1,234.56) groups the usual way.
+        let f = MoneyFormatter.format(money, digits: digits, grouping: isTaka ? .lakh : .western,
+                                      showsZeroFraction: showsZeroFraction, symbol: CurrencyCatalog.symbol(money.currency.code))
         let fractionColor = minorColor ?? (color == .ink ? .inkMuted : color)
-        let symbol = Text(verbatim: f.sign + f.symbol + "\u{2009}").font(size.minor(bengaliDigits: true)).foregroundStyle(minorColor ?? .inkMuted)
+        let symbol = Text(verbatim: f.sign + f.symbol + "\u{2009}").font(size.minor(bengaliDigits: isTaka || bengali)).foregroundStyle(minorColor ?? .inkMuted)
         let whole = Text(verbatim: f.whole).font(size.main(bengaliDigits: bengali)).tracking(size.tracking).foregroundStyle(color)
         let fraction = Text(verbatim: f.fraction).font(size.minor(bengaliDigits: bengali)).foregroundStyle(fractionColor)
         Text("\(symbol)\(whole)\(fraction)")

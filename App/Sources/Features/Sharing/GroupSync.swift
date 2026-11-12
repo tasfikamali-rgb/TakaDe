@@ -208,7 +208,7 @@ final class GroupSync {
         let ids = Set(changes.filter { $0.entity == .expense }.compactMap { try? decoder.decode(Expense.self, from: $0.body).receiptID })
         for id in ids {
             // Only the text goes up, compressed and sealed: under 1 KB instead of a 100-240 KB
-            // photo (ADR 27). The photo never leaves this phone.
+            // photo (ADR 28). The photo never leaves this phone.
             guard let packed = await packedReceiptText(id), !(try await relay.hasReceipt(id)) else { continue }
             try await relay.uploadReceipt(id, ciphertext: try SyncCipher.sealReceiptText(packed, id: id, groupID: group, with: key), to: group)
         }

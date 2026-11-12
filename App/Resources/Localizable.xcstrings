@@ -10287,6 +10287,210 @@
         }
       }
     },
+    "Show balance in": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যালান্স দেখান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show balance in"
+          }
+        }
+      }
+    },
+    "Choose currency": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুদ্রা বাছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose currency"
+          }
+        }
+      }
+    },
+    "Double-tap to choose another currency": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্য মুদ্রা বাছতে ডাবল-ট্যাপ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double-tap to choose another currency"
+          }
+        }
+      }
+    },
+    "Popular": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "জনপ্রিয়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Popular"
+          }
+        }
+      }
+    },
+    "All currencies": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সব মুদ্রা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All currencies"
+          }
+        }
+      }
+    },
+    "Search currencies": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুদ্রা খুঁজুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search currencies"
+          }
+        }
+      }
+    },
+    "No currency matches that": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এমন কোনো মুদ্রা নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No currency matches that"
+          }
+        }
+      }
+    },
+    "%@ · rate from %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@ তারিখের রেট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · rate from %2$@"
+          }
+        }
+      }
+    },
+    "%@ · rate from %@ · offline": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@ তারিখের রেট · অফলাইন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · rate from %2$@ · offline"
+          }
+        }
+      }
+    },
+    "Connect to the internet to see %@. Showing taka for now.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ দেখতে ইন্টারনেটে যুক্ত হোন। আপাতত টাকায় দেখানো হচ্ছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect to the internet to see %@. Showing taka for now."
+          }
+        }
+      }
+    },
+    "No rate for %@ today. Showing taka.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আজ %@-এর রেট নেই। টাকায় দেখানো হচ্ছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No rate for %@ today. Showing taka."
+          }
+        }
+      }
+    },
+    "Set currency": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুদ্রা বাছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set currency"
+          }
+        }
+      }
+    },
     "Receipt text": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
