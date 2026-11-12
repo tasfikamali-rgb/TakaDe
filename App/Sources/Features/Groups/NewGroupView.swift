@@ -181,6 +181,9 @@ struct NewGroupView: View {
             layout { kindCards }
                 // Both cards as tall as the taller one.
                 .fixedSize(horizontal: false, vertical: true)
+                // The list rounds and clips each row more than the cards' own corners, which
+                // cut the selected card's outline at the edges. A small gap keeps it whole.
+                .padding(Spacing.xxs)
             .listRowBackground(Color.clear)
             .listRowInsets(EdgeInsets())
         } header: {
@@ -656,11 +659,11 @@ private struct KindCard: View {
             .foregroundStyle(Color.ink)
             .padding(Spacing.m)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(RoundedRectangle(cornerRadius: Radius.key, style: .continuous).fill(Color.surface))
+            .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
             .overlay(
-                RoundedRectangle(cornerRadius: Radius.key, style: .continuous)
+                RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
                     .strokeBorder(isOn ? Color.ink : Color.ink.opacity(0.1), lineWidth: isOn ? 1.5 : 1))
-            .contentShape(RoundedRectangle(cornerRadius: Radius.key, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)

@@ -6,6 +6,9 @@ extension Color {
     static let canvas = Color("canvas")
     static let surface = Color("surface")
     static let surfaceRaised = Color("surfaceRaised")
+    /// Your own cards in Activity: a soft tint of the blue accent, so they stand apart from
+    /// the canvas and from friends' white cards in light mode (surfaceRaised blended in).
+    static let surfaceMine = Color("surfaceMine")
     static let ink = Color("ink")
     static let inkMuted = Color("inkMuted")
     static let header = Color("header")
@@ -29,7 +32,10 @@ extension Color {
     static let tabBarBackground = Color.header
     static let tabBarIndicator = Color.lime
     static let tabBarSelected = Color.onLime
-    static let tabBarUnselected = Color.onHeader.opacity(0.78)
+    /// Solid, not faded: at 78% opacity the small labels failed the accessibility audit's
+    /// contrast check ("Activity" on Settings, 2026-11-12). The selected tab still stands
+    /// out on its accent pill.
+    static let tabBarUnselected = Color.onHeader
 }
 
 /// The moving line texture behind every screen (`FlowingLines`): ink hairlines at a few

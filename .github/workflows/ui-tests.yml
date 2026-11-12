@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
-  MAESTRO_DRIVER_STARTUP_TIMEOUT: "240000"
+  MAESTRO_DRIVER_STARTUP_TIMEOUT: "420000"
   MAESTRO_CLI_NO_ANALYTICS: "1"
   HOMEBREW_NO_AUTO_UPDATE: "1"
   HOMEBREW_NO_INSTALL_CLEANUP: "1"
@@ -150,8 +150,18 @@ jobs:
           xcrun simctl ui "${{ steps.sim.outputs.udid }}" appearance light
           out="maestro-results/${{ steps.sim.outputs.slug }}-light"
           mkdir -p "$out"
-          maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" ${{ matrix.tags }} --debug-output "$out/debug" \
-            --format junit --output "$out/report.xml" maestro/flows
+          run_flows() {
+            maestro --device "${{ steps.sim.outputs.udid }}" test -e OUT="$out" ${{ matrix.tags }} --debug-output "$out/debug" \
+              --format junit --output "$out/report.xml" maestro/flows 2>&1 | tee "$out/maestro.log"
+            return "${PIPESTATUS[0]}"
+          }
+          # Maestro's driver sometimes doesn't start on a cold iPad simulator before any
+          # flow runs. Only that case gets one more try; a failing flow fails the step.
+          if ! run_flows; then
+            grep -q "iOS driver not ready in time" "$out/maestro.log" || exit 1
+            echo "::warning::Maestro's driver didn't start in time; trying once more."
+            run_flows
+          fi
       - name: Main journey in dark mode
         if: matrix.dark && (success() || failure())
         run: |

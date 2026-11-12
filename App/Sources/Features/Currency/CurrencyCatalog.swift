@@ -51,18 +51,51 @@ enum CurrencyCatalog {
     }
 
     /// The flag of the country the currency belongs to (Sabit, 2026-11-12): 🇧🇩 for BDT,
-    /// 🇬🇧 for GBP, 🇪🇺 for EUR. ISO codes start with the country's code, so that's tried
-    /// first; otherwise the first country iOS says uses it. Nil for shared regional
-    /// currencies with no single flag (XOF, XCD).
+    /// 🇬🇧 for GBP, 🇪🇺 for EUR. Every currency in the picker gets one: ISO codes start with
+    /// the country's code, so that's tried first, then any country or territory iOS says
+    /// uses it (🇰🇾 for KYD). Shared regional currencies use the flag picked in `shared`.
     static func flag(_ code: String) -> String? { flags[code] }
 
-    /// Built once: about 190 lookups, so scrolling the list doesn't repeat them.
+    /// Money several places share, with no flag of its own: the country of the issuing
+    /// central bank, or the biggest user.
+    private static let shared: [String: String] = [
+        "EUR": "EU", // euro area
+        "XAF": "CM", // Central African CFA franc: Cameroon, the biggest CEMAC economy
+        "XOF": "SN", // West African CFA franc: BCEAO is in Dakar
+        "XCD": "KN", // East Caribbean dollar: ECCB is in Basseterre
+        "XPF": "PF", // CFP franc: French Polynesia
+        "XCG": "CW", // Caribbean guilder: Curaçao
+        "ANG": "CW", // Netherlands Antillean guilder, which XCG replaced
+        "USD": "US",
+        "CHF": "CH",
+        "AUD": "AU",
+        "NZD": "NZ",
+        "INR": "IN",
+        "ZAR": "ZA",
+        "GBP": "GB",
+        "DKK": "DK",
+        "NOK": "NO",
+        "ILS": "IL",
+        "MAD": "MA",
+    ]
+
+    /// Built once: a few hundred lookups, so scrolling the list doesn't repeat them.
+    /// UN members come before territories, so a shared currency shows the country's flag.
     private static let flags: [String: String] = {
-        var regionFor: [String: String] = ["EUR": "EU"]
-        for region in HomeRegion.unMembers {
-            guard let code = Locale(identifier: "und_\(region)").currency?.identifier,
-                  !code.hasPrefix("X"), code != "EUR" else { continue }
-            if code.hasPrefix(region) || regionFor[code] == nil { regionFor[code] = region }
+        var regionFor = shared
+        let un = Set(HomeRegion.unMembers)
+        let territories = Locale.Region.isoRegions.map(\.identifier).filter {
+            $0.count == 2 && $0.allSatisfy(\.isUppercase) && !un.contains($0)
+                && !["EU", "EZ", "UN", "QO", "XK", "XA", "XB"].contains($0)
+        }
+        for (regions, isUN) in [(HomeRegion.unMembers, true), (territories, false)] {
+            for region in regions {
+                guard let code = Locale(identifier: "und_\(region)").currency?.identifier,
+                      shared[code] == nil else { continue }
+                guard let current = regionFor[code] else { regionFor[code] = region; continue }
+                // A country whose code the currency starts with beats one that only uses it.
+                if isUN, code.hasPrefix(region), !code.hasPrefix(current) { regionFor[code] = region }
+            }
         }
         return regionFor.mapValues(HomeRegion.flag)
     }()

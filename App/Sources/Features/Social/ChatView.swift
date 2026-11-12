@@ -55,7 +55,8 @@ struct ChatView: View {
                                 .padding(.top, Spacing.m)
                                 .padding(.bottom, Spacing.xxs)
                         }
-                        MessageBubble(message: message, friendName: friend.displayName, showsTime: showsTime(at: index)) {
+                        MessageBubble(message: message, friendName: friend.displayName, showsTime: showsTime(at: index),
+                                      card: card(for: message, with: friend)) {
                             Task { await social.retry(message, to: friend, myName: myName) }
                         }
                     }
@@ -214,6 +215,14 @@ struct ChatView: View {
         }
     }
 
+    /// A payment or proof request shows as a card instead of its words.
+    private func card(for message: FriendMessage, with friend: Friend) -> AskCard? {
+        guard let ask = message.ask, message.direction != .notice else { return nil }
+        return AskCard(message: message, ask: ask, friend: friend) { text in
+            _ = await social.send(text, to: friend, myName: myName)
+        }
+    }
+
     private func startsNewDay(at index: Int) -> Bool {
         guard index > 0 else { return true }
         return !Calendar.current.isDate(messages[index].at, inSameDayAs: messages[index - 1].at)
@@ -232,6 +241,7 @@ private struct MessageBubble: View {
     let message: FriendMessage
     let friendName: String
     let showsTime: Bool
+    var card: AskCard?
     let retry: () -> Void
 
     private var isMine: Bool { message.direction == .outgoing }
@@ -248,41 +258,56 @@ private struct MessageBubble: View {
             .multilineTextAlignment(.center)
             .padding(.vertical, Spacing.xs)
             .frame(maxWidth: .infinity)
+        } else if card != nil {
+            // A card keeps its buttons reachable one by one.
+            bubble.accessibilityElement(children: .contain)
         } else {
-            VStack(alignment: isMine ? .trailing : .leading, spacing: 2) {
-                Text(verbatim: message.text)
-                    .font(AppFont.body)
-                    .foregroundStyle(isMine ? Color.onLime : Color.ink)
-                    .textSelection(.enabled)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 9)
-                    .background(
-                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .fill(isMine ? Color.lime : Color.surface)
-                    )
-                    .opacity(message.state == .sending ? 0.7 : 1)
-                if message.state == .failed {
-                    Button(action: retry) {
-                        Label("Not sent. Tap to try again.", systemImage: "exclamationmark.circle")
-                            .font(AppFont.caption)
-                            .foregroundStyle(Color.owe)
-                    }
-                    .buttonStyle(.plain)
-                } else if showsTime {
-                    HStack(spacing: 4) {
-                        Text(message.at, format: .dateTime.hour().minute())
-                        if isMine { stateText }
-                    }
-                    .font(AppFont.caption)
-                    .foregroundStyle(Color.inkMuted)
-                    .padding(.bottom, Spacing.xs)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: isMine ? .trailing : .leading)
-            .padding(isMine ? Edge.Set.leading : Edge.Set.trailing, Spacing.huge)
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(isMine ? Text("You: \(message.text)") : Text("\(friendName): \(message.text)"))
+            bubble
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(isMine ? Text("You: \(message.text)") : Text("\(friendName): \(message.text)"))
         }
+    }
+
+    private var bubble: some View {
+        VStack(alignment: isMine ? .trailing : .leading, spacing: 2) {
+            if let card {
+                card.opacity(message.state == .sending ? 0.7 : 1)
+            } else {
+                textBubble
+            }
+            if message.state == .failed {
+                Button(action: retry) {
+                    Label("Not sent. Tap to try again.", systemImage: "exclamationmark.circle")
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.owe)
+                }
+                .buttonStyle(.plain)
+            } else if showsTime {
+                HStack(spacing: 4) {
+                    Text(message.at, format: .dateTime.hour().minute())
+                    if isMine { stateText }
+                }
+                .font(AppFont.caption)
+                .foregroundStyle(Color.inkMuted)
+                .padding(.bottom, Spacing.xs)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: isMine ? .trailing : .leading)
+        .padding(isMine ? Edge.Set.leading : Edge.Set.trailing, Spacing.huge)
+    }
+
+    private var textBubble: some View {
+        Text(verbatim: message.text)
+            .font(AppFont.body)
+            .foregroundStyle(isMine ? Color.onLime : Color.ink)
+            .textSelection(.enabled)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 9)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(isMine ? Color.lime : Color.surface)
+            )
+            .opacity(message.state == .sending ? 0.7 : 1)
     }
 
     @ViewBuilder private var stateText: some View {
