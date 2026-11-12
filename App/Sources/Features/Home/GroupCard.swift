@@ -3,7 +3,7 @@ import TakaDeCore
 
 /// Modelled on the savings-goal cards in DESIGN.md 1b: avatars and title, then a nested
 /// inner card with where you stand on the left and what the group spent on the right.
-/// Layering comes from two grays, not shadows. The arrow sits in a bite out of the top-right
+/// The card wears the group's colour; the inner card is a light wash over it. The arrow sits in a bite out of the top-right
 /// corner (DESIGN.md 1b).
 struct GroupCard: View {
     @Environment(AppModel.self) private var model
@@ -15,7 +15,7 @@ struct GroupCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             HStack(spacing: Spacing.s) {
-                GroupPhotoBadge(group: group, photo: photo, size: photo == nil ? 28 : 36, ring: isSelected ? .surfaceRaised : .surface)
+                GroupPhotoBadge(group: group, photo: photo, size: photo == nil ? 28 : 36, ring: cardFill)
                 Text(verbatim: group.name)
                     .font(AppFont.bodyEmphasis)
                     .foregroundStyle(Color.ink)
@@ -41,7 +41,8 @@ struct GroupCard: View {
                 }
             }
             .padding(Spacing.m)
-            .background(RoundedRectangle(cornerRadius: Radius.card - Spacing.xs, style: .continuous).fill(Color.canvas))
+            // A light wash over the group's colour, so the amounts keep strong contrast.
+            .background(RoundedRectangle(cornerRadius: Radius.card - Spacing.xs, style: .continuous).fill(Color.surface.opacity(0.75)))
             Text("\(group.members.count) people · ^[\(stats.expenseCount) expense](inflect: true)")
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
@@ -62,5 +63,7 @@ struct GroupCard: View {
         }
     }
 
-    private var cardFill: Color { isSelected ? .surfaceRaised : .surface }
+    /// The group's own colour (from its photo, or the standard lilac), the same one its
+    /// screen uses, so the card and the group read as one place (Sabit, 2026-11-12).
+    private var cardFill: Color { GroupTint.color(for: group) }
 }
