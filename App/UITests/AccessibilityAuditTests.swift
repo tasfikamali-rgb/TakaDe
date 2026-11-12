@@ -124,6 +124,9 @@ final class AccessibilityAuditTests: XCTestCase {
     @MainActor
     private func audit(_ app: XCUIApplication, for types: XCUIAccessibilityAuditType = .all,
                        ignoringContrastAbove sheetTop: CGFloat? = nil) throws {
+        // Let tab and navigation transitions finish (the tab bar's selection pill springs
+        // between tabs), so the audit doesn't measure a label mid-animation.
+        sleep(1)
         var savedScreenshot = false
         try app.performAccessibilityAudit(for: types) { issue in
             let label = issue.element?.label ?? "(no element)"
