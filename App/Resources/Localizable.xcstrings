@@ -8671,6 +8671,23 @@
           }
         }
       }
+    },
+    "You have %lld groups, the most TakaDe allows. Delete a group you no longer use to make room.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার %lldটি গ্রুপ আছে, TakaDe-তে এর বেশি রাখা যায় না। জায়গা করতে অব্যবহৃত একটি গ্রুপ মুছে ফেলুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have %lld groups, the most TakaDe allows. Delete a group you no longer use to make room."
+          }
+        }
+      }
     }
   }
 }

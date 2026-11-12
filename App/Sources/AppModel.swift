@@ -80,7 +80,17 @@ final class AppModel {
         groups.first { $0.id == id }
     }
 
+    /// Most groups one person can have on this phone, made or joined (Sabit, 2026-11-12).
+    /// Keeps lists usable and shared-group storage within the free server plan.
+    static let groupLimit = 50
+
+    /// Thrown when making or joining a group would pass `groupLimit`.
+    struct GroupLimitReached: Error {}
+
+    var canAddGroup: Bool { groups.count < Self.groupLimit }
+
     func createGroup(name: String, myName: String, otherNames: [String], kind: GroupKind = .standard, photo: Data? = nil) async throws -> ExpenseGroup {
+        guard canAddGroup else { throw GroupLimitReached() }
         let me = Member(displayName: myName, isMe: true)
         let others = otherNames.map { Member(displayName: $0) }
         // In a mess, whoever sets it up on their phone keeps the books.
