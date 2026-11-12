@@ -11,11 +11,11 @@ struct AmountField: View {
         Button(action: onTap) {
             HStack {
                 if let total = draft.total {
-                    AmountText(money: total, size: size, color: .ink, minorColor: .ink.opacity(0.6))
+                    AmountText(money: total, size: size, color: .ink, minorColor: .inkMuted)
                 } else {
                     Text("Amount")
                         .font(AppFont.display(size.points, relativeTo: .title))
-                        .foregroundStyle(Color.ink.opacity(0.6))
+                        .foregroundStyle(Color.inkMuted)
                 }
                 Spacer()
                 Image(systemName: "keyboard")

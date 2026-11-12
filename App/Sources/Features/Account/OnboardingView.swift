@@ -166,9 +166,7 @@ struct OnboardingView: View {
             regionQuery = ""
         } label: {
             HStack(spacing: Spacing.s) {
-                Text(verbatim: HomeRegion.flag(code))
-                    .font(.title2)
-                    .accessibilityHidden(true)
+                FlagImage(HomeRegion.flag(code), size: 22, relativeTo: .title2)
                 regionName(code)
                     .font(selected ? AppFont.headline : AppFont.bodyEmphasis)
                     .fixedSize(horizontal: false, vertical: true)

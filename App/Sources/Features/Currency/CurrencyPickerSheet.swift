@@ -56,11 +56,17 @@ struct CurrencyPickerSheet: View {
             dismiss()
         } label: {
             HStack(spacing: Spacing.s) {
-                Text(verbatim: CurrencyCatalog.flag(code) ?? CurrencyCatalog.symbol(code))
-                    .font(CurrencyCatalog.flag(code) == nil ? AppFont.bodyEmphasis : .system(size: 22))
-                    .foregroundStyle(Color.ink)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+                Group {
+                    if let flag = CurrencyCatalog.flag(code) {
+                        FlagImage(flag, size: 22)
+                    } else {
+                        Text(verbatim: CurrencyCatalog.symbol(code))
+                            .font(AppFont.bodyEmphasis)
+                            .foregroundStyle(Color.ink)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                    }
+                }
                     .frame(width: 44, height: 36)
                     .background(Circle().fill(Color.ink.opacity(0.06)))
                     .accessibilityHidden(true)

@@ -50,7 +50,7 @@ struct HomeHeader: View {
                     .buttonStyle(.plain)
                 }
             }
-            AmountText(money: converted ?? total.magnitude, size: .balance, color: .onHeader, minorColor: .onHeader.opacity(0.6))
+            AmountText(money: converted ?? total.magnitude, size: .balance, color: .onHeader, minorColor: .inkMuted)
             if showsForeign {
                 RateCaption(foreignCode: foreignCode, converted: converted != nil)
             }

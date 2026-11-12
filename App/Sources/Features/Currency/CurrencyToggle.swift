@@ -40,7 +40,7 @@ struct CurrencyToggle: View {
             HStack(spacing: Spacing.xxs) {
                 // Flag and code (🇧🇩 BDT, 🇬🇧 GBP); the sign (৳, £) shows on the amount itself.
                 if let flag = CurrencyCatalog.flag(code) {
-                    Text(verbatim: flag).font(.system(size: 15)).accessibilityHidden(true)
+                    FlagImage(flag, size: 15, relativeTo: .subheadline)
                 } else {
                     Text(verbatim: CurrencyCatalog.symbol(code)).font(AppFont.label)
                 }

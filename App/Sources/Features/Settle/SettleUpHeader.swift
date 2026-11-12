@@ -15,7 +15,7 @@ struct SettleUpHeader: View {
                 Text(verbatim: describe(transfer))
                     .font(AppFont.headline)
                     .foregroundStyle(Color.ink.opacity(0.8))
-                AmountText(money: transfer.amount, size: .balance, color: .ink, minorColor: .ink.opacity(0.6))
+                AmountText(money: transfer.amount, size: .balance, color: .ink, minorColor: .inkMuted)
                     // Full height: only a very long amount shrinks, to fit the width.
                     .fixedSize(horizontal: false, vertical: true)
             } else {
