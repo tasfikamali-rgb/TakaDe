@@ -36,12 +36,10 @@ struct ChatView: View {
             await social.markRead(friendID)
         }
         .onAppear {
-            social.openChat = friendID
-            if let friend { social.openTyping(with: friend) }
+            if let friend { social.enterChat(friend) } else { social.openChat = friendID }
         }
         .onDisappear {
-            if social.openChat == friendID { social.openChat = nil }
-            if let friend { social.closeTyping(with: friend) }
+            if let friend { social.leaveChat(friend) } else if social.openChat == friendID { social.openChat = nil }
         }
     }
 
