@@ -37,8 +37,9 @@ final class GoogleSignInService {
     /// raw nonce) goes into the ID token, so the sign-in service can check the token was
     /// made for this request.
     /// `includeProfile` false asks Google for the email only, so no name or picture reaches
-    /// the sign-in service in the ID token.
-    func signIn(nonce: String? = nil, includeProfile: Bool = true) async throws -> Identity {
+    /// the sign-in service in the ID token. `loginHint` (an email) goes straight to that
+    /// Google account instead of showing the account chooser.
+    func signIn(nonce: String? = nil, includeProfile: Bool = true, loginHint: String? = nil) async throws -> Identity {
         let verifier = Self.randomURLSafe(32)
         let challenge = Self.base64URL(Data(SHA256.hash(data: Data(verifier.utf8))))
         let state = Self.randomURLSafe(16)
@@ -52,8 +53,12 @@ final class GoogleSignInService {
             .init(name: "code_challenge", value: challenge),
             .init(name: "code_challenge_method", value: "S256"),
             .init(name: "state", value: state),
-            .init(name: "prompt", value: "select_account"),
         ]
+        if let loginHint, !loginHint.isEmpty {
+            components.queryItems?.append(.init(name: "login_hint", value: loginHint))
+        } else {
+            components.queryItems?.append(.init(name: "prompt", value: "select_account"))
+        }
         if let nonce { components.queryItems?.append(.init(name: "nonce", value: nonce)) }
 
         let callback: URL = try await withCheckedThrowingContinuation { continuation in
@@ -82,8 +87,12 @@ final class GoogleSignInService {
         guard claims.aud == config.clientID, ["accounts.google.com", "https://accounts.google.com"].contains(claims.iss) else {
             throw Failure.invalidToken
         }
-        if let refresh = tokens.refreshToken ?? tokens.accessToken {
+        // Kept for revoking access later. Don't swap a refresh token for a short-lived access
+        // token from a later request (such as fetching the photo).
+        if let refresh = tokens.refreshToken {
             KeychainStore.set(refresh, for: Self.tokenKey)
+        } else if let access = tokens.accessToken, KeychainStore.get(Self.tokenKey) == nil {
+            KeychainStore.set(access, for: Self.tokenKey)
         }
         return Identity(userID: claims.sub, email: claims.email, name: claims.name,
                         picture: claims.picture.flatMap(URL.init(string:)), idToken: tokens.idToken)

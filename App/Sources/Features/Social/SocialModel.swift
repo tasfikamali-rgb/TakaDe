@@ -2,6 +2,7 @@ import CryptoKit
 import Foundation
 import Observation
 import TakaDeCore
+import UIKit
 
 /// The Social tab (docs/adr/0025-friend-messages.md): people added by TakaDe ID, and text
 /// messages with them.
@@ -18,6 +19,8 @@ final class SocialModel {
     private(set) var people: [Friend] = []
     /// Bumped when messages change, so an open chat reloads.
     private(set) var revision = 0
+    /// Bumped when a friend's photo arrives or goes, so avatars redraw.
+    private(set) var photoRevision = 0
     /// Friends who are typing right now.
     private(set) var typing: Set<UUID> = []
     /// The chat on screen, if any: its messages count as read when they arrive.
@@ -85,6 +88,13 @@ final class SocialModel {
         if let liveChat { goLive(with: liveChat) }
         await fetchInbox()
         await resendPendingHellos()
+        // Also once after updating to this version, so a photo changed or removed before it
+        // reaches friends without changing it again.
+        if UserDefaults.standard.bool(forKey: Self.profileChangedKey)
+            || !UserDefaults.standard.bool(forKey: Self.profileSharedOnceKey) {
+            await shareProfile()
+            UserDefaults.standard.set(true, forKey: Self.profileSharedOnceKey)
+        }
         startPolling()
     }
 
@@ -217,6 +227,31 @@ final class SocialModel {
         FriendEnvelope(kind: kind, fromName: myName, photo: FriendPhotos.mine())
     }
 
+    /// A friend's photo as their phone last sent it. Reading it from a view redraws that view
+    /// when a new one arrives.
+    func photo(for friend: UUID) -> UIImage? {
+        _ = photoRevision
+        return FriendPhotos.image(for: friend)
+    }
+
+    private static let profileChangedKey = "social.profileChanged"
+    private static let profileSharedOnceKey = "social.profileSharedOnce"
+
+    /// Your photo changed (new, from Google, or removed): sends your name and current photo,
+    /// sealed, to everyone in your chats, so their phones show it. Nothing about it is kept
+    /// on the server once their phone collects it. If some can't be reached now, it's tried
+    /// again each time the app opens.
+    func shareProfile() async {
+        UserDefaults.standard.set(true, forKey: Self.profileChangedKey)
+        guard friends.userID != nil else { return }
+        let envelope = profileEnvelope(.profile)
+        var allSent = true
+        for friend in chats {
+            do { _ = try await deliver(envelope, to: friend) } catch { allSent = false }
+        }
+        if allSent { UserDefaults.standard.set(false, forKey: Self.profileChangedKey) }
+    }
+
     private static let pendingHelloKey = "social.pendingHello"
 
     private func sendHello(to friend: Friend) async {
@@ -271,6 +306,7 @@ final class SocialModel {
     func remove(_ friend: Friend) async {
         try? await store.deleteFriend(friend.id)
         FriendPhotos.remove(friend.id)
+        photoRevision += 1
         await reload()
         revision += 1
     }
@@ -428,8 +464,14 @@ final class SocialModel {
                             namedByMe: false, status: .request, addedAt: at)
             try? await store.save(friend)
         }
-        if envelope.kind != .text, let photo = envelope.photo {
-            FriendPhotos.store(base64: photo, for: friend.id)
+        // A hello or profile always carries their current photo; none means they removed it.
+        if envelope.kind != .text {
+            if let photo = envelope.photo {
+                FriendPhotos.store(base64: photo, for: friend.id)
+            } else {
+                FriendPhotos.remove(friend.id)
+            }
+            photoRevision += 1
         }
         // They added you after you'd added them: send your name and photo back. Never to
         // someone you haven't accepted, and never in answer to a profile, so it can't loop.

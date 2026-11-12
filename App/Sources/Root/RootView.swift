@@ -100,6 +100,9 @@ struct RootView: View {
             }
         }
         .environment(chrome)
+        .googlePhotoOffer(when: !account.needsOnboarding)
+        // A new or removed profile photo goes, sealed, to friends so their phones show it.
+        .onChange(of: account.photoRevision) { Task { await social.shareProfile() } }
         .fullScreenCover(isPresented: Binding(get: { account.needsOnboarding }, set: { _ in })) {
             OnboardingView().rebuildsOnDynamicType()
         }

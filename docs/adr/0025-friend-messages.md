@@ -51,6 +51,14 @@ Free plan only.
 - A hello that couldn't be sent is tried again each time the app opens.
 - "Use my Google photo" asks Google in its own sheet and saves the photo on the phone; the
   sign-in service still gets no name or photo (Sabit chose this over automatic at sign-in).
+- Photo updates (2026-11-12): setting, replacing or removing your photo sends a sealed
+  `profile` envelope with your current photo to everyone in your chats; it's retried each
+  time the app opens until all were sent. A hello or profile with no photo means the sender
+  removed it. Friends' avatars redraw when one arrives.
+- After a Google sign-in or link, the app asks "Use your Google photo?" when there's no
+  photo yet (and once for people already signed in with Google). Yes opens Google's sheet for
+  that account (`login_hint`), where Google asks to share the profile photo. The sign-in
+  token sent to the account server still asks for email only, so it carries no name or photo.
 
 ## What the server can see
 Who sends a message to whom and when, its size, and when a typing channel is used (not who
