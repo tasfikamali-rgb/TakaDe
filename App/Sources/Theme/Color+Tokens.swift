@@ -19,8 +19,6 @@ extension Color {
     static let bkash = Color("bkash")
     static let sheet = Color("sheet")
     static let lilac = Color("lilac")
-    /// The slow light behind the Home header: pale periwinkle in light mode, deep blue in dark.
-    static let glow = Color("glow")
 }
 
 /// Tab bar roles. The bar reads only these, so a new palette is a change here (or a new
@@ -30,4 +28,9 @@ extension Color {
     static let tabBarIndicator = Color.lime
     static let tabBarSelected = Color.onLime
     static let tabBarUnselected = Color.onHeader.opacity(0.62)
+}
+
+/// The moving line texture behind the Home header: hairlines in the header's own ink.
+extension Color {
+    static let headerTexture = Color.onHeader.opacity(0.09)
 }

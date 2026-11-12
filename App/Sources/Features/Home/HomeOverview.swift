@@ -18,7 +18,7 @@ struct HomeOverview: View {
             }
         }
         .background(alignment: .top) {
-            AmbientGlow().frame(height: 480).ignoresSafeArea()
+            FlowingLines().frame(height: 480).ignoresSafeArea()
         }
         .background(Color.canvas)
         .toolbar(.hidden, for: .navigationBar)
