@@ -56,8 +56,8 @@ struct CurrencyPickerSheet: View {
             dismiss()
         } label: {
             HStack(spacing: Spacing.s) {
-                Text(verbatim: CurrencyCatalog.symbol(code))
-                    .font(AppFont.bodyEmphasis)
+                Text(verbatim: CurrencyCatalog.flag(code) ?? CurrencyCatalog.symbol(code))
+                    .font(CurrencyCatalog.flag(code) == nil ? AppFont.bodyEmphasis : .system(size: 22))
                     .foregroundStyle(Color.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
@@ -68,7 +68,7 @@ struct CurrencyPickerSheet: View {
                     Text(verbatim: CurrencyCatalog.name(code, in: locale))
                         .font(AppFont.body)
                         .foregroundStyle(Color.ink)
-                    Text(verbatim: code)
+                    Text(verbatim: CurrencyCatalog.symbol(code) == code ? code : "\(code) · \(CurrencyCatalog.symbol(code))")
                         .font(AppFont.caption)
                         .foregroundStyle(Color.inkMuted)
                 }

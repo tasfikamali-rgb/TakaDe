@@ -50,6 +50,23 @@ enum CurrencyCatalog {
         return sign.isEmpty ? code : sign
     }
 
+    /// The flag of the country the currency belongs to (Sabit, 2026-11-12): 🇧🇩 for BDT,
+    /// 🇬🇧 for GBP, 🇪🇺 for EUR. ISO codes start with the country's code, so that's tried
+    /// first; otherwise the first country iOS says uses it. Nil for shared regional
+    /// currencies with no single flag (XOF, XCD).
+    static func flag(_ code: String) -> String? { flags[code] }
+
+    /// Built once: about 190 lookups, so scrolling the list doesn't repeat them.
+    private static let flags: [String: String] = {
+        var regionFor: [String: String] = ["EUR": "EU"]
+        for region in HomeRegion.unMembers {
+            guard let code = Locale(identifier: "und_\(region)").currency?.identifier,
+                  !code.hasPrefix("X"), code != "EUR" else { continue }
+            if code.hasPrefix(region) || regionFor[code] == nil { regionFor[code] = region }
+        }
+        return regionFor.mapValues(HomeRegion.flag)
+    }()
+
     /// "British Pound" / "ব্রিটিশ পাউন্ড", in the app's language.
     static func name(_ code: String, in locale: Locale) -> String {
         locale.localizedString(forCurrencyCode: code) ?? code
