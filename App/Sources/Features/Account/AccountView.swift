@@ -50,6 +50,7 @@ struct AccountView: View {
                 }
             }
             if account.isSignedIn {
+                if account.usesAccountService { FriendIDSection() }
                 signedInSections
             } else {
                 signedOutSection

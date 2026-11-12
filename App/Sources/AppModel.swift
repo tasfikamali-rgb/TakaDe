@@ -112,19 +112,23 @@ final class AppModel {
         await reload()
     }
 
-    func addMember(named name: String, to group: ExpenseGroup) async throws {
-        try await addMembers(named: [name], to: group)
+    @discardableResult
+    func addMember(named name: String, to group: ExpenseGroup) async throws -> Member? {
+        try await addMembers(named: [name], to: group).first
     }
 
     /// Adds several people in one save, starting from the latest copy of the group so an
     /// earlier add isn't overwritten.
-    func addMembers(named names: [String], to group: ExpenseGroup) async throws {
-        guard !names.isEmpty else { return }
+    @discardableResult
+    func addMembers(named names: [String], to group: ExpenseGroup) async throws -> [Member] {
+        guard !names.isEmpty else { return [] }
         var updated = self.group(group.id) ?? group
-        updated.members.append(contentsOf: names.map { Member(displayName: $0) })
+        let added = names.map { Member(displayName: $0) }
+        updated.members.append(contentsOf: added)
         try await repository.save(updated, actor: group.me?.id)
         await reload()
         changed(group.id)
+        return added
     }
 
     /// Takes someone out of a group, if nothing in it mentions them (see
@@ -132,6 +136,7 @@ final class AppModel {
     func removeMember(_ member: Member, from group: ExpenseGroup) async throws {
         try await repository.removeMember(member.id, from: group.id, actor: group.me?.id)
         await reload()
+        changed(group.id)
     }
 
     /// Sets or clears what this group calls someone. The person's name never changes.
@@ -142,6 +147,7 @@ final class AppModel {
         updated.members[index].nickname = trimmed?.isEmpty == false ? trimmed : nil
         try await repository.save(updated, actor: updated.me?.id)
         await reload()
+        changed(group.id)
     }
 
     // MARK: Monthly repeats
@@ -194,7 +200,8 @@ final class AppModel {
             let updated = try Expense(id: expense.id, groupID: expense.groupID, title: expense.title, total: expense.total,
                                       paidBy: expense.paidBy, splitRule: rule, occurredAt: expense.occurredAt,
                                       note: expense.note, category: expense.category, version: expense.version + 1,
-                                      repeatsMonthly: expense.repeatsMonthly, repeatOf: expense.repeatOf)
+                                      repeatsMonthly: expense.repeatsMonthly, repeatOf: expense.repeatOf,
+                                      receiptID: expense.receiptID)
             try await repository.save(updated, actor: group.me?.id)
         }
         await reload()

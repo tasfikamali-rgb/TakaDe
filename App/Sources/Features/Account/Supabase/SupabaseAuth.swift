@@ -260,6 +260,29 @@ final class SupabaseAuth {
         return user
     }
 
+    /// A database call (PostgREST) as the signed-in account, for TakaDe IDs. Returns the raw
+    /// response body; failures carry the database's error code.
+    func rest(_ path: String, method: String, body: Any? = nil, prefer: String? = nil) async throws -> Data {
+        try await refreshIfNeeded()
+        guard let token = session?.accessToken,
+              let url = URL(string: config.baseURL.appendingPathComponent("rest/v1").absoluteString + "/" + path)
+        else { throw Failure.notSignedIn }
+        var request = URLRequest(url: url, timeoutInterval: 20)
+        request.httpMethod = method
+        request.setValue(config.anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let prefer { request.setValue(prefer, forHTTPHeaderField: "Prefer") }
+        if let body { request.httpBody = try JSONSerialization.data(withJSONObject: body) }
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else { throw Failure.badResponse }
+        guard (200..<300).contains(http.statusCode) else {
+            let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
+            throw Failure.server(status: http.statusCode, code: json["code"] as? String)
+        }
+        return data
+    }
+
     private func refreshIfNeeded() async throws {
         guard let current = session else { throw Failure.notSignedIn }
         guard current.isExpiring else { return }

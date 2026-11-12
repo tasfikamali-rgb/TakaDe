@@ -26,13 +26,13 @@
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "রসিদ পড়তে TakaDe এই ফোনেই ক্যামেরা ব্যবহার করে। ছবি সেভ বা আপলোড হয় না।"
+            "value": "রসিদ এবং বন্ধুর TakaDe আইডির QR কোড স্ক্যান করতে TakaDe ক্যামেরা ব্যবহার করে। রসিদের ছবি খরচের সাথে থাকে; শেয়ার করা গ্রুপে পাঠানোর আগে এটি এনক্রিপ্ট করা হয়।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "TakaDe uses the camera to read receipts on this phone. Photos are not saved or uploaded."
+            "value": "TakaDe uses the camera to scan receipts and friends' TakaDe ID QR codes. A receipt photo stays with its expense; in a shared group it's encrypted before it's sent."
           }
         }
       }

@@ -302,6 +302,7 @@ final class AccountModel {
         KeychainStore.deleteAll()
         // Shared groups' keys and the sharing sign-in go too.
         SyncKeychain.deleteAll()
+        ReceiptPhotos.deleteAll()
         try await store.eraseEverything()
         for key in [Self.nameKey, AppLanguage.storageKey, DigitPreference.storageKey, HomeRegion.storageKey] {
             UserDefaults.standard.removeObject(forKey: key)
