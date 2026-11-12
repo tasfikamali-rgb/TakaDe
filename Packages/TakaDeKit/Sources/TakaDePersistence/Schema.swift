@@ -172,7 +172,7 @@ enum Schema {
                 t.add(column: "accent", .text)
             }
         }
-        // The Social tab (docs/adr/0024-friend-messages.md): friends added by TakaDe ID and
+        // The Social tab (docs/adr/0025-friend-messages.md): friends added by TakaDe ID and
         // the messages with them. Kept on this phone; the server only passes sealed messages
         // along. Each friend belongs to the account signed in when they were added.
         migrator.registerMigration("v9_social") { db in

@@ -1,4 +1,4 @@
-# 24. Social tab: friends and encrypted messages
+# 25. Social tab: friends and encrypted messages
 
 Status: accepted (Sabit, 2026-11-12: a Social tab between Groups and Activity listing people
 you've added, where you can message friends; later the same day, a live "typing…"
@@ -20,6 +20,11 @@ Free plan only.
   day, 500 waiting per account) and drops messages from blocked senders without telling
   them. An ID nobody has counts as a lookup, so IDs can't be guessed by sending.
   `friend_inbox` returns waiting messages with the sender's current ID and public key.
+- **Privileges** (same pattern as ADR 24, security review): the tables start from `revoke
+  all`; the app's sign-ins may only read a waiting message's id, sealed text and time and
+  delete their own. No insert or update; sending, blocking and the inbox go through
+  `security definer` functions with an empty `search_path` and no dynamic SQL. Works the
+  same whether `20261112030000_security_hardening.sql` runs before or after it.
 - **Latency:** the message appears in your chat at once and sends in the background.
   Supabase Realtime pushes a "new row" event to the friend's open app (row-level security
   applies), which then fetches straight away. No polling. With the app closed, messages wait
@@ -39,4 +44,4 @@ Group chats, photos, read receipts, push notifications, message deletion for bot
 backup of chats (they're in "Export my data" and go with "Delete all my data").
 
 ## Setup
-Run `supabase/migrations/20261112030000_friend_messages.sql` in the SQL editor.
+Run `supabase/migrations/20261112040000_friend_messages.sql` in the SQL editor.

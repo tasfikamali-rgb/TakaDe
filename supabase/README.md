@@ -52,9 +52,9 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
 5. **TakaDe IDs:** run `migrations/20261112020000_friend_ids.sql` (ADR 0021), so friends with
    accounts can add each other by ID or QR code. It stores an ID and a public key per account.
 
-## Social tab messages (ADR 0024)
+## Social tab messages (ADR 0025)
 
-1. **SQL editor:** run `migrations/20261112030000_friend_messages.sql` after the TakaDe IDs
+1. **SQL editor:** run `migrations/20261112040000_friend_messages.sql` after the TakaDe IDs
    file. It adds the sealed message box, blocking, spam limits, a nightly cleanup, and puts
    `friend_message` on Realtime so a new message reaches an open app at once.
 2. **Project Settings > Realtime:** leave **Allow public access** on (the default). The

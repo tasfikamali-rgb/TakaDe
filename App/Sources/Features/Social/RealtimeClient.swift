@@ -1,7 +1,7 @@
 import Foundation
 
 /// A small Supabase Realtime client over one WebSocket (Phoenix protocol, JSON v1), with no
-/// Supabase SDK. It does two things for the Social tab (docs/adr/0024-friend-messages.md):
+/// Supabase SDK. It does two things for the Social tab (docs/adr/0025-friend-messages.md):
 /// tells the app the moment a message is waiting for it (database changes, filtered by the
 /// server's row-level security), and passes "typing" signals between two phones on a
 /// channel only those two phones can name. Events are nudges only: messages themselves are
@@ -147,11 +147,11 @@ final class RealtimeClient {
 
     /// Listens for new rows the signed-in account may read in `table` (row-level security
     /// still applies on the server).
-    func listen(topic: String, table: String, filter: String) {
+    func listen(topic: String, table: String) {
         join(topic, settings: [
             "broadcast": ["self": false, "ack": false],
             "presence": ["key": ""],
-            "postgres_changes": [["event": "INSERT", "schema": "public", "table": table, "filter": filter]],
+            "postgres_changes": [["event": "INSERT", "schema": "public", "table": table]],
             "private": false,
         ])
     }

@@ -1,5 +1,8 @@
--- Social tab: messages between friends (docs/adr/0024-friend-messages.md).
--- Run after 20261112020000_friend_ids.sql. Safe to re-run.
+-- Social tab: messages between friends (docs/adr/0025-friend-messages.md).
+-- Run after 20261112020000_friend_ids.sql. Safe to re-run, and runs the same before or after
+-- 20261112030000_security_hardening.sql (neither touches the other's tables). Same pattern
+-- as that file: start from "revoke all", grant only what the app uses, size caps in the
+-- table, rate limits in the functions, and auth.uid() read once per request in the rules.
 --
 -- A message is sealed on the sender's phone to the friend's public key (HPKE, the same
 -- keys as TakaDe IDs), so the server stores it without being able to read it. The
@@ -40,16 +43,18 @@ alter table public.friend_message     enable row level security;
 alter table public.friend_block       enable row level security;
 alter table public.friend_message_log enable row level security;
 
-revoke all on public.friend_message, public.friend_block, public.friend_message_log from anon, authenticated;
--- Read and delete your own messages. Sending goes through send_friend_message only.
-grant select, delete on public.friend_message to authenticated;
+-- Supabase grants the API roles every privilege on new tables by default, so start from none.
+revoke all on public.friend_message, public.friend_block, public.friend_message_log from public, anon, authenticated;
+-- Read and delete your own messages; no insert or update at all. Sending goes through
+-- send_friend_message only, and blocks and the send log are reachable only through functions.
+grant select (id, sealed, created_at), delete on public.friend_message to authenticated;
 
 drop policy if exists "own messages" on public.friend_message;
 create policy "own messages" on public.friend_message
-  for select to authenticated using (to_user = auth.uid() and public.is_account());
+  for select to authenticated using (to_user = (select auth.uid()) and (select public.is_account()));
 drop policy if exists "remove own messages" on public.friend_message;
 create policy "remove own messages" on public.friend_message
-  for delete to authenticated using (to_user = auth.uid() and public.is_account());
+  for delete to authenticated using (to_user = (select auth.uid()) and (select public.is_account()));
 
 -- Leaves a sealed message for the account with this ID. Returns false when no account has
 -- the ID (and counts that as a lookup, so IDs can't be guessed by sending). A blocked

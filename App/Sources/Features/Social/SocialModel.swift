@@ -3,7 +3,7 @@ import Foundation
 import Observation
 import TakaDeCore
 
-/// The Social tab (docs/adr/0024-friend-messages.md): people added by TakaDe ID, and text
+/// The Social tab (docs/adr/0025-friend-messages.md): people added by TakaDe ID, and text
 /// messages with them.
 ///
 /// Each message is sealed on this phone with HPKE in authenticated mode: to the friend's
@@ -88,8 +88,9 @@ final class SocialModel {
         guard realtime == nil, let supabase = account.supabase else { return }
         let client = RealtimeClient(config: supabase.config) { try await supabase.accessToken() }
         client.onEvent = { [weak self] event in self?.handle(event) }
-        // Only the account's own rows: the server's row-level security applies as well.
-        client.listen(topic: Self.inboxTopic, table: "friend_message", filter: "to_user=eq.\(user)")
+        // No column filter: the app may only read a message's id and time, and Realtime sends
+        // each phone only the rows its row-level security lets it see (its own messages).
+        client.listen(topic: Self.inboxTopic, table: "friend_message")
         client.connect()
         realtime = client
         realtimeUser = user

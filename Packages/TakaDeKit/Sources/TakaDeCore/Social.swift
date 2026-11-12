@@ -1,6 +1,6 @@
 import Foundation
 
-/// Someone in the Social tab (docs/adr/0024-friend-messages.md): a person with a TakaDe
+/// Someone in the Social tab (docs/adr/0025-friend-messages.md): a person with a TakaDe
 /// account, known on this phone by their TakaDe ID, their public key and the name this
 /// phone gave them. Names never go to the server.
 public struct Friend: Identifiable, Hashable, Sendable, Codable {
