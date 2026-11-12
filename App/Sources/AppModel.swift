@@ -260,13 +260,14 @@ final class AppModel {
         return try BalanceCalculator.balances(members: group.members.map(\.id), currency: group.currency, expenses: expenses, settlements: settlements)
     }
 
-    /// Most recent expenses across every group, newest first.
-    func recentActivity(limit: Int = 50) async -> [ActivityItem] {
+    /// Expenses and payments added, edited or deleted across every group, newest first,
+    /// with who did it and what each edit changed.
+    func recentActivity(limit: Int = 100, locale: Locale) async -> [ActivityItem] {
         var items: [ActivityItem] = []
         for group in groups {
-            let expenses = (try? await repository.expenses(in: group.id, includeDeleted: false)) ?? []
-            items += expenses.map { ActivityItem(group: group, expense: $0) }
+            let events = (try? await repository.history(of: group.id)) ?? []
+            items += ActivityFeed.items(for: events, in: group, entities: [.expense, .settlement], locale: locale)
         }
-        return Array(items.sorted { $0.expense.occurredAt > $1.expense.occurredAt }.prefix(limit))
+        return Array(items.sorted { $0.occurredAt > $1.occurredAt }.prefix(limit))
     }
 }

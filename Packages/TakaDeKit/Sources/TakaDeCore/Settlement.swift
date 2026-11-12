@@ -62,13 +62,16 @@ public struct Settlement: Hashable, Codable, Sendable, Identifiable {
     public let groupID: GroupID
     public let from: MemberID
     public let to: MemberID
-    public let amount: Money
+    public private(set) var amount: Money
     public var method: SettlementMethod
     public private(set) var status: SettlementStatus
     /// A provider transaction reference typed by the user. Untrusted; never proof of payment.
     public var userReference: String?
     public let createdAt: Date
     public private(set) var updatedAt: Date
+    /// Who made this version (recorded, edited or changed its status). Set by the
+    /// repository on save, so Activity can say who edited a payment. Nil for older saves.
+    public var changedBy: MemberID?
 
     public init(id: SettlementID = SettlementID(), groupID: GroupID, from: MemberID, to: MemberID, amount: Money, method: SettlementMethod, status: SettlementStatus = .notStarted, userReference: String? = nil, createdAt: Date = Date()) throws {
         guard from != to else { throw LedgerError.settlementToSelf }
@@ -93,6 +96,31 @@ public struct Settlement: Hashable, Codable, Sendable, Identifiable {
         }
         status = .acknowledgedByRecipient
         updatedAt = date
+    }
+
+    /// Fixes a payment recorded with the wrong amount, method or transaction id. The people
+    /// and the status stay. Once the person paid has marked it received, only they can
+    /// change the amount; a provider-confirmed amount never changes.
+    public mutating func edit(amount newAmount: Money, method newMethod: SettlementMethod, userReference newReference: String?,
+                              by member: MemberID?, at date: Date = Date()) throws {
+        guard newAmount.minorUnits > 0 else { throw LedgerError.nonPositiveSettlement }
+        guard newAmount.currency == amount.currency else { throw LedgerError.invalidPayment }
+        if newAmount != amount, !Self.canChangeAmount(status: status, to: to, by: member) {
+            throw LedgerError.settlementAmountLocked
+        }
+        amount = newAmount
+        method = newMethod
+        userReference = newReference
+        updatedAt = date
+    }
+
+    /// Whether `member` may change the amount of a payment in `status` made to `recipient`.
+    public static func canChangeAmount(status: SettlementStatus, to recipient: MemberID, by member: MemberID?) -> Bool {
+        switch status {
+        case .confirmed, .reversed: return false
+        case .acknowledgedByRecipient: return member == recipient
+        default: return true
+        }
     }
 
     public mutating func transition(to next: SettlementStatus, withProviderEvidence: Bool = false, at date: Date = Date()) throws {
