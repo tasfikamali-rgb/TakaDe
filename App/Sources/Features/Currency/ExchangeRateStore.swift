@@ -3,7 +3,7 @@ import Observation
 import TakaDeCore
 
 /// Today's exchange rates, downloaded by this phone straight from a free public source
-/// each time TakaDe opens, and kept on the phone for when there's no internet (ADR 28).
+/// each time TakaDe opens, and kept on the phone for when there's no internet (ADR 27).
 ///
 /// Nothing goes through TakaDe's own server. The request is a plain download of one public
 /// file: it carries no names, amounts, account or device ID, and no cookies.

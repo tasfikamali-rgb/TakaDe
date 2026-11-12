@@ -93,7 +93,7 @@ struct TakaDeApp: App {
                         appearance.apply(animated: false)
                         // Rent due today shows up when the app comes back, not only at launch.
                         // Fresh exchange rates on every open, straight from the public source,
-                        // only for people who show their balance in another currency (ADR 28).
+                        // only for people who show their balance in another currency (ADR 27).
                         if showsForeignCurrency { Task { await exchange.refresh() } }
                         Task {
                             await model.addDueRepeats()

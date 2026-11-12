@@ -2,7 +2,7 @@ import Foundation
 import TakaDeCore
 
 /// Currencies the header can show the balance in, and how each one looks. Display only:
-/// the ledger keeps every amount in the currency it was recorded in (ADR 28).
+/// the ledger keeps every amount in the currency it was recorded in (ADR 27).
 enum CurrencyCatalog {
     /// The foreign currency the header toggle switches to. Kept on this phone only.
     static let codeKey = "displayCurrency"
