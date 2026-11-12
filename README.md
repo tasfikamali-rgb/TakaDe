@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-on-dark.svg">
-    <img src="docs/brand/logo-on-light.svg" alt="TakaDe" width="320">
-  </picture>
+  <img src="docs/brand/social-preview.png" alt="TakaDe: Shared expenses, settled in taka" width="640">
 </p>
 
 # TakaDe
