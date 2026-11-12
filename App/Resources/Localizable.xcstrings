@@ -5595,19 +5595,19 @@
         }
       }
     },
-    "Split bills with friends, settle up in taka": {
+    "Split bills with friends & family, settle up in taka": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "বন্ধুদের সাথে খরচ ভাগ করুন, টাকায় হিসাব মেটান"
+            "value": "বন্ধু ও পরিবারের সাথে খরচ ভাগ করুন, টাকায় হিসাব মেটান"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Split bills with friends, settle up in taka"
+            "value": "Split bills with friends & family, settle up in taka"
           }
         }
       }

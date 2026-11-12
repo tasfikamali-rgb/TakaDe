@@ -48,7 +48,7 @@ struct OnboardingHeader: View {
     private var title: LocalizedStringKey {
         switch (step, mode) {
         case (.language, _): "Choose your language"
-        case (.welcome, _): "Split bills with friends, settle up in taka"
+        case (.welcome, _): "Split bills with friends & family, settle up in taka"
         case (.name, _): "What should your friends call you?"
         case (.method, .signIn): "Sign in to your account"
         case (.method, _): "How do you want to sign in?"
