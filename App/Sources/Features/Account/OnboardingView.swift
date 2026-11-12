@@ -244,13 +244,15 @@ struct OnboardingView: View {
                 .fixedSize(horizontal: false, vertical: true)
             // Creates the account if there isn't one yet, or signs in to it.
             SignInMethods(mode: .create, name: nil, onFinished: handleSignIn)
+            // A quiet text button, not a third big pill, so Apple and Google stay the
+            // main choices (Sabit, 2026-11-12). Still 44 pt tall to tap.
             Button { start(.guest) } label: {
                 Text("Continue without account")
-                    .font(AppFont.bodyEmphasis)
-                    .frame(maxWidth: .infinity, minHeight: 52)
+                    .font(AppFont.label)
+                    .underline()
                     .foregroundStyle(Color.ink)
-                    .background(Capsule().fill(Color.surface))
-                    .overlay(Capsule().stroke(Color.ink.opacity(0.2), lineWidth: 1))
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(PressScaleButtonStyle())
             Text("You can sign in later from Account.")
