@@ -183,6 +183,8 @@ jobs:
         with:
           name: maestro-debug-${{ steps.sim.outputs.slug }}
           path: maestro-results
+          # Maestro writes under a hidden .maestro folder.
+          include-hidden-files: true
           retention-days: 14
 
   iphone-duo:

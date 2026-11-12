@@ -3,7 +3,6 @@
 (commands-*.json, found recursively under the given folders): each command, its
 status and how long it took, plus the texts on screen when the failing step ran.
 Shows in CI where a flow stopped and where its time went."""
-import glob
 import json
 import os
 import sys
@@ -32,7 +31,9 @@ def texts(node, out):
         texts(child, out)
 
 
-paths = sorted({p for r in roots for p in glob.glob(os.path.join(r, "**", "commands-*.json"), recursive=True)})
+# os.walk, not glob: Maestro nests its output under a hidden .maestro folder, which glob skips.
+paths = sorted({os.path.join(d, f) for r in roots for d, _, files in os.walk(r)
+                for f in files if f.startswith("commands-") and f.endswith(".json")})
 if not paths:
     print("No Maestro debug output (commands-*.json) found under:", ", ".join(roots))
 for path in paths:
