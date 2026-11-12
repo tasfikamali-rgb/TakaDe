@@ -122,17 +122,10 @@ private struct PillTabButton: View {
                 // At accessibility text sizes the bar shows icons only, like the system tab
                 // bar: touch and hold a tab for the large content viewer to read its name.
                 if !dynamicTypeSize.isAccessibilitySize {
-                    // One line at its full size: the button grows to fit, so it can't be
-                    // cut off, and at accessibility sizes it's replaced by the large content
-                    // viewer. Hidden from accessibility because the button already carries
-                    // the same title as its label. Merged into the button, Bengali labels
-                    // (সাম্প্রতিক, অ্যাকাউন্ট) set off a "Text clipped" audit warning
-                    // with no element, though nothing is cut in full-size screenshots.
                     Text(tab.title)
                         .font(AppFont.text(11, .semibold, relativeTo: .caption2))
                         .lineLimit(1)
                         .fixedSize()
-                        .accessibilityHidden(true)
                 }
             }
             .foregroundStyle(isSelected ? Color.tabBarSelected : Color.tabBarUnselected)
