@@ -51,3 +51,6 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
 4. Check space used at any time: `select * from public.sync_storage();`
 5. **TakaDe IDs:** run `migrations/20261112020000_friend_ids.sql` (ADR 0021), so friends with
    accounts can add each other by ID or QR code. It stores an ID and a public key per account.
+6. **Security review:** run `migrations/20261112030000_security_hardening.sql` (ADR 0024). It
+   tightens what the app's sign-ins may write, adds upload limits per sign-in, and makes the
+   access rules faster. Safe to re-run.
