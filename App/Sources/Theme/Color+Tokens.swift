@@ -29,7 +29,10 @@ extension Color {
     static let tabBarBackground = Color.header
     static let tabBarIndicator = Color.lime
     static let tabBarSelected = Color.onLime
-    static let tabBarUnselected = Color.onHeader.opacity(0.78)
+    /// Solid, not faded: at 78% opacity the small labels failed the accessibility audit's
+    /// contrast check ("Activity" on Settings, 2026-11-12). The selected tab still stands
+    /// out on its accent pill.
+    static let tabBarUnselected = Color.onHeader
 }
 
 /// The moving line texture behind every screen (`FlowingLines`): ink hairlines at a few
