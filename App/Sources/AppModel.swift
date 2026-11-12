@@ -18,6 +18,8 @@ final class AppModel {
     let mess: MessRepository
     /// The same database: which groups are shared and what still has to go up.
     let syncStore: SyncRepository
+    /// The same database: friends and messages in the Social tab.
+    let social: SocialRepository
     /// Called after every change made on this phone, so a shared group syncs it.
     @ObservationIgnored var onLocalChange: ((GroupID) -> Void)?
     /// A group to open, e.g. right after joining one from a link.
@@ -28,6 +30,7 @@ final class AppModel {
         profiles = store
         mess = store
         syncStore = store
+        social = store
     }
 
     private func changed(_ group: GroupID) {

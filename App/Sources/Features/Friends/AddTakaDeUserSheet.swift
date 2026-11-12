@@ -8,6 +8,7 @@ struct AddTakaDeUserSheet: View {
     @Environment(GroupSync.self) private var sync
     @Environment(Friends.self) private var friends
     @Environment(AccountModel.self) private var account
+    @Environment(SocialModel.self) private var social
     @Environment(\.dismiss) private var dismiss
     let group: ExpenseGroup
 
@@ -143,6 +144,8 @@ struct AddTakaDeUserSheet: View {
                     fromName: latest.me?.displayName ?? account.profile?.displayName ?? "",
                     memberID: member.id.rawValue)
                 try await friends.send(payload, to: code, key: key)
+                // People added to a group by ID also show up in the Social tab.
+                _ = try? await social.add(code: code, name: member.displayName, myName: payload.fromName, key: key)
                 sentTo = member.displayName
                 AccessibilityNotification.Announcement(String(localized: "Invite sent", bundle: .appLanguage)).post()
             } catch {

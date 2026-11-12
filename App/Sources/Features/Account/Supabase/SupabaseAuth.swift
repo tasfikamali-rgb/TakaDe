@@ -283,6 +283,14 @@ final class SupabaseAuth {
         return data
     }
 
+    /// A current access token, refreshed first when it's about to expire. For the Realtime
+    /// connection, which sends it itself.
+    func accessToken() async throws -> String {
+        try await refreshIfNeeded()
+        guard let token = session?.accessToken else { throw Failure.notSignedIn }
+        return token
+    }
+
     private func refreshIfNeeded() async throws {
         guard let current = session else { throw Failure.notSignedIn }
         guard current.isExpiring else { return }

@@ -9,6 +9,7 @@ struct TakaDeApp: App {
     @State private var account: AccountModel
     @State private var sync: GroupSync
     @State private var friends: Friends
+    @State private var social: SocialModel
     @State private var lock = AppLock()
     @State private var notifications: GroupNotifications
     /// Shown on every open: a cold launch and each return from the background (Sabit,
@@ -28,7 +29,9 @@ struct TakaDeApp: App {
         let sync = GroupSync(app: model)
         _account = State(initialValue: account)
         _sync = State(initialValue: sync)
-        _friends = State(initialValue: Friends(account: account, sync: sync))
+        let friends = Friends(account: account, sync: sync)
+        _friends = State(initialValue: friends)
+        _social = State(initialValue: SocialModel(store: model.social, account: account, friends: friends))
         // Set before launch finishes, so tapping a notification that opened the app is handled.
         let notifications = GroupNotifications()
         UNUserNotificationCenter.current().delegate = notifications
@@ -54,6 +57,7 @@ struct TakaDeApp: App {
                 .environment(lock)
                 .environment(sync)
                 .environment(friends)
+                .environment(social)
                 .environment(notifications)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
@@ -62,6 +66,7 @@ struct TakaDeApp: App {
                     await model.addDueRepeats()
                     await sync.syncAll()
                     await friends.checkInbox()
+                    await social.start()
                 }
                 // Invite links: takade://join?… now, https://takadeapp.com/join?… later.
                 .onOpenURL { url in
@@ -71,6 +76,8 @@ struct TakaDeApp: App {
                     lock.scenePhaseChanged(to: phase)
                     if phase == .background {
                         wasInBackground = true
+                        // Messages wait on the server until the app is back.
+                        social.stop()
                         Self.scheduleRefresh()
                     }
                     if phase == .active, wasInBackground {
@@ -86,6 +93,7 @@ struct TakaDeApp: App {
                             await model.addDueRepeats()
                             await sync.syncAll()
                             await friends.checkInbox()
+                            await social.start()
                         }
                     }
                 }

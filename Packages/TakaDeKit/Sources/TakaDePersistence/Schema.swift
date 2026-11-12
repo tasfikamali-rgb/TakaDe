@@ -172,6 +172,36 @@ enum Schema {
                 t.add(column: "accent", .text)
             }
         }
+        // The Social tab (docs/adr/0025-friend-messages.md): friends added by TakaDe ID and
+        // the messages with them. Kept on this phone; the server only passes sealed messages
+        // along. Each friend belongs to the account signed in when they were added.
+        migrator.registerMigration("v9_social") { db in
+            try db.create(table: "friend") { t in
+                t.primaryKey("id", .text)
+                t.column("account_id", .text).notNull()
+                t.column("code", .text).notNull()
+                t.column("public_key", .text).notNull()
+                t.column("name", .text).notNull()
+                t.column("status", .text).notNull()
+                    .check { ["friend", "request", "blocked"].contains($0) }
+                t.column("added_at", .datetime).notNull()
+                t.column("last_message_at", .datetime)
+                t.column("last_message_preview", .text)
+                t.column("unread", .integer).notNull().defaults(to: 0)
+                t.uniqueKey(["account_id", "code"])
+            }
+            try db.create(table: "friend_message") { t in
+                t.primaryKey("id", .text)
+                t.column("friend_id", .text).notNull().indexed()
+                    .references("friend", onDelete: .cascade)
+                t.column("direction", .text).notNull()
+                    .check { ["outgoing", "incoming", "notice"].contains($0) }
+                t.column("body", .text).notNull()
+                t.column("at", .datetime).notNull()
+                t.column("state", .text).notNull()
+                    .check { ["sending", "sent", "failed", "received"].contains($0) }
+            }
+        }
         return migrator
     }
 }

@@ -8,6 +8,7 @@ struct RootView: View {
     @Environment(AccountModel.self) private var account
     @Environment(GroupSync.self) private var sync
     @Environment(Friends.self) private var friends
+    @Environment(SocialModel.self) private var social
     @Environment(GroupNotifications.self) private var notifications
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -33,6 +34,7 @@ struct RootView: View {
             ForEach(AppTab.allCases) { item in
                 TabContent(tab: item)
                     .tabItem { Label(item.title, systemImage: item.systemImage) }
+                    .badge(item == .social ? social.unreadTotal : 0)
                     .tag(item)
                     .toolbar(usesPillBar ? .hidden : .automatic, for: .tabBar)
             }
@@ -57,7 +59,7 @@ struct RootView: View {
         // overlay and each page reserves room for it (TabContent).
         .overlay(alignment: .bottom) {
             if usesPillBar && !chrome.hidesTabBar {
-                PillTabBar(selection: $tab)
+                PillTabBar(selection: $tab, unread: [.social: social.unreadTotal])
                     .padding(.horizontal, Spacing.screenMargin)
                     .padding(.bottom, Spacing.xs)
                     .background(alignment: .bottom) {
@@ -103,8 +105,12 @@ struct RootView: View {
 
 #Preview {
     let app = AppModel.preview()
-    return RootView().environment(app).environment(AccountModel(store: app.profiles, google: nil))
-        .environment(GroupSync(app: app, config: nil))
+    let account = AccountModel(store: app.profiles, google: nil)
+    let sync = GroupSync(app: app, config: nil)
+    let friends = Friends(account: account, sync: sync)
+    return RootView().environment(app).environment(account)
+        .environment(sync)
+        .environment(friends)
         .environment(GroupNotifications())
-        .environment(Friends(account: AccountModel(store: app.profiles, google: nil), sync: GroupSync(app: app, config: nil)))
+        .environment(SocialModel(store: app.social, account: account, friends: friends))
 }
