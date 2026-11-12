@@ -11,11 +11,17 @@ tags:
 - runFlow: ../subflows/onboarding.yaml
 - takeScreenshot: ${OUT}/01-groups-empty
 - tapOn: "Create a group"
-- tapOn: "Group name"
+- tapOn:
+    id: "newGroup.name"
 - inputText: "Sajek trip"
 # Your own name comes from onboarding; the new group never asks for it.
-- tapOn: "Add name"
+# Return in the group name moves to Add name (the field can sit under the keyboard,
+# below the optional photo), then Add puts Rishan in the list.
+- pressKey: Enter
+- tapOn:
+    id: "newGroup.memberName"
 - inputText: "Rishan"
+- pressKey: Enter
 - takeScreenshot: ${OUT}/02-new-group
 - tapOn: "Create"
 - extendedWaitUntil:

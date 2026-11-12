@@ -76,6 +76,7 @@ struct NewGroupView: View {
                     // Vertical so long names wrap at large text sizes; Return still moves on.
                     TextField("Group name", text: $name, prompt: Text("Group name").foregroundStyle(Color.inkMuted), axis: .vertical)
                         .focused($focus, equals: .group)
+                        .accessibilityIdentifier("newGroup.name")
                         .submitLabel(.next)
                         .returnMovesOn($name) { focus = .newPerson }
                 } footer: {
@@ -111,6 +112,7 @@ struct NewGroupView: View {
                         TextField("Add name", text: $newPerson, prompt: Text("Add name").foregroundStyle(Color.inkMuted))
                             .textContentType(.name)
                             .focused($focus, equals: .newPerson)
+                            .accessibilityIdentifier("newGroup.memberName")
                             .submitLabel(.next)
                             .onSubmit(addTyped)
                         // Shown only when it can add, not greyed out (greyed text fails contrast).
