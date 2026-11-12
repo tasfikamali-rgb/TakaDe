@@ -8,6 +8,10 @@ tags:
 ---
 - launchApp:
     clearState: true
+    # Pauses the moving background lines: Maestro waits for the screen to stop
+    # moving before each step, so an endless animation made every step slow.
+    arguments:
+      holdTexture: "YES"
 - extendedWaitUntil:
     visible: "Get started"
     timeout: 20000

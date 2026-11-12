@@ -97,7 +97,7 @@ final class AppModel {
         let me = Member(displayName: myName, isMe: true)
         let others = people.map { Member(displayName: $0.name) }
         // In a mess, whoever sets it up on their phone keeps the books.
-        var group = ExpenseGroup(name: name, members: [me] + others, kind: kind, managerID: kind == .mess ? me.id : nil)
+        var group = ExpenseGroup(name: name, members: [me] + others, kind: kind, managerID: kind == .mess ? me.id : nil, createdBy: me.id)
         // A photo that can't be read is skipped; the group is still made.
         if let photo, let saved = try? await GroupPhotoFile.save(photo, for: group.id) {
             group.accentHex = saved.accentHex
@@ -169,6 +169,37 @@ final class AppModel {
 
     /// Takes someone out of a group, if nothing in it mentions them (see
     /// `LedgerRepository.removeMember`). Throws `MemberRemovalError` otherwise.
+    /// The files kept next to the ledger for a group: its cover, its people's photos and its
+    /// receipt photos. Collected before the group is deleted, removed after.
+    struct GroupFiles {
+        let group: GroupID
+        let members: [MemberID]
+        let receipts: [UUID]
+    }
+
+    func files(of group: GroupID) async -> GroupFiles {
+        let expenses = (try? await repository.expenses(in: group, includeDeleted: true)) ?? []
+        return GroupFiles(group: group, members: self.group(group)?.members.map(\.id) ?? [], receipts: expenses.compactMap(\.receiptID))
+    }
+
+    func removeFiles(_ files: GroupFiles) {
+        GroupPhotoFile.remove(files.group)
+        for id in files.receipts { ReceiptPhotos.delete(id) }
+        for id in files.members {
+            MemberPhotoFile.remove(id)
+            MemberPhotos.didRemove(id)
+        }
+    }
+
+    /// Deletes the group and everything in it from this phone. For a shared group, call
+    /// `GroupSync.deleteGroup` instead: it tells the other phones first.
+    func deleteGroup(_ group: GroupID) async throws {
+        let files = await files(of: group)
+        try await repository.deleteGroup(group)
+        removeFiles(files)
+        await reload()
+    }
+
     func removeMember(_ member: Member, from group: ExpenseGroup) async throws {
         try await repository.removeMember(member.id, from: group.id, actor: group.me?.id)
         MemberPhotoFile.remove(member.id)
