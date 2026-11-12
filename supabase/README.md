@@ -63,6 +63,12 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
    `select * from public.top_store_names(3, 'BD');` (last 3 months, Bangladesh; `null` for
    everywhere).
 
+9. **Ready for 10k people:** run `migrations/20261112070000_ready_for_10k.sql` (ADR 0033). It
+   lets a phone rejoin its shared groups if its sharing sign-in is lost, adds indexes that
+   keep account deletion fast, and removes Supabase's sign-in log after 30 days. Safe to re-run.
+10. **Health check:** run `checks/health_check.sql` at any time. It changes nothing and lists
+    which files above have run, the nightly jobs' last results, space used, and account checks.
+
 ## Social tab messages (ADR 0025)
 
 1. **SQL editor:** run `migrations/20261112040000_friend_messages.sql` after the TakaDe IDs

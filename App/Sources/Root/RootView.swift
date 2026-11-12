@@ -94,14 +94,15 @@ struct RootView: View {
             inbox.isViewing = viewing
         }
         // While the app is open, check shared groups once a minute, so other people's
-        // changes reach Activity and its number without a pull. One small request per shared
-        // group; no live connection (Realtime is kept for open chats, PR #47).
+        // changes reach Activity and its number without a pull. One small request for all
+        // shared groups, then a sync only of groups that changed; no live connection
+        // (Realtime is kept for open chats, PR #47).
         .task(id: scenePhase == .active) {
             guard scenePhase == .active else { return }
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(60))
                 guard !Task.isCancelled else { return }
-                await sync.syncAll()
+                await sync.syncChanged()
             }
         }
         .environment(chrome)
