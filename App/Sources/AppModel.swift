@@ -155,7 +155,8 @@ final class AppModel {
             let updated = try Expense(id: expense.id, groupID: expense.groupID, title: expense.title, total: expense.total,
                                       paidBy: expense.paidBy, splitRule: rule, occurredAt: expense.occurredAt,
                                       note: expense.note, category: expense.category, version: expense.version + 1,
-                                      repeatsMonthly: expense.repeatsMonthly, repeatOf: expense.repeatOf)
+                                      repeatsMonthly: expense.repeatsMonthly, repeatOf: expense.repeatOf,
+                                      receiptID: expense.receiptID)
             try await repository.save(updated, actor: group.me?.id)
         }
         await reload()

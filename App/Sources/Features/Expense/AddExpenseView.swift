@@ -47,7 +47,11 @@ struct AddExpenseView: View {
                     } label: {
                         Text("Category")
                     }
-                    ReceiptScanButton(onReviewed: draft.apply)
+                    ReceiptScanButton(onReviewed: draft.apply, onPhoto: draft.attach)
+                }
+
+                if draft.hasReceipt {
+                    ReceiptPhotoSection(draft: draft)
                 }
 
                 PaidBySection(draft: draft)
@@ -103,6 +107,11 @@ struct AddExpenseView: View {
     private func save() {
         Task {
             do {
+                // The photo is saved on the phone first, so the expense never points to nothing.
+                if let photo = draft.newReceipt {
+                    draft.receiptID = try ReceiptPhotos.save(photo)
+                    draft.newReceipt = nil
+                }
                 try await app.save(try draft.makeExpense(), in: draft.group)
                 dismiss()
             } catch {
@@ -114,5 +123,6 @@ struct AddExpenseView: View {
 
 #Preview {
     let group = ExpenseGroup(name: "Sajek trip", members: [Member(displayName: "Sabit", isMe: true), Member(displayName: "Rishan"), Member(displayName: "Nafisa")])
-    AddExpenseView(group: group).environment(AppModel.preview())
+    let app = AppModel.preview()
+    return AddExpenseView(group: group).environment(app).environment(GroupSync(app: app, config: nil))
 }
