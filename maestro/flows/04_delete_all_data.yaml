@@ -38,6 +38,9 @@ tags:
     direction: DOWN
 - tapOn: "Delete all my data"
 - tapOn: "Delete everything"
+# It asks a second time before wiping anything.
+- assertVisible: "Are you sure?"
+- tapOn: "Yes, delete everything"
 # Back to first launch, and the group is gone.
 - extendedWaitUntil:
     visible: "Get started"

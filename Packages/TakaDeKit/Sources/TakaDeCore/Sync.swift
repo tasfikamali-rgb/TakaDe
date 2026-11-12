@@ -57,7 +57,7 @@ public struct ApplyResult: Equatable, Sendable {
     public var rejected = 0
     /// Expenses and payments that another phone changed and that changed something here,
     /// in relay order. This phone's own changes coming back are not in it. Used for
-    /// notifications (docs/adr/0024-group-change-notifications.md).
+    /// notifications (docs/adr/0025-group-change-notifications.md).
     public var fromOthers: [AppliedChange] = []
     public init() {}
 }

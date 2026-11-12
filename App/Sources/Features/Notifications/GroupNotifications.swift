@@ -4,7 +4,7 @@ import TakaDeCore
 import UserNotifications
 
 /// App notifications when someone else changes a shared group: an expense you're in, or a
-/// payment to or from you (docs/adr/0024-group-change-notifications.md).
+/// payment to or from you (docs/adr/0025-group-change-notifications.md).
 ///
 /// They are local notifications. The phone pulls the group's encrypted changes, opens them
 /// with the group's key, and writes the notification itself, so names and amounts never

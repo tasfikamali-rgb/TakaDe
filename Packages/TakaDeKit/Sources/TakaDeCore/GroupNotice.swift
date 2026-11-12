@@ -1,7 +1,7 @@
 import Foundation
 
 /// What to tell the person using this phone after other people changed a shared group
-/// (docs/adr/0024-group-change-notifications.md). Worked out on the phone, after the
+/// (docs/adr/0025-group-change-notifications.md). Worked out on the phone, after the
 /// changes are decrypted, so names and amounts never pass through the relay in the clear.
 ///
 /// Only changes this person is part of count: an expense they paid for or have a share in,

@@ -1,4 +1,4 @@
-# 24. Notifications for changes in shared groups
+# 25. Notifications for changes in shared groups
 
 Status: accepted (Sabit, 2026-11-12: "whenever there is a change in one of the groups and one
 of the things they are owed, they should get a notification... app notification itself", not

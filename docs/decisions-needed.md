@@ -19,8 +19,8 @@ Pick one, per CLAUDE.md:
 **Open, owner:** a sender domain and SMTP provider for the sign-in codes before launch (Owner materials 5).
 **Decided 2026-11-11:** shared groups through the encrypted relay on Supabase, for every user; only shared groups leave the phone, idle ones are removed from the server after 90 days (ADR 19).
 **Open, owner:** run the shared-groups SQL and turn on anonymous sign-ins (supabase/README.md). Tappable https invite links wait on takadeapp.com and a paid Apple Developer account.
-**Decided 2026-11-12:** app notifications (not SMS) when someone changes an expense or payment you're in, written on the phone so the relay learns nothing (ADR 24). Built as local notifications plus background refresh.
-**Open, owner:** push, so they arrive within seconds, needs the paid Apple Developer Program and an APNs key that Sabit enters in Supabase (ADR 24, Part 2).
+**Decided 2026-11-12:** app notifications (not SMS) when someone changes an expense or payment you're in, written on the phone so the relay learns nothing (ADR 25). Built as local notifications plus background refresh.
+**Open, owner:** push, so they arrive within seconds, needs the paid Apple Developer Program and an APNs key that Sabit enters in Supabase (ADR 25, Part 2).
 
 ## 2. bKash, upay and bank settlement (blocks: any payment button)
 No public peer-to-peer API is assumed. Needed per provider: official docs, merchant or

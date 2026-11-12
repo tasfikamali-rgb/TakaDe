@@ -42,7 +42,7 @@ targets:
           - CFBundleURLName: app.takade.links
             CFBundleURLSchemes: [takade]
         # Background refresh pulls shared groups' changes so group notifications can arrive
-        # while TakaDe is closed (docs/adr/0024-group-change-notifications.md). No push yet.
+        # while TakaDe is closed (docs/adr/0025-group-change-notifications.md). No push yet.
         UIBackgroundModes: [fetch]
         BGTaskSchedulerPermittedIdentifiers: [app.takade.refresh]
         UILaunchScreen:
