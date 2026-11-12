@@ -99,8 +99,8 @@ jobs:
           xcrun xcresulttool export attachments --path build/UITests.xcresult \
             --output-path build/audit-shots >/dev/null 2>&1 || true
           scripts/ci/print_pngs.sh build/audit-shots full
-          # Element trees saved next to those screenshots (labels and frames).
-          for t in build/audit-shots/*.txt; do [ -f "$t" ] && { echo "::group::Tree $(basename "$t")"; cat "$t"; echo "::endgroup::"; }; done
+          # Element trees and full issue lists saved next to those screenshots.
+          for t in build/audit-shots/*.txt; do [ -f "$t" ] && { echo "::group::Tree $(basename "$t")"; cat "$t"; echo; echo "::endgroup::"; }; done
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4

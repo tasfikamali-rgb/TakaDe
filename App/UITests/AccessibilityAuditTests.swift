@@ -39,6 +39,11 @@ final class AccessibilityAuditTests: XCTestCase {
         app.buttons["Create a group"].tap()
         let sheetBar = app.navigationBars["New group"]
         XCTAssertTrue(sheetBar.waitForExistence(timeout: 5))
+        // The sheet must stay open: on CI it has closed by itself within a second or two of
+        // opening right after onboarding, and the audit then measured the Groups screen
+        // fading back in. Fail plainly if that happens instead of reporting contrast.
+        sleep(2)
+        XCTAssertTrue(sheetBar.exists, "New group sheet closed by itself after opening")
         // The Groups screen shows above the sheet under the system dimming. The audit
         // measures that dimmed text too; only the sheet's own elements count here.
         try audit(app, ignoringContrastAbove: sheetBar.frame.minY)
@@ -128,8 +133,21 @@ final class AccessibilityAuditTests: XCTestCase {
         // between tabs), so the audit doesn't measure a label mid-animation.
         sleep(1)
         var savedScreenshot = false
+        // Every issue the audit reports, ignored or not, saved as one text attachment, since
+        // the CI summary shows only the first failure per test.
+        var issueLog: [String] = []
+        defer {
+            if !issueLog.isEmpty {
+                let log = XCTAttachment(string: issueLog.joined(separator: "\n"))
+                log.name = "issues-\(self.name)"
+                log.lifetime = .keepAlways
+                self.add(log)
+            }
+        }
         try app.performAccessibilityAudit(for: types) { issue in
             let label = issue.element?.label ?? "(no element)"
+            let where_ = issue.element.map { "\(String(describing: $0.elementType)) \"\($0.label)\" frame \($0.frame)" } ?? "no element"
+            issueLog.append("[\(issue.auditType.rawValue)] \(issue.compactDescription) | \(where_) | \(issue.detailedDescription)")
             if issue.auditType == .contrast, let sheetTop, let element = issue.element,
                element.frame.maxY <= sheetTop {
                 print("Ignored contrast on dimmed content behind the sheet: \(label)")
