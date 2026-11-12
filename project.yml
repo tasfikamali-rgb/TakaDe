@@ -49,7 +49,8 @@ targets:
           UIColorName: launchBackground
           UIImageName: LaunchMark
           UIImageRespectsSafeAreaInsets: false
-        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        # iPhone (and iPhone Duo) stays upright; only iPad turns sideways (Sabit, 2026-11-12).
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: "TakaDe uses the camera to scan receipts and friends' TakaDe ID QR codes. A receipt photo stays with its expense; in a shared group it's encrypted before it's sent."
         NSContactsUsageDescription: TakaDe shows your contacts so you can search and pick people to add to a group. Only the names, photos and mobile numbers of the people you pick are kept, on this phone. Your contacts are never uploaded.
