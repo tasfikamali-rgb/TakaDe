@@ -80,3 +80,8 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
 3. Free plan limits that matter: 200 phones connected to Realtime at the same time and 2
    million Realtime messages a month. A phone is connected only while one of its chats is
    on screen; otherwise the app checks for messages every minute while open.
+
+## Packed changes, backups and the spare (ADR 0034)
+
+Run `migrations/20261112080000_pack_old_changes.sql` in the SQL editor. Phones then pack busy
+groups' older changes into one bundle. Backups and the spare project: see docs/backups.md.

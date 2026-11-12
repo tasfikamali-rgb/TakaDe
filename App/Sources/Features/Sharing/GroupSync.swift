@@ -51,6 +51,10 @@ final class GroupSync {
     @ObservationIgnored private var stamps: [GroupID: String] = [:]
     /// The relay doesn't have the rejoin functions yet (migration not run): don't ask again.
     @ObservationIgnored private var rejoinUnavailable = false
+    /// The relay doesn't have bundles yet (migration not run): read and pack rows only.
+    @ObservationIgnored private var bundlesUnavailable = false
+    /// A group is packed once this many of its rows are old enough to pack.
+    static let packThreshold: Int64 = 200
     /// Expenses and payments other phones changed, after they're applied here. Not called
     /// for the first download of a group just joined or shared. Used for notifications.
     @ObservationIgnored var onChangesFromOthers: ((GroupID, [AppliedChange]) async -> Void)?
@@ -161,6 +165,13 @@ final class GroupSync {
     /// Syncs every shared group: on launch and when the app comes back.
     func syncAll() async {
         await loadStates()
+        // The app moved to the other project (ServerSwitch): it may be missing the last day's
+        // changes, so every shared group goes up again whole. Repeats are stored once per id
+        // and newer versions win, so nothing is applied twice.
+        if ServerSwitch.takeChanged() {
+            for id in states.keys { try? await app.syncStore.requeueEverything(id) }
+            await loadStates()
+        }
         for id in states.keys { await sync(id) }
     }
 
@@ -253,27 +264,42 @@ final class GroupSync {
         var fromOthers: [AppliedChange] = []
         // Cursor 0 means the whole group is arriving for the first time: nothing to announce.
         let startedAt = try await store.sharedState(of: group)?.cursor ?? 0
-        let pageSize = 200
-        while true {
-            let cursor = try await store.sharedState(of: group)?.cursor ?? 0
-            let rows = try await relay.pull(group, after: cursor, limit: pageSize)
-            guard let last = rows.last else { break }
-            // A change that can't be opened (wrong key, damaged) is skipped, never applied.
-            let received = rows.compactMap { row in
-                (try? SyncCipher.open(row.ciphertext, changeID: row.change_id, groupID: group, with: key))
-                    .map { ReceivedChange(sequence: row.seq, change: $0) }
+        // Older changes may have been packed into one bundle. A phone that hasn't seen them
+        // yet (just joined, or away a while) reads the bundle first, then the rows after it.
+        // If another phone packed the group while this one was paging through it, some rows
+        // vanished mid-download: go back to where this sync started and read the new bundle.
+        for attempt in 0..<2 {
+            if attempt > 0 { try await store.rewind(group, to: startedAt) }
+            let read = try await applyBundleIfBehind(group, cursor: startedAt, key: key)
+            if let result = read?.result {
+                applied += result.applied
+                fromOthers += result.fromOthers
             }
-            // If the maker deleted the group, note its photos first: the ledger rows that point
-            // to them are deleted along with the group.
-            let files = received.contains { $0.change.entity == .groupDeleted } ? await app.files(of: group) : nil
-            let result = try await store.apply(received, through: last.seq, in: group, syncedAt: Date())
-            if result.groupDeleted {
-                await finishRemoteDeletion(group, files: files)
-                return
+            let pageSize = 200
+            var pages = 0
+            while true {
+                let cursor = try await store.sharedState(of: group)?.cursor ?? 0
+                let rows = try await relay.pull(group, after: cursor, limit: pageSize)
+                pages += 1
+                guard let last = rows.last else { break }
+                // A change that can't be opened (wrong key, damaged) is skipped, never applied.
+                let received = rows.compactMap { row in
+                    (try? SyncCipher.open(row.ciphertext, changeID: row.change_id, groupID: group, with: key))
+                        .map { ReceivedChange(sequence: row.seq, change: $0) }
+                }
+                // If the maker deleted the group, note its photos first: the ledger rows that point
+                // to them are deleted along with the group.
+                let files = received.contains { $0.change.entity == .groupDeleted } ? await app.files(of: group) : nil
+                let result = try await store.apply(received, through: last.seq, in: group, syncedAt: Date())
+                if result.groupDeleted {
+                    await finishRemoteDeletion(group, files: files)
+                    return
+                }
+                applied += result.applied
+                fromOthers += result.fromOthers
+                if rows.count < pageSize { break }
             }
-            applied += result.applied
-            fromOthers += result.fromOthers
-            if rows.count < pageSize { break }
+            guard pages > 1, await packedDuringDownload(group, since: startedAt, alreadyRead: read?.id) else { break }
         }
         try await store.markSynced(group, at: Date())
         if applied > 0 { await app.reload() }
@@ -281,6 +307,64 @@ final class GroupSync {
         status[group] = .upToDate
         if startedAt > 0, !fromOthers.isEmpty { await onChangesFromOthers?(group, fromOthers) }
         await registerRejoinSecret(group)
+        await packIfWorthIt(group, key: key)
+    }
+
+    // MARK: Bundles (docs/adr/0034-packed-changes-and-backups.md)
+
+    /// Reads and applies the group's bundle when it covers changes after `cursor`. Returns the
+    /// bundle's id and what changed, or nil when there was nothing to read.
+    private func applyBundleIfBehind(_ group: GroupID, cursor: Int64, key: SymmetricKey) async throws -> (id: UUID, result: ApplyResult)? {
+        guard let relay, !bundlesUnavailable else { return nil }
+        let bundle: RelayClient.Bundle?
+        do {
+            bundle = try await relay.bundle(group, after: cursor)
+        } catch RelayClient.Failure.server(let status, let code) where Self.isMissingOnRelay(status: status, code: code) {
+            bundlesUnavailable = true
+            return nil
+        }
+        guard let bundle else { return nil }
+        // A bundle that can't be opened stops the sync (status "failed") instead of skipping
+        // it: the rows it replaced are gone, so skipping would silently lose them.
+        let changes = try SyncCipher.openBundle(bundle.ciphertext, id: bundle.id, through: bundle.through_seq, groupID: group, with: key)
+        return (id: bundle.id, result: try await app.syncStore.applyBundle(changes, through: bundle.through_seq, in: group, syncedAt: Date()))
+    }
+
+    /// True when a bundle other than the one already read now covers changes after `start`.
+    private func packedDuringDownload(_ group: GroupID, since start: Int64, alreadyRead: UUID?) async -> Bool {
+        guard let relay, !bundlesUnavailable, let latest = try? await relay.bundleID(group, after: start) else { return false }
+        return latest != alreadyRead
+    }
+
+    /// Once a day per group, after a full sync with nothing waiting to go up: if enough of the
+    /// group's rows are old enough, seal the whole group into one bundle and let the relay
+    /// replace those rows with it. Any member's phone can do it; the relay takes one pack per
+    /// group every 6 hours.
+    private func packIfWorthIt(_ group: GroupID, key: SymmetricKey) async {
+        guard let relay, !bundlesUnavailable else { return }
+        let checkedKey = "sync.packChecked.\(group)"
+        if let last = UserDefaults.standard.object(forKey: checkedKey) as? Date, Date().timeIntervalSince(last) < 24 * 3600 { return }
+        UserDefaults.standard.set(Date(), forKey: checkedKey)
+        do {
+            guard let point = try await relay.packPoint(group), let through = point.through_seq,
+                  point.packable >= Self.packThreshold,
+                  let state = try await app.syncStore.sharedState(of: group),
+                  // This phone has everything up to that point and nothing still to upload.
+                  state.cursor >= through, state.pendingUploads == 0 else { return }
+            let changes = try await app.syncStore.bundleChanges(of: group)
+            let id = UUID()
+            let sealed = try SyncCipher.sealBundle(changes, id: id, through: through, groupID: group, with: key)
+            _ = try await relay.pack(group, id: id, through: through, ciphertext: sealed)
+        } catch RelayClient.Failure.server(let status, let code) where Self.isMissingOnRelay(status: status, code: code) {
+            bundlesUnavailable = true
+        } catch {
+            // Tried again tomorrow.
+        }
+    }
+
+    /// The relay answered "no such table or function": its migration hasn't been run yet.
+    private static func isMissingOnRelay(status: Int, code: String?) -> Bool {
+        status == 404 || ["PGRST202", "PGRST205", "42883", "42P01"].contains(code ?? "")
     }
 
     // MARK: Rejoin (supabase/migrations/20261112070000_ready_for_10k.sql)

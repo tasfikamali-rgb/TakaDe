@@ -352,6 +352,128 @@ final class GroupSyncTests: XCTestCase {
         let otherHistory = try await phone.history(of: other.id)
         XCTAssertEqual(otherHistory.count, 1)
     }
+
+    // MARK: Bundles (docs/adr/0034-packed-changes-and-backups.md)
+
+    func testBundleBringsTheWholeGroupToANewPhone() async throws {
+        let (phone, group, expense) = try await makeShared()
+        try await phone.startSharing(group.id)
+        var gone = try Expense(groupID: group.id, title: "Taxi", total: Money(minorUnits: 50_000),
+                               paidBy: [group.members[1].id: Money(minorUnits: 50_000)],
+                               splitRule: .equal(group.members.map(\.id)))
+        try await phone.save(gone, actor: nil)
+        gone = try await phone.expenses(in: group.id, includeDeleted: false).first { $0.id == gone.id }!
+        try await phone.delete(gone.id, actor: nil)
+
+        let bundle = try await phone.bundleChanges(of: group.id)
+        XCTAssertEqual(bundle.map(\.entity), [.group, .expense, .expense])
+        XCTAssertTrue(bundle.allSatisfy { $0.groupID == group.id })
+
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        let result = try await friend.applyBundle(bundle, through: 40, in: group.id, syncedAt: Date())
+        XCTAssertEqual(result.applied, 3)
+        XCTAssertEqual(result.rejected, 0)
+        let state = try await friend.sharedState(of: group.id)
+        XCTAssertEqual(state?.cursor, 40)
+        let joined = try await friend.group(group.id)
+        XCTAssertEqual(joined?.members.map(\.displayName), ["সাবিত", "Rafi"])
+        XCTAssertEqual(joined?.members.contains(where: \.isMe), false)
+        // The deleted expense arrives deleted.
+        let visible = try await friend.expenses(in: group.id, includeDeleted: false)
+        XCTAssertEqual(visible.map(\.id), [expense.id])
+        let all = try await friend.expenses(in: group.id, includeDeleted: true)
+        XCTAssertEqual(all.count, 2)
+        // Nothing from a bundle is sent back up.
+        let echo = try await friend.pendingChanges(in: group.id, limit: 100)
+        XCTAssertTrue(echo.isEmpty)
+    }
+
+    func testBundleOnlyWritesWhatIsNewer() async throws {
+        let (phone, group, expense) = try await makeShared()
+        try await phone.startSharing(group.id)
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        _ = try await friend.apply(relay(try await phone.pendingChanges(in: group.id, limit: 100)), in: group.id, syncedAt: Date())
+        let historyBefore = try await friend.history(of: group.id).count
+
+        var edited = expense
+        edited.title = "Hotel (2 nights)"
+        edited.version = 2
+        try await phone.save(edited, actor: nil)
+        let bundle = try await phone.bundleChanges(of: group.id)
+
+        let result = try await friend.applyBundle(bundle, through: 9, in: group.id, syncedAt: Date())
+        // The group's settings are merged again (quietly) and the edited expense is written;
+        // only the expense is announced and logged. The unchanged parts are skipped.
+        XCTAssertEqual(result.applied, 2)
+        XCTAssertEqual(result.fromOthers.count, 1)
+        let kept = try await friend.expenses(in: group.id, includeDeleted: false).first
+        XCTAssertEqual(kept?.title, "Hotel (2 nights)")
+        let historyAfter = try await friend.history(of: group.id).count
+        XCTAssertEqual(historyAfter, historyBefore + 1)
+
+        // A bundle this phone is already past is ignored.
+        let again = try await friend.applyBundle(bundle, through: 5, in: group.id, syncedAt: Date())
+        XCTAssertEqual(again.applied, 0)
+        let state = try await friend.sharedState(of: group.id)
+        XCTAssertEqual(state?.cursor, 9)
+    }
+
+    func testBundleCannotSlipInAConfirmedPayment() async throws {
+        let (phone, group, _) = try await makeShared()
+        try await phone.startSharing(group.id)
+        var bundle = try await phone.bundleChanges(of: group.id)
+        var forged = try Settlement(groupID: group.id, from: group.members[1].id, to: group.members[0].id,
+                                    amount: Money(minorUnits: 150_000), method: .bkash, status: .reportedUnverified)
+        try forged.transition(to: .confirmed, withProviderEvidence: true)
+        bundle.append(SyncChange(groupID: group.id, entity: .settlement, body: try JSONEncoder.iso.encode(forged)))
+
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        let result = try await friend.applyBundle(bundle, through: 3, in: group.id, syncedAt: Date())
+        XCTAssertEqual(result.rejected, 1)
+        let settlements = try await friend.settlements(in: group.id)
+        XCTAssertTrue(settlements.isEmpty)
+    }
+
+    func testGroupSentAgainWholeIsNotAnnouncedTwice() async throws {
+        let (phone, group, _) = try await makeShared()
+        try await phone.startSharing(group.id)
+        let first = try await phone.pendingChanges(in: group.id, limit: 100)
+        try await phone.markUploaded(first.map(\.id))
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        _ = try await friend.apply(relay(first), in: group.id, syncedAt: Date())
+        let historyBefore = try await friend.history(of: group.id).count
+
+        // After a move to the spare project the first phone sends the whole group again.
+        try await phone.requeueEverything(group.id)
+        let again = try await phone.pendingChanges(in: group.id, limit: 100)
+        XCTAssertEqual(again.map(\.entity), [.group, .expense])
+        let result = try await friend.apply(relay(again, from: 10), in: group.id, syncedAt: Date())
+        XCTAssertEqual(result.rejected, 0)
+        XCTAssertTrue(result.fromOthers.isEmpty)
+        let expenses = try await friend.expenses(in: group.id, includeDeleted: true)
+        XCTAssertEqual(expenses.count, 1)
+        // Only the group's settings are logged again; the unchanged expense isn't.
+        let historyAfter = try await friend.history(of: group.id).count
+        XCTAssertLessThanOrEqual(historyAfter, historyBefore + 1)
+    }
+
+    func testRewindOnlyMovesTheCursorBack() async throws {
+        let (phone, group, _) = try await makeShared()
+        try await phone.startSharing(group.id)
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        _ = try await friend.apply(relay(try await phone.pendingChanges(in: group.id, limit: 100)), in: group.id, syncedAt: Date())
+        try await friend.rewind(group.id, to: 50)
+        var state = try await friend.sharedState(of: group.id)
+        XCTAssertEqual(state?.cursor, 2)
+        try await friend.rewind(group.id, to: 0)
+        state = try await friend.sharedState(of: group.id)
+        XCTAssertEqual(state?.cursor, 0)
+    }
 }
 
 private extension JSONEncoder {

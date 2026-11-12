@@ -32,6 +32,37 @@ enum SyncCipher {
         return change
     }
 
+    // MARK: Bundles (docs/adr/0034-packed-changes-and-backups.md)
+
+    private static let bundlePrefix = "b1."
+
+    /// A whole group packed into one upload: compressed together, which is far smaller than
+    /// the same changes sealed one by one. The group id, bundle id and the relay position it
+    /// covers are bound in, so a bundle can't be moved to another group or another position.
+    static func sealBundle(_ changes: [SyncChange], id: UUID, through: Int64, groupID: GroupID, with key: SymmetricKey) throws -> String {
+        let json = try encoder.encode(changes)
+        let packed = try (json as NSData).compressed(using: .zlib) as Data
+        let box = try AES.GCM.seal(packed, using: key, authenticating: bundleContext(groupID, id, through))
+        guard let combined = box.combined else { throw Failure.malformed }
+        return bundlePrefix + combined.base64EncodedString()
+    }
+
+    static func openBundle(_ text: String, id: UUID, through: Int64, groupID: GroupID, with key: SymmetricKey) throws -> [SyncChange] {
+        guard text.hasPrefix(bundlePrefix), let combined = Data(base64Encoded: String(text.dropFirst(bundlePrefix.count))) else {
+            throw Failure.malformed
+        }
+        let box = try AES.GCM.SealedBox(combined: combined)
+        let packed = try AES.GCM.open(box, using: key, authenticating: bundleContext(groupID, id, through))
+        let json = try BoundedInflate.inflate(packed, limit: SyncLimits.maxBundleBytes)
+        let changes = try decoder.decode([SyncChange].self, from: json)
+        guard changes.count <= SyncLimits.maxBundleChanges, changes.allSatisfy({ $0.groupID == groupID }) else { throw Failure.mismatch }
+        return changes
+    }
+
+    private static func bundleContext(_ group: GroupID, _ id: UUID, _ through: Int64) -> Data {
+        Data("takade.bundle.v1|\(group)|\(id.uuidString)|\(through)".utf8)
+    }
+
     // MARK: Receipts
 
     /// What a shared receipt turned out to be. New uploads are always text (ADR 28); photos

@@ -59,6 +59,10 @@ targets:
         TakaDeGoogleClientID: $(TAKADE_GOOGLE_CLIENT_ID)
         TakaDeSupabaseHost: $(TAKADE_SUPABASE_HOST)
         TakaDeSupabaseAnonKey: $(TAKADE_SUPABASE_ANON_KEY)
+        # The spare project and the switch file (docs/adr/0034-packed-changes-and-backups.md).
+        TakaDeSupabaseSpareHost: $(TAKADE_SUPABASE_SPARE_HOST)
+        TakaDeSupabaseSpareAnonKey: $(TAKADE_SUPABASE_SPARE_ANON_KEY)
+        TakaDeServerSwitchURL: $(TAKADE_SERVER_SWITCH_URL)
         TakaDeMicrosoftSignIn: $(TAKADE_MICROSOFT_SIGN_IN)
         TakaDeEmailSignIn: $(TAKADE_EMAIL_SIGN_IN)
         UIAppFonts: [Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, InterDisplay-SemiBold.ttf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf, AnekBangla-Medium.ttf, AnekBangla-SemiBold.ttf]

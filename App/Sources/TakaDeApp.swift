@@ -83,6 +83,8 @@ struct TakaDeApp: App {
                     await model.addDueRepeats()
                     await sync.syncAll()
                     await social.start()
+                    // Main or spare project, for the next time the app opens.
+                    await ServerSwitch.refresh()
                 }
                 // Invite links: takade://join?… now, https://takadeapp.com/join?… later.
                 .onOpenURL { url in

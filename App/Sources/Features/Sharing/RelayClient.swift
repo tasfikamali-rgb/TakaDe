@@ -144,6 +144,50 @@ actor RelayClient {
         return try JSONDecoder().decode([Row].self, from: data)
     }
 
+    // MARK: Bundles (supabase/migrations/20261112080000_pack_old_changes.sql)
+
+    struct Bundle: Decodable, Sendable {
+        let id: UUID
+        let through_seq: Int64
+        let ciphertext: String
+    }
+
+    struct PackPoint: Decodable, Sendable {
+        let through_seq: Int64?
+        let packable: Int64
+        let packed_at: String?
+    }
+
+    /// The group's packed bundle, only if it covers changes after `cursor`. Nil when there
+    /// is none to read.
+    func bundle(_ group: GroupID, after cursor: Int64) async throws -> Bundle? {
+        let data = try await send("sync_bundle?group_id=eq.\(group)&through_seq=gt.\(cursor)&select=id,through_seq,ciphertext",
+                                  method: "GET", body: nil)
+        return try JSONDecoder().decode([Bundle].self, from: data).first
+    }
+
+    /// Just the id of the group's bundle when it covers changes after `cursor`, without its
+    /// content.
+    func bundleID(_ group: GroupID, after cursor: Int64) async throws -> UUID? {
+        struct Header: Decodable { let id: UUID }
+        let data = try await send("sync_bundle?group_id=eq.\(group)&through_seq=gt.\(cursor)&select=id", method: "GET", body: nil)
+        return try JSONDecoder().decode([Header].self, from: data).first?.id
+    }
+
+    /// Where a pack of the group could end now, and how many rows it would remove.
+    func packPoint(_ group: GroupID) async throws -> PackPoint? {
+        let data = try await send("rpc/sync_pack_point", method: "POST", body: ["p_group": group.description])
+        return try JSONDecoder().decode([PackPoint].self, from: data).first
+    }
+
+    /// Uploads a bundle; the relay then deletes the rows it covers. False when the relay
+    /// turned it down (packed recently, or the position is no longer valid).
+    func pack(_ group: GroupID, id: UUID, through: Int64, ciphertext: String) async throws -> Bool {
+        let data = try await send("rpc/pack_sync_group", method: "POST",
+                                  body: ["p_group": group.description, "p_id": id.uuidString, "p_through": through, "p_ciphertext": ciphertext])
+        return (try? JSONDecoder().decode(Bool.self, from: data)) ?? false
+    }
+
     // MARK: Receipt photos
 
     func hasReceipt(_ id: UUID) async throws -> Bool {

@@ -24,10 +24,22 @@ struct SupabaseConfig: Sendable {
     var authURL: URL { baseURL.appendingPathComponent("auth/v1") }
     var functionsURL: URL { baseURL.appendingPathComponent("functions/v1") }
 
+    /// The project the app uses now: the main one, or the spare when the server switch says
+    /// so (ServerSwitch).
     static var current: SupabaseConfig? {
+        ServerSwitch.current == .spare ? spare ?? main : main
+    }
+
+    static var main: SupabaseConfig? { make(hostKey: "TakaDeSupabaseHost", anonKey: "TakaDeSupabaseAnonKey") }
+    /// The spare project, refilled every night from the main one's backup. Nil when this
+    /// build has none.
+    static var spare: SupabaseConfig? { make(hostKey: "TakaDeSupabaseSpareHost", anonKey: "TakaDeSupabaseSpareAnonKey") }
+    static var spareConfigured: Bool { spare != nil }
+
+    private static func make(hostKey: String, anonKey: String) -> SupabaseConfig? {
         let info = Bundle.main.infoDictionary ?? [:]
-        let host = (info["TakaDeSupabaseHost"] as? String)?.trimmingCharacters(in: .whitespaces) ?? ""
-        let key = (info["TakaDeSupabaseAnonKey"] as? String)?.trimmingCharacters(in: .whitespaces) ?? ""
+        let host = (info[hostKey] as? String)?.trimmingCharacters(in: .whitespaces) ?? ""
+        let key = (info[anonKey] as? String)?.trimmingCharacters(in: .whitespaces) ?? ""
         // xcconfig treats "//" as a comment, so only the host is configured.
         guard !host.isEmpty, !key.isEmpty, !host.contains("/"), let url = URL(string: "https://\(host)") else { return nil }
         return SupabaseConfig(baseURL: url, anonKey: key,

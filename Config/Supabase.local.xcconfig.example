@@ -4,3 +4,5 @@
 // The host is already set in TakaDe.xcconfig; override it here only for another project.
 // TAKADE_SUPABASE_HOST = abcdefghijkl.supabase.co
 TAKADE_SUPABASE_ANON_KEY = paste-the-anon-public-key-here
+// The spare project's anon (public) key, once the spare exists (docs/adr/0034-packed-changes-and-backups.md).
+// TAKADE_SUPABASE_SPARE_ANON_KEY = paste-the-spare-anon-public-key-here
