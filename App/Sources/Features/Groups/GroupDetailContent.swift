@@ -25,12 +25,14 @@ struct GroupDetailContent: View {
     @State private var editing: Expense?
     @State private var editingPayment: Settlement?
     @State private var errorMessage: String?
+    @State private var refresh = LogoRefreshState()
     @State private var confirmingDelete = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
+                LogoRefreshHeader(state: refresh, color: .ink)
                 GroupHeader(group: group, myNet: model.myNet(in: group), onAddExpense: addExpense) {
                     SyncStatusLabel(groupID: group.id)
                 }
@@ -50,6 +52,7 @@ struct GroupDetailContent: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .logoRefreshable(state: refresh) { await sync.sync(group.id) }
         .background(alignment: .top) { TexturedBackground(base: GroupTint.color(for: group)).frame(height: 480).ignoresSafeArea() }
         // The sheet ends with its content; the lines carry on to the bottom of the screen.
         .background(TexturedBackground().ignoresSafeArea())
@@ -106,7 +109,6 @@ struct GroupDetailContent: View {
         .sheet(isPresented: $addingTakaDeUser) {
             AddTakaDeUserSheet(group: group)
         }
-        .refreshable { await sync.sync(group.id) }
         // While a shared group is open, others' changes show up within about 20 seconds.
         .onAppear { notifications.visibleGroup = group.id }
         .onDisappear { if notifications.visibleGroup == group.id { notifications.visibleGroup = nil } }

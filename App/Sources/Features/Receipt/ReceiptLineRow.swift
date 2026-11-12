@@ -2,7 +2,8 @@ import SwiftUI
 import TakaDeCore
 
 /// One line read from a receipt: the words as printed, and the amount. Discounts show
-/// as a minus. The label is the receipt's own text, so it isn't translated.
+/// as a minus. The label and amount are the receipt's own English text and digits, so they aren't
+/// translated; only the labels around them follow the app language.
 struct ReceiptLineRow: View {
     let line: ReceiptLine
 
@@ -17,7 +18,9 @@ struct ReceiptLineRow: View {
                 }
             }
             Spacer(minLength: Spacing.s)
+            // The receipt itself stays in English, digits too, so it matches the paper.
             AmountText(money: line.kind == .discount ? line.amount.negated : line.amount, size: .body)
+                .environment(\.locale, Locale(identifier: "en"))
         }
         .accessibilityElement(children: .combine)
     }

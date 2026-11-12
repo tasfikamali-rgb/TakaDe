@@ -11,7 +11,10 @@ enum ReceiptTextRecognizer {
                 let request = VNRecognizeTextRequest()
                 request.recognitionLevel = .accurate
                 request.usesLanguageCorrection = false
-                request.automaticallyDetectsLanguage = true
+                // Receipts are read as English (Sabit, 2026-11-12): printed receipts here are
+                // English, and the text is kept exactly as printed, never translated.
+                request.recognitionLanguages = ["en-US"]
+                request.automaticallyDetectsLanguage = false
                 let handler = VNImageRequestHandler(cgImage: image)
                 try handler.perform([request])
                 let observations = request.results ?? []
