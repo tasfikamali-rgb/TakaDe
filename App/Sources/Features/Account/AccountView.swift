@@ -45,6 +45,7 @@ struct AccountView: View {
                 }
             }
             if account.isSignedIn {
+                if account.signInEnded { signInAgainSection }
                 if account.usesAccountService { friendIDSection }
                 signedInSections
             } else {
@@ -145,6 +146,18 @@ struct AccountView: View {
             Button("Sign out", action: signOut)
         } footer: {
             Text("To delete your account or your data, open Settings.")
+                .foregroundStyle(Color.inkMuted)
+        }
+    }
+
+    private var signInAgainSection: some View {
+        Section {
+            Button("Sign in again") { flow = .signIn }
+                .buttonStyle(PillButtonStyle())
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+        } footer: {
+            Text("Your sign-in on this phone ended. Sign in again with the same method to use TakaDe IDs, chats and shared groups. Nothing on this phone is lost.")
                 .foregroundStyle(Color.inkMuted)
         }
     }

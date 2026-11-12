@@ -192,7 +192,7 @@ final class SocialModel {
     @discardableResult
     func add(code: FriendCode, name: String?, key known: Curve25519.KeyAgreement.PublicKey? = nil,
              namedByMe: Bool = true) async throws -> Friend {
-        guard let user = friends.userID else { throw Friends.Failure.notSignedIn }
+        guard let user = friends.userID else { throw friends.signedOut }
         let key: Curve25519.KeyAgreement.PublicKey
         if let known { key = known } else { key = try await friends.lookUp(code) }
         let publicKey = key.rawRepresentation.base64URLEncoded
@@ -291,7 +291,7 @@ final class SocialModel {
 
     /// Stops their messages: the server drops what they send, and it isn't told to them.
     func block(_ friend: Friend) async throws {
-        guard let supabase = account.supabase else { throw Friends.Failure.notSignedIn }
+        guard let supabase = account.supabase else { throw friends.signedOut }
         _ = try await friends.call {
             try await supabase.rest("rpc/block_friend", method: "POST", body: ["p_code": friend.code.raw])
         }
@@ -303,7 +303,7 @@ final class SocialModel {
     }
 
     func unblock(_ friend: Friend) async throws {
-        guard let supabase = account.supabase else { throw Friends.Failure.notSignedIn }
+        guard let supabase = account.supabase else { throw friends.signedOut }
         _ = try await friends.call {
             try await supabase.rest("rpc/unblock_friend", method: "POST", body: ["p_code": friend.code.raw])
         }
@@ -392,11 +392,12 @@ final class SocialModel {
     /// True when the server took it; false when no account has their ID any more.
     @discardableResult
     private func deliver(_ envelope: FriendEnvelope, to friend: Friend) async throws -> Bool {
-        guard let supabase = account.supabase, let user = friends.userID,
-              let mine = friends.privateKey(for: user, creating: false),
+        guard let supabase = account.supabase, let user = friends.userID else { throw friends.signedOut }
+        // A missing key or a bad one on their ID is not a sign-in problem; don't say it is.
+        guard let mine = friends.privateKey(for: user, creating: false),
               let raw = Data(base64URLEncoded: friend.publicKey),
               let theirs = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: raw) else {
-            throw Friends.Failure.notSignedIn
+            throw Friends.Failure.server
         }
         let sealed = try Self.seal(JSONEncoder().encode(envelope), to: theirs, from: mine)
         let data = try await friends.call {

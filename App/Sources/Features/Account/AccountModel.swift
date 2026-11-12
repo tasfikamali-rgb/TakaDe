@@ -50,6 +50,12 @@ final class AccountModel {
     var needsOnboarding: Bool { isLoaded && profile == nil }
     var account: LinkedAccount? { profile?.account }
     var isSignedIn: Bool { profile?.isSignedIn ?? false }
+    /// The phone still shows a TakaDe account, but its sign-in to the service has ended, so
+    /// TakaDe IDs, chats and shared groups can't reach the server until the person signs in again.
+    var signInEnded: Bool {
+        guard let supabase, profile?.accountID != nil else { return false }
+        return supabase.session == nil
+    }
     /// True when accounts live on the sign-in service rather than on this phone only.
     var usesAccountService: Bool { supabase != nil }
 
