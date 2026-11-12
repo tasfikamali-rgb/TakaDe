@@ -98,7 +98,7 @@ Neutral ramp plus one accent (Sabit asked for minimal, 2026-11-12). Surfaces sta
 | `surfaceRaised` | `#F0F0EE` | `#26262A` | Card within a card |
 | `surfaceMine` | `#DFE7EF` | `#1F2933` | Your own cards in Activity (soft accent tint) |
 | `ink` / `onHeader` | `#1A1A1A` | `#F2F2F0` | Primary text |
-| `inkMuted` | `#545451` | `#AEAEAA` | Secondary text and decimals. At least 5.8:1 on every surface, measured with a texture line behind it: the accessibility audit samples real pixels, and small grey text over the lines failed at the earlier `#5E5E5B` / `#A0A09C` (2026-11-12) |
+| `inkMuted` | `#4A4A47` | `#B8B8B4` | Secondary text, section headers and decimals. At least 7.5:1 on every surface. The accessibility audit samples real pixels of small anti-aliased text, and section headers like "LANGUAGE" still failed at `#545451` / `#AEAEAA` (2026-11-12) |
 | `lime` (accent) | `#2B5D8A` | `#7AAAD6` | Selected tab, main buttons. The token keeps its old name; it is a muted blue now. Never body text |
 | `onLime` | `#FFFFFF` | `#0D1B28` | Text and icons on the accent (about 7:1) |
 | `lilac` | `#ECEEF1` | `#25272B` | Neutral header tint for forms and groups without a color |
