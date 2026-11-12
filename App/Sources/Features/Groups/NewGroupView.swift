@@ -59,6 +59,7 @@ struct NewGroupView: View {
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { scroller in
             AppForm {
                 coverSection
                 kindSection
@@ -70,6 +71,15 @@ struct NewGroupView: View {
                 }
             }
             .readableWidth()
+            // The search box moves to the top while it's used, so its matches show above
+            // the keyboard instead of under it.
+            .onChange(of: focus) { _, field in
+                if field == .search { scrollToSearch(scroller) }
+            }
+            .onChange(of: query) { _, _ in
+                if focus == .search { scrollToSearch(scroller) }
+            }
+            }
             .task { await loadContactNames() }
             .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
             .sheet(isPresented: $scanning) { QRScannerSheet(onScan: scanned) }
@@ -254,6 +264,7 @@ struct NewGroupView: View {
                 }
             }
             .disabled(made != nil)
+            .id(Self.searchRow)
             ForEach(results) { result in
                 Button { add(result) } label: {
                     HStack(spacing: Spacing.s) {
@@ -310,6 +321,16 @@ struct NewGroupView: View {
     }
 
     // MARK: Search
+
+    private static let searchRow = "newGroup.searchRow"
+
+    private func scrollToSearch(_ scroller: ScrollViewProxy) {
+        // After the keyboard has started to rise, so the list knows its new height.
+        Task {
+            try? await Task.sleep(for: .milliseconds(300))
+            withAnimation(Motion.standard) { scroller.scrollTo(Self.searchRow, anchor: .top) }
+        }
+    }
 
     private struct Match: Identifiable {
         let id: String
