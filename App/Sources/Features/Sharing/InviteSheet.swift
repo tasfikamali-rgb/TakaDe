@@ -72,8 +72,11 @@ struct InviteSheet: View {
     }
 
     /// The whole message is shared and copied, so a pasted message still carries the link.
-    private func message(for url: URL) -> String {
-        String(localized: "Join \(group.name) on TakaDe to see and add our shared expenses: \(url.absoluteString)\n\nIf the link doesn't open, copy this message, open TakaDe and tap Join with a link.", bundle: .appLanguage)
+    private func message(for url: URL) -> String { Self.message(groupName: group.name, url: url) }
+
+    /// Also the body of an email invite from the new-group screen.
+    static func message(groupName: String, url: URL) -> String {
+        String(localized: "Join \(groupName) on TakaDe to see and add our shared expenses: \(url.absoluteString)\n\nIf the link doesn't open, copy this message, open TakaDe and tap Join with a link.", bundle: .appLanguage)
     }
 
     private func make() {

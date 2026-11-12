@@ -171,7 +171,7 @@ struct ContactSearchSheet: View {
     }
 
     /// The picked people's photos and numbers, by contact identifier.
-    nonisolated private static func readDetails(of identifiers: [String], from store: CNContactStore) -> [String: PickedContact] {
+    nonisolated static func readDetails(of identifiers: [String], from store: CNContactStore) -> [String: PickedContact] {
         guard !identifiers.isEmpty else { return [:] }
         let keys: [CNKeyDescriptor] = [
             CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
@@ -188,7 +188,7 @@ struct ContactSearchSheet: View {
 
     /// Names only for the list: no numbers, photos, emails or other fields are read. People whose names break the
     /// name rule (emoji, symbols) are left out, since they couldn't be added anyway.
-    nonisolated private static func readNames(from store: CNContactStore) -> [Entry] {
+    nonisolated static func readNames(from store: CNContactStore) -> [Entry] {
         let keys: [CNKeyDescriptor] = [
             CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
             CNContactOrganizationNameKey as CNKeyDescriptor,
