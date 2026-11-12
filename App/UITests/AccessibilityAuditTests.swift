@@ -52,28 +52,6 @@ final class AccessibilityAuditTests: XCTestCase {
         XCTAssertTrue(sheetBar.exists, "The New group sheet closed during the audit")
     }
 
-    /// Temporary diagnostic: Settings with the notifications switch on (accent track). If the
-    /// unnamed contrast count drops by one, the off switch's grey track is one of them.
-    /// Remove once known.
-    @MainActor
-    func testSettingsWithNotificationsOn() throws {
-        let app = launch()
-        completeOnboardingIfNeeded(app)
-        app.buttons["Account"].firstMatch.tap()
-        app.buttons["Settings"].firstMatch.tap()
-        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
-        let toggle = app.switches["Changes in shared groups"]
-        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
-        toggle.switches.firstMatch.exists ? toggle.switches.firstMatch.tap() : toggle.tap()
-        // iOS asks for notification permission the first time.
-        let allow = XCUIApplication(bundleIdentifier: "com.apple.springboard").buttons["Allow"]
-        if allow.waitForExistence(timeout: 5) { allow.tap() }
-        let on = NSPredicate(format: "value == '1'")
-        expectation(for: on, evaluatedWith: toggle)
-        waitForExpectations(timeout: 5)
-        try audit(app)
-    }
-
     @MainActor
     func testSettingsScreen() throws {
         let app = launch()
