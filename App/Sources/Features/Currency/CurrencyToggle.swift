@@ -38,8 +38,12 @@ struct CurrencyToggle: View {
     private func segment(code: String, selected: Bool, showsChevron: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: Spacing.xxs) {
-                Text(verbatim: CurrencyCatalog.symbol(code))
-                    .font(code == Currency.bdt.code ? AppFont.figures(15, .semibold, relativeTo: .subheadline, bengali: true) : AppFont.label)
+                // Flag and code (🇧🇩 BDT, 🇬🇧 GBP); the sign (৳, £) shows on the amount itself.
+                if let flag = CurrencyCatalog.flag(code) {
+                    Text(verbatim: flag).font(.system(size: 15)).accessibilityHidden(true)
+                } else {
+                    Text(verbatim: CurrencyCatalog.symbol(code)).font(AppFont.label)
+                }
                 Text(verbatim: code)
                     .font(AppFont.label)
                 if showsChevron {
