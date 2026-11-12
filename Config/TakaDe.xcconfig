@@ -28,7 +28,7 @@ TAKADE_EMAIL_SIGN_IN = NO
 // public switch file that says which one to use (docs/adr/0034-packed-changes-and-backups.md).
 // Host and file address without https:// (// starts a comment here). Empty: no spare, the
 // app always uses the main project. The spare's anon key goes in Supabase.local.xcconfig.
-TAKADE_SUPABASE_SPARE_HOST =
+TAKADE_SUPABASE_SPARE_HOST = luvqbyikhonhcydafiia.supabase.co
 TAKADE_SUPABASE_SPARE_ANON_KEY =
 TAKADE_SERVER_SWITCH_URL =
 
