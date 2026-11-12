@@ -11544,6 +11544,57 @@
           }
         }
       }
+    },
+    "Added": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যোগ হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added"
+          }
+        }
+      }
+    },
+    "%@ wasn't added. Names can't have emoji, numbers or symbols.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ যোগ হয়নি। নামে ইমোজি, সংখ্যা বা চিহ্ন থাকতে পারবে না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wasn't added. Names can't have emoji, numbers or symbols."
+          }
+        }
+      }
+    },
+    "%@ is in the group, but their invite didn't go: %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ গ্রুপে আছেন, কিন্তু তাদের আমন্ত্রণ যায়নি: %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is in the group, but their invite didn't go: %@"
+          }
+        }
+      }
     }
   }
 }

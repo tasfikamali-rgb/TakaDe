@@ -17,8 +17,6 @@ struct GroupDetailContent: View {
     @State private var showingInvite = false
     @State private var addingTakaDeUser = false
     @State private var pickingContacts = false
-    @State private var newMemberName = ""
-    @State private var duplicateMember: String?
     @State private var paymentMember: Member?
     @State private var removingMember: Member?
     @State private var recentlyDeleted: Expense?
@@ -154,28 +152,7 @@ struct GroupDetailContent: View {
             Button("Yes", role: .destructive, action: deleteGroup)
             Button("No", role: .cancel) {}
         }
-        .alert("Add a person", isPresented: $showingAddMember) {
-            TextField("Name", text: $newMemberName)
-            Button("Add", action: checkNewMember)
-            Button("Cancel", role: .cancel) { newMemberName = "" }
-        }
-        .confirmationDialog(
-            Text("Someone here is already called \(duplicateMember ?? "")"),
-            isPresented: Binding(get: { duplicateMember != nil }, set: { if !$0 { duplicateMember = nil } }),
-            titleVisibility: .visible
-        ) {
-            Button("Add anyway", action: addMember)
-            Button("Change the name") {
-                duplicateMember = nil
-                showingAddMember = true
-            }
-            Button("Cancel", role: .cancel) {
-                duplicateMember = nil
-                newMemberName = ""
-            }
-        } message: {
-            Text("Add something to tell them apart, like an initial.")
-        }
+        .sheet(isPresented: $showingAddMember) { AddPeopleSheet(group: group).rebuildsOnDynamicType() }
         .task(id: app.revision) { await model.load(group, from: app) }
     }
 
@@ -247,37 +224,6 @@ struct GroupDetailContent: View {
         paymentMember = member
     }
 
-    /// Same check as a new group: a name already in the group, ignoring case and spaces,
-    /// gets a warning. Both are allowed, and the name is never changed.
-    private func checkNewMember() {
-        let name = newMemberName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !name.isEmpty else { newMemberName = ""; return }
-        if let problem = NameRule.message(for: name) {
-            errorMessage = problem
-            newMemberName = ""
-            return
-        }
-        let taken = group.members.contains {
-            $0.displayName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name.lowercased()
-        }
-        if taken { duplicateMember = name } else { addMember() }
-    }
-
-    private func addMember() {
-        let name = newMemberName.trimmingCharacters(in: .whitespacesAndNewlines)
-        newMemberName = ""
-        duplicateMember = nil
-        guard !name.isEmpty else { return }
-        Task {
-            do {
-                try await app.addMember(named: name, to: group)
-                errorMessage = nil
-            } catch {
-                errorMessage = String(localized: "\(name) wasn't added. Try again.", bundle: .appLanguage)
-            }
-        }
-    }
-
     /// Adds everyone picked, with their contact photo and mobile number. Someone already in
     /// the group, by the same name ignoring case and spaces, is left out and named in a note,
     /// so a double tap doesn't add them twice.
@@ -303,7 +249,7 @@ struct GroupDetailContent: View {
             if !skipped.isEmpty {
                 errorMessage = String(localized: "\(skipped.formatted(.list(type: .and))) is already in this group.", bundle: .appLanguage)
             } else if !notNames.isEmpty {
-                errorMessage = String(localized: "\(notNames.formatted(.list(type: .and))) wasn't added. Names can't have emoji, numbers or symbols. Add them with Type a name.", bundle: .appLanguage)
+                errorMessage = String(localized: "\(notNames.formatted(.list(type: .and))) wasn't added. Names can't have emoji, numbers or symbols.", bundle: .appLanguage)
             } else {
                 errorMessage = nil
             }

@@ -15,7 +15,7 @@ struct MemberBalancesCard: View {
     var body: some View {
         SectionCard(title: "Balances") {
             Menu {
-                Button("Type a name", systemImage: "character.cursor.ibeam", action: onAddMember)
+                Button("Search friends and contacts", systemImage: "magnifyingglass", action: onAddMember)
                 Button("From contacts", systemImage: "person.crop.circle", action: onAddFromContacts)
                 if let onAddTakaDeUser {
                     Button("TakaDe ID or QR code", systemImage: "qrcode", action: onAddTakaDeUser)
