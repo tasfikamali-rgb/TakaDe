@@ -124,6 +124,7 @@ final class AccessibilityAuditTests: XCTestCase {
     @MainActor
     private func audit(_ app: XCUIApplication, for types: XCUIAccessibilityAuditType = .all,
                        ignoringContrastAbove sheetTop: CGFloat? = nil) throws {
+        var savedScreenshot = false
         try app.performAccessibilityAudit(for: types) { issue in
             let label = issue.element?.label ?? "(no element)"
             if issue.auditType == .contrast, let sheetTop, let element = issue.element,
@@ -138,6 +139,15 @@ final class AccessibilityAuditTests: XCTestCase {
                     print("Ignored system navigation-bar audit issue: \(issue.compactDescription) on \(label)")
                     return true
                 }
+            }
+            // The audit sometimes names no element. Keep one screenshot per audit so CI
+            // can show where the issue is (printed only when the tests fail).
+            if issue.element == nil, !savedScreenshot {
+                savedScreenshot = true
+                let shot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+                shot.name = "audit-\(self.name)-\(issue.compactDescription)"
+                shot.lifetime = .keepAlways
+                self.add(shot)
             }
             // Report each issue with the element it's on, so CI logs say what to fix.
             let type = issue.element.map { String(describing: $0.elementType) } ?? "?"

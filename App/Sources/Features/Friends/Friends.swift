@@ -144,17 +144,55 @@ final class Friends {
 
     // MARK: Receiving
 
+    @ObservationIgnored private var watching: Task<Void, Never>?
+    /// The invite in the join sheet now, and ones closed with Cancel while the app stayed open.
+    @ObservationIgnored private var offered: UUID?
+    @ObservationIgnored private var snoozed: Set<UUID> = []
+
+    /// The join sheet closed. Joined or declined invites are already gone from the server;
+    /// one closed with Cancel isn't offered again until the app is next opened.
+    func offerClosed() async {
+        if let offered { snoozed.insert(offered) }
+        offered = nil
+        await checkInbox()
+    }
+
+    static let checkEvery: Duration = .seconds(15)
+
+    /// While the app is open: publishes this device's key once (so senders seal to a key it
+    /// has), then looks for invites every 15 seconds. A plain request each time, with no
+    /// always-on connection, so it stays within the free plan. Stops in the background.
+    func startWatching() {
+        guard watching == nil else { return }
+        // Invites put off with Cancel come back the next time the app is opened.
+        snoozed = []
+        watching = Task { [weak self] in
+            if let self, self.isAvailable { try? await self.ensureID() }
+            while !Task.isCancelled {
+                guard let self else { return }
+                await self.checkInbox()
+                try? await Task.sleep(for: Self.checkEvery)
+            }
+        }
+    }
+
+    func stopWatching() {
+        watching?.cancel()
+        watching = nil
+    }
+
     /// Looks for invites left for this account and offers the first new one in the join
-    /// sheet. Runs at launch and when the app comes back.
+    /// sheet. Runs every 15 seconds while the app is open.
     func checkInbox() async {
         guard !checking, sync.pendingInvite == nil, let supabase = account.supabase, let user = userID,
               let key = privateKey(for: user, creating: false) else { return }
         checking = true
         defer { checking = false }
         struct Row: Decodable { let id: UUID; let sealed: String }
-        guard let data = try? await supabase.rest("friend_invite?select=id,sealed&order=created_at.asc&limit=20", method: "GET"),
+        guard let data = try? await supabase.rest("friend_invite?select=id,sealed&order=created_at.desc&limit=50", method: "GET"),
               let rows = try? JSONDecoder().decode([Row].self, from: data) else { return }
-        for row in rows {
+        if !rows.isEmpty { await sync.loadStates() }
+        for row in rows where !snoozed.contains(row.id) {
             guard let plain = try? Self.open(row.sealed, with: key),
                   let payload = try? JSONDecoder().decode(FriendInvitePayload.self, from: plain),
                   // Anyone who knows this account's ID can leave an invite, so its names are
@@ -162,8 +200,9 @@ final class Friends {
                   payload.fromName.count <= SyncLimits.maxPersonNameLength,
                   payload.groupName.count <= SyncLimits.maxGroupNameLength, payload.link.count <= 1_000,
                   let url = URL(string: payload.link), let invite = GroupInvite(url: url) else {
-                // Sealed to a key this phone doesn't have, or damaged: it can never be opened here.
-                await remove(row.id)
+                // Not readable here: sealed to a key this device doesn't have yet (iCloud
+                // Keychain may still be bringing it over) or damaged. Left for the person's
+                // other device; the server drops it after 7 days.
                 continue
             }
             if sync.isShared(invite.groupID) {
@@ -171,6 +210,7 @@ final class Friends {
                 await remove(row.id)
                 continue
             }
+            offered = row.id
             sync.pendingInvite = PendingInvite(invite: invite, from: Received(id: row.id, payload: payload))
             return
         }
@@ -183,16 +223,29 @@ final class Friends {
 
     // MARK: Keys and sealing
 
+    /// The account's key, shared by the person's iPhone and iPad through iCloud Keychain, so
+    /// whichever device opens TakaDe can read what was sent. Before, each device made its
+    /// own key and the last one opened replaced the other's on the server, so invites and
+    /// messages sealed for one device were unreadable (and dropped) on the other.
     func privateKey(for user: String, creating: Bool) -> Curve25519.KeyAgreement.PrivateKey? {
         let name = "friend.key.\(user)"
-        if let text = KeychainStore.get(name), let raw = Data(base64URLEncoded: text),
-           let key = try? Curve25519.KeyAgreement.PrivateKey(rawRepresentation: raw) {
+        if let key = KeychainStore.getSynced(name).flatMap(Self.key(from:)) { return key }
+        // A key from an earlier version, on this device only: move it to the synced item.
+        if let key = KeychainStore.get(name).flatMap(Self.key(from:)) {
+            KeychainStore.setSynced(key.rawRepresentation.base64URLEncoded, for: name)
+            if KeychainStore.getSynced(name) != nil { KeychainStore.delete(name) }
             return key
         }
         guard creating else { return nil }
         let key = Curve25519.KeyAgreement.PrivateKey()
-        KeychainStore.set(key.rawRepresentation.base64URLEncoded, for: name)
+        KeychainStore.setSynced(key.rawRepresentation.base64URLEncoded, for: name)
+        // iCloud Keychain can refuse (rare); keep it on this device then.
+        if KeychainStore.getSynced(name) == nil { KeychainStore.set(key.rawRepresentation.base64URLEncoded, for: name) }
         return key
+    }
+
+    private static func key(from text: String) -> Curve25519.KeyAgreement.PrivateKey? {
+        Data(base64URLEncoded: text).flatMap { try? Curve25519.KeyAgreement.PrivateKey(rawRepresentation: $0) }
     }
 
     /// "v1." + encapsulated key + "." + ciphertext, both base64url.

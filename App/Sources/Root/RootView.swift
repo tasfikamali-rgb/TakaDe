@@ -106,7 +106,7 @@ struct RootView: View {
         // A tapped invite link. Waits until onboarding is done for someone new to TakaDe.
         // Next, any other invite friends sent by TakaDe ID.
         .sheet(item: Binding(get: { account.needsOnboarding ? nil : sync.pendingInvite }, set: { sync.pendingInvite = $0 }),
-               onDismiss: { Task { await friends.checkInbox() } }) { pending in
+               onDismiss: { Task { await friends.offerClosed() } }) { pending in
             JoinGroupSheet(invite: pending.invite, from: pending.from) { id in
                 tab = .home
                 model.requestedGroup = id
