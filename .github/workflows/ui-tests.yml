@@ -93,12 +93,14 @@ jobs:
         run: |
           xcrun xcresulttool get test-results summary --path build/UITests.xcresult --compact \
             | python3 scripts/ci/xcresult_failures.py
-          # Screens where the audit named no element, printed as small base64 PNGs so
+          # Screens where the audit named no element, printed full size as base64 PNGs so
           # they can be read from the log (artifact downloads aren't always available).
           mkdir -p build/audit-shots
           xcrun xcresulttool export attachments --path build/UITests.xcresult \
             --output-path build/audit-shots >/dev/null 2>&1 || true
-          scripts/ci/print_pngs.sh build/audit-shots
+          scripts/ci/print_pngs.sh build/audit-shots full
+          # Element trees saved next to those screenshots (labels and frames).
+          for t in build/audit-shots/*.txt; do [ -f "$t" ] && { echo "::group::Tree $(basename "$t")"; cat "$t"; echo "::endgroup::"; }; done
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
