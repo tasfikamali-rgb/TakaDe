@@ -3,11 +3,11 @@ import ContactsUI
 import SwiftUI
 
 /// Apple's contact picker. It runs outside the app, so TakaDe needs no Contacts permission
-/// and never sees the address book: only the people tapped come back, and only their
-/// names are kept, exactly as written in Contacts.
+/// and never sees the address book: only the people tapped come back. Their names are kept
+/// exactly as written in Contacts, with their photo and mobile number (see `PickedContact`).
 struct ContactPicker: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
-    let onPick: ([String]) -> Void
+    let onPick: ([PickedContact]) -> Void
 
     func makeUIViewController(context: Context) -> UIViewController { UIViewController() }
 
