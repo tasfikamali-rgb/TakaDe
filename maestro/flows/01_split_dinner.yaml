@@ -56,11 +56,20 @@ tags:
 - tapOn: "Done"
 - tapOn: "What was it for?"
 - inputText: "Dinner"
-# Close the keyboard first: a tap on Save while the predictions bar updates was
-# sometimes lost. "Dinner" is also in the open form, so wait for Settle up,
-# which only shows on the group page once the debt exists.
-- hideKeyboard
+# A tap on Save while the predictions bar updates was sometimes lost, so if the
+# sheet is still open, tap Save once more. "Dinner" is also in the open form, so
+# wait for Settle up, which only shows on the group page once the debt exists.
+# (hideKeyboard isn't used: iPad's keyboard can't always be hidden that way.)
 - tapOn: "Save"
+- extendedWaitUntil:
+    visible: "Settle up"
+    timeout: 8000
+    optional: true
+- runFlow:
+    when:
+      visible: "What was it for?"
+    commands:
+      - tapOn: "Save"
 - extendedWaitUntil:
     visible: "Settle up"
     timeout: 10000
