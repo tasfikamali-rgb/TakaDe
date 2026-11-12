@@ -26,9 +26,14 @@ Free plan only.
   `security definer` functions with an empty `search_path` and no dynamic SQL. Works the
   same whether `20261112030000_security_hardening.sql` runs before or after it.
 - **Latency:** the message appears in your chat at once and sends in the background.
-  Supabase Realtime pushes a "new row" event to the friend's open app (row-level security
-  applies), which then fetches straight away. No polling. With the app closed, messages wait
-  until it's opened: push notifications need an Apple Developer account and APNs, later.
+  A phone holds a Supabase Realtime connection only while a chat is on screen (Sabit,
+  2026-11-12, so the Free plan's 200 concurrent connections serve far more people). Then
+  Realtime pushes a "new row" event (row-level security applies) and the app fetches straight
+  away. Elsewhere, an open app checks for messages when it opens or comes back, when the
+  Social tab opens or is pulled down, and every 60 seconds while it stays in the foreground.
+  A message to someone not in that chat can therefore take up to a minute to show. With the
+  app closed, messages wait until it's opened: push notifications need an Apple Developer
+  account and APNs, later. Group sync and group notifications don't use Realtime at all.
 - **Typing:** while a chat is open, both phones join a Realtime broadcast channel named
   `typing-` + 16 bytes from HKDF over their shared X25519 secret. At most one signal every
   2.5 seconds while typing; the indicator hides after 6 seconds without one.

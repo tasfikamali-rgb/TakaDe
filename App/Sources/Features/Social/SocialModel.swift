@@ -29,12 +29,19 @@ final class SocialModel {
     @ObservationIgnored private let account: AccountModel
     @ObservationIgnored private let friends: Friends
     @ObservationIgnored private var realtime: RealtimeClient?
-    @ObservationIgnored private var realtimeUser: String?
+    @ObservationIgnored private var activeUser: String?
     @ObservationIgnored private var fetching = false
     @ObservationIgnored private var fetchAgain = false
     @ObservationIgnored private var typingExpiry: [UUID: Task<Void, Never>] = [:]
     @ObservationIgnored private var lastTypingSent: [UUID: Date] = [:]
     @ObservationIgnored private var typingTopics: [String: UUID] = [:]
+    /// The friend whose chat is on screen: the only time this phone keeps a live Realtime
+    /// connection (Sabit, 2026-11-12), so the Free plan's connection limit goes much further.
+    @ObservationIgnored private var liveChat: Friend?
+    @ObservationIgnored private var polling: Task<Void, Never>?
+
+    /// How often an open app checks for messages while no chat is on screen.
+    static let checkEvery: Duration = .seconds(60)
 
     private static let info = Data("takade.friend-message.v1".utf8)
     private static let inboxTopic = "inbox"
@@ -58,28 +65,80 @@ final class SocialModel {
     // MARK: Lifecycle
 
     /// At launch and whenever the app comes back: makes sure this account has an ID and key
-    /// (so friends can reach it), connects Realtime and collects waiting messages.
+    /// (so friends can reach it), collects waiting messages, and checks again every minute
+    /// while the app is open. A live connection is held only while a chat is on screen.
     func start() async {
         guard let user = friends.userID else {
             stop()
+            liveChat = nil
             people = []
             return
         }
-        if realtimeUser != user { stop() }
+        if activeUser != user {
+            stop()
+            liveChat = nil
+        }
+        activeUser = user
         await reload()
         if friends.myCode == nil { try? await friends.ensureID() }
-        connect(user: user)
+        // Back from the background with a chat still on screen: go live again.
+        if let liveChat { goLive(with: liveChat) }
         await fetchInbox()
         await resendPendingHellos()
+        startPolling()
     }
 
     /// When the app goes to the background. Messages wait on the server until it's back.
     func stop() {
+        polling?.cancel()
+        polling = nil
+        disconnect()
+    }
+
+    /// Called when a chat opens: connects Realtime so new messages and "typing…" arrive at
+    /// once, for as long as this chat is on screen.
+    func enterChat(_ friend: Friend) {
+        openChat = friend.id
+        liveChat = friend
+        goLive(with: friend)
+        Task { await fetchInbox() }
+    }
+
+    /// Called when a chat closes: drops the live connection; the app goes back to checking
+    /// every minute.
+    func leaveChat(_ friend: Friend) {
+        stoppedTyping(in: friend)
+        if openChat == friend.id { openChat = nil }
+        guard liveChat?.id == friend.id else { return }
+        liveChat = nil
+        disconnect()
+    }
+
+    private func goLive(with friend: Friend) {
+        guard let user = friends.userID else { return }
+        connect(user: user)
+        openTyping(with: friend)
+    }
+
+    private func disconnect() {
         realtime?.disconnect()
         realtime = nil
-        realtimeUser = nil
         typingTopics = [:]
+        for task in typingExpiry.values { task.cancel() }
+        typingExpiry = [:]
         typing = []
+    }
+
+    private func startPolling() {
+        guard polling == nil else { return }
+        polling = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: Self.checkEvery)
+                guard let self, !Task.isCancelled else { return }
+                // A live chat hears about new messages at once; no need to ask.
+                if self.realtime == nil { await self.fetchInbox() }
+            }
+        }
     }
 
     func reload() async {
@@ -99,7 +158,6 @@ final class SocialModel {
         client.listen(topic: Self.inboxTopic, table: "friend_message")
         client.connect()
         realtime = client
-        realtimeUser = user
     }
 
     private func handle(_ event: RealtimeClient.Event) {
@@ -286,7 +344,8 @@ final class SocialModel {
 
     /// Collects waiting messages, checks each against the sender's key, saves it, and
     /// deletes it from the server. Runs at launch, when the app comes back, when the Social
-    /// tab opens, and the moment Realtime says something arrived.
+    /// tab opens or is pulled down, every minute while the app is open, and the moment
+    /// Realtime says something arrived while a chat is on screen.
     func fetchInbox() async {
         guard !fetching else {
             fetchAgain = true
@@ -393,19 +452,11 @@ final class SocialModel {
 
     // MARK: Typing
 
-    /// Called when a chat opens: listens on the typing channel the two phones share.
-    func openTyping(with friend: Friend) {
+    /// Listens on the typing channel the two phones share.
+    private func openTyping(with friend: Friend) {
         guard let topic = typingTopic(with: friend) else { return }
         typingTopics[topic] = friend.id
         realtime?.joinBroadcast(topic: topic)
-    }
-
-    func closeTyping(with friend: Friend) {
-        stoppedTyping(in: friend)
-        guard let topic = typingTopic(with: friend) else { return }
-        typingTopics[topic] = nil
-        realtime?.leave(topic: topic)
-        hideTyping(friend.id)
     }
 
     /// While the person types: at most one signal every 2.5 seconds.
