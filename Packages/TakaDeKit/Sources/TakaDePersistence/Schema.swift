@@ -202,6 +202,12 @@ enum Schema {
                     .check { ["sending", "sent", "failed", "received"].contains($0) }
             }
         }
+        // Who made each group, so only they can delete it (docs/adr/0027-delete-groups.md).
+        migrator.registerMigration("v10_group_creator") { db in
+            try db.alter(table: "expense_group") { t in
+                t.add(column: "created_by", .text)
+            }
+        }
         return migrator
     }
 }

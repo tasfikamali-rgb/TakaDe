@@ -208,6 +208,8 @@ struct GroupPhotoPicker<Label: View>: View {
 
     @State private var item: PhotosPickerItem?
     @State private var choosing = false
+    /// The picked photo, waiting to be moved and zoomed into the cover frame.
+    @State private var cropping: PickedCover?
 
     var body: some View {
         Group {
@@ -225,8 +227,19 @@ struct GroupPhotoPicker<Label: View>: View {
             guard let picked else { return }
             Task {
                 defer { item = nil }
-                if let data = try? await picked.loadTransferable(type: Data.self) { onPick(data) }
+                if let data = try? await picked.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                    cropping = PickedCover(image: image)
+                }
             }
         }
+        .sheet(item: $cropping) { picked in
+            CoverCropView(image: picked.image, onUse: onPick)
+                .rebuildsOnDynamicType()
+        }
     }
+}
+
+private struct PickedCover: Identifiable {
+    let id = UUID()
+    let image: UIImage
 }
