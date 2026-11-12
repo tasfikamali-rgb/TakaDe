@@ -46,6 +46,9 @@ struct SwipeToConfirm: View {
                 .gesture(drag)
         }
         .frame(minHeight: height)
+        // Its own height only: in a bottom inset the capsule would otherwise take every
+        // point it's offered and cover the sheet. Still grows for two lines of large text.
+        .fixedSize(horizontal: false, vertical: true)
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { trackWidth = $0 }
         .sensoryFeedback(trigger: outcome) { _, new in
             guard let new else { return nil }
