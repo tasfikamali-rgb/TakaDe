@@ -37,7 +37,7 @@ struct AddPeopleSheet: View {
             AppForm {
                 Section {
                     HStack(spacing: Spacing.s) {
-                        Image(systemName: "magnifyingglass").foregroundStyle(Color.inkMuted).accessibilityHidden(true)
+                        Image(systemName: "magnifyingglass").foregroundStyle(Color.ink).accessibilityHidden(true)
                         TextField("Search friends and contacts", text: $query,
                                   prompt: Text("Search friends and contacts").foregroundStyle(Color.inkMuted))
                             .focused($searching)
@@ -94,7 +94,7 @@ struct AddPeopleSheet: View {
                             }
                         }
                     } header: {
-                        Text("Added").foregroundStyle(Color.inkMuted)
+                        Text("Added").formHeader()
                     }
                 }
             }
