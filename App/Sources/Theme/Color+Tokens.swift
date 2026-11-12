@@ -6,6 +6,9 @@ extension Color {
     static let canvas = Color("canvas")
     static let surface = Color("surface")
     static let surfaceRaised = Color("surfaceRaised")
+    /// Your own cards in Activity: a soft tint of the blue accent, so they stand apart from
+    /// the canvas and from friends' white cards in light mode (surfaceRaised blended in).
+    static let surfaceMine = Color("surfaceMine")
     static let ink = Color("ink")
     static let inkMuted = Color("inkMuted")
     static let header = Color("header")
