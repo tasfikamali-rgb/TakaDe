@@ -58,6 +58,10 @@ struct HomeView: View {
             syncPath(newValue)
             hideOverlaySidebar(newValue)
         }
+        // The open group was deleted (or all data was): show the list, not an empty group.
+        .onChange(of: model.groups.map(\.id)) { _, ids in
+            if let selection, !ids.contains(selection) { self.selection = nil }
+        }
         .onChange(of: path) { _, newValue in
             selection = newValue.last
             updateChrome()

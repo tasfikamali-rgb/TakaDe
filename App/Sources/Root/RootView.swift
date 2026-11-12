@@ -103,6 +103,11 @@ struct RootView: View {
         .googlePhotoOffer(when: !account.needsOnboarding)
         // A new or removed profile photo goes, sealed, to friends so their phones show it.
         .onChange(of: account.photoRevision) { Task { await social.shareProfile() } }
+        // After "Delete all my data" the app starts over like a first launch: on Groups,
+        // not on the tab (Account > Settings) that was open when the data was deleted.
+        .onChange(of: account.needsOnboarding) { _, needsOnboarding in
+            if needsOnboarding { tab = .home }
+        }
         .fullScreenCover(isPresented: Binding(get: { account.needsOnboarding }, set: { _ in })) {
             OnboardingView().rebuildsOnDynamicType()
         }
