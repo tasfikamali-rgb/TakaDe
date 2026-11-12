@@ -181,7 +181,7 @@ struct ActivityBubble: View {
         }
         .padding(.horizontal, Spacing.m)
         .padding(.vertical, Spacing.s)
-        .background(shape.fill(item.isMine ? Color.surfaceRaised : Color.surface))
+        .background(shape.fill(item.isMine ? Color.surfaceMine : Color.surface))
         .overlay {
             if isNew { shape.strokeBorder(Color.lime.opacity(0.55), lineWidth: 1) }
         }
