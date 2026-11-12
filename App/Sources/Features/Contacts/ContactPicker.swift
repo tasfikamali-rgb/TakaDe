@@ -28,7 +28,7 @@ struct ContactPicker: UIViewControllerRepresentable {
 
         // Implementing the plural form turns on picking several people at once.
         func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
-            let names = contacts.compactMap(Self.name(of:))
+            let names = contacts.compactMap(ContactName.of)
             parent.isPresented = false
             parent.onPick(names)
         }
@@ -36,21 +36,24 @@ struct ContactPicker: UIViewControllerRepresentable {
         func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
             parent.isPresented = false
         }
+    }
+}
 
-        /// The name as Contacts shows it, without any change of spelling or script.
-        static func name(of contact: CNContact) -> String? {
-            let formatted: String?
-            if contact.areKeysAvailable([CNContactFormatter.descriptorForRequiredKeys(for: .fullName)]) {
-                formatted = CNContactFormatter.string(from: contact, style: .fullName)
-            } else {
-                let parts = [CNContactGivenNameKey, CNContactFamilyNameKey].filter(contact.isKeyAvailable).map {
-                    $0 == CNContactGivenNameKey ? contact.givenName : contact.familyName
-                }
-                formatted = parts.filter { !$0.isEmpty }.joined(separator: " ")
+/// How a contact's name is read, shared by both pickers.
+enum ContactName {
+    /// The name as Contacts shows it, without any change of spelling or script.
+    static func of(_ contact: CNContact) -> String? {
+        let formatted: String?
+        if contact.areKeysAvailable([CNContactFormatter.descriptorForRequiredKeys(for: .fullName)]) {
+            formatted = CNContactFormatter.string(from: contact, style: .fullName)
+        } else {
+            let parts = [CNContactGivenNameKey, CNContactFamilyNameKey].filter(contact.isKeyAvailable).map {
+                $0 == CNContactGivenNameKey ? contact.givenName : contact.familyName
             }
-            if let name = formatted?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty { return name }
-            if contact.isKeyAvailable(CNContactOrganizationNameKey), !contact.organizationName.isEmpty { return contact.organizationName }
-            return nil
+            formatted = parts.filter { !$0.isEmpty }.joined(separator: " ")
         }
+        if let name = formatted?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty { return name }
+        if contact.isKeyAvailable(CNContactOrganizationNameKey), !contact.organizationName.isEmpty { return contact.organizationName }
+        return nil
     }
 }

@@ -16,6 +16,71 @@ final class SQLiteLedgerRepositoryTests: XCTestCase {
         XCTAssertEqual(loaded?.name, "Cox's Bazar trip")
     }
 
+    func testNicknameRoundTripsAndNeverChangesTheName() async throws {
+        let repo = try SQLiteLedgerRepository()
+        var group = ExpenseGroup(name: "Flat", members: [Member(displayName: "Sabit", isMe: true), Member(displayName: "Rishan Ahmed")])
+        try await repo.save(group, actor: group.members[0].id)
+        group.members[1].nickname = "Rishu"
+        try await repo.save(group, actor: group.members[0].id)
+        let loaded = try await repo.group(group.id)
+        XCTAssertEqual(loaded?.members[1].nickname, "Rishu")
+        XCTAssertEqual(loaded?.members[1].displayName, "Rishan Ahmed")
+        XCTAssertEqual(loaded?.members[1].shownName, "Rishu")
+        XCTAssertNil(loaded?.members[0].nickname)
+        XCTAssertEqual(loaded?.members[0].shownName, "Sabit")
+
+        group.members[1].nickname = nil
+        try await repo.save(group, actor: group.members[0].id)
+        let cleared = try await repo.group(group.id)
+        XCTAssertNil(cleared?.members[1].nickname)
+    }
+
+    func testGroupAccentRoundTrips() async throws {
+        let repo = try SQLiteLedgerRepository()
+        var group = ExpenseGroup(name: "Sajek", members: [Member(displayName: "Sabit", isMe: true), Member(displayName: "Zawad")])
+        try await repo.save(group, actor: group.members[0].id)
+        let plain = try await repo.group(group.id)
+        XCTAssertNil(plain?.accentHex)
+        group.accentHex = "#2E7D5B"
+        try await repo.save(group, actor: group.members[0].id)
+        let tinted = try await repo.group(group.id)
+        XCTAssertEqual(tinted?.accentHex, "#2E7D5B")
+    }
+
+    func testRemovingAMemberOnlyWhileNothingMentionsThem() async throws {
+        let repo = try SQLiteLedgerRepository()
+        let me = Member(displayName: "Sabit", isMe: true)
+        let zawad = Member(displayName: "Zawad")
+        let rishan = Member(displayName: "Rishan")
+        let group = ExpenseGroup(name: "Flat", members: [me, zawad, rishan])
+        try await repo.save(group, actor: me.id)
+        let dinner = try Expense(groupID: group.id, title: "Dinner", total: Money(minorUnits: 600, currency: group.currency),
+                                 paidBy: [me.id: Money(minorUnits: 600, currency: group.currency)], splitRule: .equal([me.id, rishan.id]))
+        try await repo.save(dinner, actor: me.id)
+
+        // Zawad was added by mistake and is in nothing: removed.
+        try await repo.removeMember(zawad.id, from: group.id, actor: me.id)
+        let afterRemove = try await repo.group(group.id)
+        XCTAssertEqual(afterRemove?.members.map(\.displayName), ["Sabit", "Rishan"])
+
+        // Rishan is in an expense, even a deleted one: kept.
+        try await repo.delete(dinner.id, actor: me.id)
+        do {
+            try await repo.removeMember(rishan.id, from: group.id, actor: me.id)
+            XCTFail("Rishan is in an expense")
+        } catch let error as MemberRemovalError {
+            XCTAssertEqual(error, .hasEntries)
+        }
+        do {
+            try await repo.removeMember(me.id, from: group.id, actor: me.id)
+            XCTFail("Can't remove yourself")
+        } catch let error as MemberRemovalError {
+            XCTAssertEqual(error, .isMe)
+        }
+        let kept = try await repo.group(group.id)
+        XCTAssertEqual(kept?.members.count, 2)
+    }
+
     func testSimplifyDebtsSettingRoundTrips() async throws {
         let repo = try SQLiteLedgerRepository()
         var group = makeGroup()

@@ -1,7 +1,7 @@
 # Testing TakaDe
 
 You don't need a simulator on your Mac to see the app working. Every pull request runs
-the checks below on GitHub's Mac machines, in parallel, and posts screenshots.
+the checks below on GitHub's Mac machines, in parallel, and reports pass or fail.
 
 ## When things run
 
@@ -11,7 +11,7 @@ minutes 10×, so only the cheap checks run on every push:
 - **Every push to a PR:** ledger/storage tests, store-readiness and adaptive-layout
   checks, app build.
 - **On merge to `main`, by hand, or when a PR gets the `ui-tests` label:**
-  accessibility audit, Maestro flows and screenshots, iPhone Duo.
+  accessibility audit, Maestro flows, iPhone Duo.
 
 ## What runs
 
@@ -25,12 +25,13 @@ minutes 10×, so only the cheap checks run on every push:
 | Rotation keeps state | `UI flows…` / `03_resize_keeps_state` | The open group survives a width change (rotation stands in for folding) |
 | iPhone Duo | `UI flows…` / iPhone Duo | Runs the flows on the iPhone Duo simulator on the newest runner Xcode. If the runner has no such simulator, the job says **NOT TESTED** in its summary instead of passing silently. Folded/unfolded poses are switched in Xcode's Device Hub, so the second pose is a manual check for now |
 | Onboarding and delete-all-data | `UI flows…` / `subflows/onboarding`, `04_delete_all_data` | Every flow starts with first-launch onboarding; deleting all data returns to onboarding with no groups left. Delete account (signed in) needs a test Apple/Google account and is checked by hand |
-| UI flows + screenshots | `UI flows and screenshots` | Creates a group, adds an expense with the keypad, opens settle up, switches language; on iPhone 16 and iPad Pro 13-inch, light and dark |
+| UI flows | `UI flows and screenshots` | Creates a group, adds an expense with the keypad, opens settle up, switches language; on iPhone 16 and iPad Pro 13-inch, light and dark |
 
-### Getting the screenshots
+### When a flow fails
 
-Open the pull request → **Checks** → *UI flows and screenshots* → **Summary** → scroll to
-**Artifacts** → download `screenshots-iphone-16` or `screenshots-ipad-pro-13-inch`.
+The flows don't take routine screenshots (Sabit's call: results only). On a failure the
+job uploads `maestro-debug-<device>` under **Artifacts**, with Maestro's own failure
+screenshot and logs, and prints the text that was on screen.
 
 ### Speed
 
@@ -41,6 +42,19 @@ Open the pull request → **Checks** → *UI flows and screenshots* → **Summar
 
 GitHub bills macOS minutes at 10× Linux minutes on private repositories. If the free
 allowance runs low, the UI-flows workflow can be limited to `workflow_dispatch` (run by hand).
+
+## Codemagic (free alternative when GitHub minutes run out)
+
+`codemagic.yaml` runs the same checks on Codemagic's Mac minis. A **personal**
+Codemagic account gets 500 free macOS M2 minutes a month, reset on the 1st (teams get
+none). GitHub's free plan gives a private repo the equivalent of 200 macOS minutes.
+
+- `checks` (every PR update and push): ledger tests, store and layout checks, app build.
+- `ui-tests` (push to `main`, or **Start new build** in Codemagic): accessibility audit,
+  Maestro flows on iPhone and iPad in light and dark. Failure output is under the build's **Artifacts**.
+
+To turn it on: sign in at codemagic.io with GitHub on a personal account, add the
+TakaDe repo, and pick "codemagic.yaml" as the configuration. No secrets are needed.
 
 ## Trying it on your own iPhone, today, with no download
 
@@ -74,7 +88,7 @@ so the same journeys gate both platforms.
 Automated checks reduce rejections; they don't guarantee approval. Things only a person
 can do, re-checked at submission time against Apple's and Google's current rules:
 
-- [ ] App icon and store screenshots (the CI screenshots are a starting point).
+- [ ] App icon and store screenshots .
 - [ ] App Store privacy label and Play Data safety form match the privacy manifest.
 - [ ] Export compliance answer (decisions-needed.md §7).
 - [ ] Bengali strings reviewed by a native speaker (the store check counts what's left).
@@ -83,6 +97,7 @@ can do, re-checked at submission time against Apple's and Google's current rules
       "settled" is reported by people, not verified by bKash/upay.
 - [ ] Test on at least one real iPhone and one lower-end Android phone.
 - [ ] Run `scripts/ci/store_check.py --app <built app> --release`; it must pass.
+- [ ] Make the GitHub repo private again (it was made public for free CI minutes on 2026-11-11).
 
 Android-specific checks (target API level, 16 KB page size, Data safety, the Play
 pre-launch report) get added when the Android app is started.

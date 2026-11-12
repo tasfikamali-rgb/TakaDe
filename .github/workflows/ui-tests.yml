@@ -155,11 +155,11 @@ jobs:
               if t: print("  -", t[:80])
               for c in n.get("children", []): walk(c)
           walk(json.load(sys.stdin))' || true
-      - name: Upload screenshots
-        if: success() || failure()
+      - name: Upload debug output (failures only)
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-${{ steps.sim.outputs.slug }}
+          name: maestro-debug-${{ steps.sim.outputs.slug }}
           path: maestro-results
           retention-days: 14
 
@@ -223,11 +223,11 @@ jobs:
           done
           echo "### iPhone Duo: tested in its default simulator pose" >> "$GITHUB_STEP_SUMMARY"
           echo "Folded/unfolded poses are switched in Xcode's Device Hub; there's no documented command-line switch yet, so the other pose is checked by hand." >> "$GITHUB_STEP_SUMMARY"
-      - name: Upload screenshots
-        if: steps.duo.outputs.available == 'true' && (success() || failure())
+      - name: Upload debug output (failures only)
+        if: steps.duo.outputs.available == 'true' && failure()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-iphone-duo
+          name: maestro-debug-iphone-duo
           path: maestro-results
           retention-days: 14
 

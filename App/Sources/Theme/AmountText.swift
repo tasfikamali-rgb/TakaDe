@@ -10,11 +10,10 @@ struct AmountText: View {
     var minorColor: Color = .inkMuted
     var showsZeroFraction = true
 
-    @AppStorage(DigitPreference.storageKey) private var digitPreference: DigitPreference = .automatic
     @Environment(\.locale) private var locale
 
     var body: some View {
-        let digits = digitPreference.resolved(for: locale)
+        let digits = DigitPreference.style(for: locale)
         let bengali = digits == .bengali
         let f = MoneyFormatter.format(money, digits: digits, showsZeroFraction: showsZeroFraction)
         let symbol = Text(verbatim: f.sign + f.symbol + "\u{2009}").font(size.minor(bengaliDigits: true)).foregroundStyle(minorColor)

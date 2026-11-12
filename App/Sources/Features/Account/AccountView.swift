@@ -2,7 +2,8 @@ import SwiftUI
 import TakaDeCore
 
 /// The Account tab: who you are, how you sign in, and your data. Settings (language,
-/// appearance, numbers, app lock) has its own tab.
+/// appearance, app lock) has its own tab. The name is shown, not edited: it's set once
+/// at first launch and can't be removed or changed (Sabit, 2026-11-12).
 struct AccountView: View {
     @Environment(AccountModel.self) private var account
     @Environment(AppModel.self) private var app
@@ -13,6 +14,8 @@ struct AccountView: View {
     @State private var removing: AccountIdentity?
     @State private var errorMessage: String?
     @State private var working = false
+    @State private var newName = ""
+    @State private var confirmingName = false
 
     var body: some View {
         Form {
@@ -20,17 +23,34 @@ struct AccountView: View {
                 ProfileHeader(name: myName, email: account.profile?.accountEmail ?? account.account?.email, isSignedIn: account.isSignedIn)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
-            }
-            Section {
-                TextField("Your name", text: $myName)
-                    .textContentType(.name)
-                    .onSubmit(saveName)
-            } header: {
-                Text("Your name")
             } footer: {
-                Text("This is how you appear in new groups, exactly as you type it")
+                if hasName {
+                    Text("Your name can't be changed. To use a different name, make a new account.")
+                        .foregroundStyle(Color.inkMuted)
+                }
+            }
+            if !hasName {
+                // Only for a profile from an older version that has no name yet. It's set
+                // once and then locked like everyone else's.
+                Section {
+                    TextField("Your name", text: $newName, prompt: Text("Your name").foregroundStyle(Color.inkMuted))
+                        .textContentType(.name)
+                        .onSubmit { if PersonName.isValid(trimmedNewName) { confirmingName = true } }
+                    Button("Save name") { confirmingName = true }
+                        .disabled(!PersonName.isValid(trimmedNewName))
+                } header: {
+                    Text("Your name")
+                        .foregroundStyle(Color.inkMuted)
+                } footer: {
+                    VStack(alignment: .leading, spacing: Spacing.xxs) {
+                        NameRuleText(newName)
+                        Text("This is how you appear in groups. You can't change it later, so use your real name.")
+                            .foregroundStyle(Color.inkMuted)
+                    }
+                }
             }
             if account.isSignedIn {
+                if account.usesAccountService { FriendIDSection() }
                 signedInSections
             } else {
                 signedOutSection
@@ -41,15 +61,19 @@ struct AccountView: View {
             }
         }
         .disabled(working)
-        .onDisappear(perform: saveName)
+        .confirmationDialog(Text("Save “\(trimmedNewName)” as your name?"), isPresented: $confirmingName, titleVisibility: .visible) {
+            Button("Save name", action: saveName)
+        } message: {
+            Text("You can't change it later.")
+        }
         .readableWidth()
         .navigationTitle("Account")
         .refreshable { await account.refreshAccount() }
         .sheet(item: $flow) { mode in
-            AccountFlowSheet(mode: mode) { flow = nil }
+            AccountFlowSheet(mode: mode) { flow = nil }.rebuildsOnDynamicType()
         }
         .sheet(isPresented: $addingMethod) {
-            AccountFlowSheet(mode: .link) { addingMethod = false }
+            AccountFlowSheet(mode: .link) { addingMethod = false }.rebuildsOnDynamicType()
         }
         .confirmationDialog("Delete your account?", isPresented: $confirmingDelete, titleVisibility: .visible) {
             Button("Delete account, keep my groups", role: .destructive) { deleteAccount(eraseData: false) }
@@ -90,14 +114,20 @@ struct AccountView: View {
             }
         } header: {
             Text("Sign-in methods")
+                .foregroundStyle(Color.inkMuted)
         } footer: {
-            Text(account.usesAccountService
-                 ? LocalizedStringKey("Any of these opens the same account. TakaDe's sign-in service keeps your account, email and these links. Your groups and expenses stay on this phone.")
-                 : LocalizedStringKey("Your sign-in is kept on this phone only. TakaDe has no server and never sees your groups."))
+            Group {
+                Text(account.usesAccountService
+                     ? LocalizedStringKey("Any of these opens the same account. TakaDe's sign-in service keeps your account, email and these links. Your groups and expenses stay on this phone.")
+                     : LocalizedStringKey("Your sign-in is kept on this phone only. TakaDe has no server and never sees your groups."))
+            }
+            .foregroundStyle(Color.inkMuted)
         }
         Section {
             Button("Sign out", action: signOut)
+            // The app's darker red: the system red is under 4.5:1 on white.
             Button("Delete account", role: .destructive) { confirmingDelete = true }
+                .foregroundStyle(Color.owe)
         }
     }
 
@@ -112,17 +142,23 @@ struct AccountView: View {
                 .frame(maxWidth: .infinity, minHeight: 48)
                 .listRowBackground(Color.clear)
         } footer: {
-            Text(account.usesAccountService
-                 ? LocalizedStringKey("With an account you can sign in on a new phone. Your groups and expenses stay on this phone.")
-                 : LocalizedStringKey("Signing in keeps your name and email with your groups. It all stays on this phone."))
+            Group {
+                Text(account.usesAccountService
+                     ? LocalizedStringKey("With an account you can sign in on a new phone. Your groups and expenses stay on this phone.")
+                     : LocalizedStringKey("Signing in keeps your name and email with your groups. It all stays on this phone."))
+            }
+            .foregroundStyle(Color.inkMuted)
         }
     }
 
     // MARK: Actions
 
+    private var hasName: Bool { !myName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    private var trimmedNewName: String { newName.trimmingCharacters(in: .whitespacesAndNewlines) }
+
     private func saveName() {
-        let name = myName
-        Task { try? await account.rename(to: name) }
+        let name = trimmedNewName
+        run { try await account.setMissingName(name) }
     }
 
     private func signOut() {
@@ -164,12 +200,14 @@ private struct ProfileHeader: View {
 
     var body: some View {
         HStack(spacing: Spacing.m) {
-            Avatar(name: name.isEmpty ? "?" : name, size: 64, fill: .lilac)
+            ProfilePhotoPicker(name: name, size: 72)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(verbatim: name.isEmpty ? "—" : name)
-                    .font(AppFont.title)
-                    .foregroundStyle(Color.ink)
-                    .lineLimit(2)
+                if !name.isEmpty {
+                    Text(verbatim: name)
+                        .font(AppFont.title)
+                        .foregroundStyle(Color.ink)
+                        .lineLimit(2)
+                }
                 if let email {
                     Text(verbatim: email).font(AppFont.label).foregroundStyle(Color.inkMuted)
                 } else {
@@ -178,9 +216,9 @@ private struct ProfileHeader: View {
                         .foregroundStyle(Color.inkMuted)
                 }
             }
+            .accessibilityElement(children: .combine)
         }
         .padding(.vertical, Spacing.s)
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -191,10 +229,16 @@ private struct IdentityRow: View {
 
     var body: some View {
         HStack(spacing: Spacing.s) {
-            Image(systemName: provider.systemImage)
-                .frame(width: 28)
-                .foregroundStyle(Color.ink)
-                .accessibilityHidden(true)
+            Group {
+                if provider == .google {
+                    // Google's own "G", never redrawn or recoloured (branding guidelines).
+                    Image("GoogleG").resizable().renderingMode(.original).frame(width: 20, height: 20)
+                } else {
+                    Image(systemName: provider.systemImage).foregroundStyle(Color.ink)
+                }
+            }
+            .frame(width: 28)
+            .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(provider.label).font(AppFont.bodyEmphasis)
                 if let email {
@@ -219,7 +263,7 @@ extension SignInProvider {
     var systemImage: String {
         switch self {
         case .apple: "apple.logo"
-        case .google: "g.circle"
+        case .google: "globe"  // Not shown: IdentityRow uses the GoogleG asset.
         case .microsoft: "square.grid.2x2"
         case .email: "envelope"
         }

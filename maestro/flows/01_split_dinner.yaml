@@ -9,21 +9,25 @@ tags:
 - launchApp:
     clearState: true
 - runFlow: ../subflows/onboarding.yaml
-- takeScreenshot: ${OUT}/01-groups-empty
 - tapOn: "Create a group"
-- tapOn: "Group name"
+- tapOn:
+    id: "newGroup.name"
 - inputText: "Sajek trip"
-# "Your name" is prefilled from onboarding.
-- tapOn: "Name"
+# Your own name comes from onboarding; the new group never asks for it.
+# Return in the group name moves to Add name (the field can sit under the keyboard,
+# below the optional photo), then Add puts Rishan in the list.
+- pressKey: Enter
+- tapOn:
+    id: "newGroup.memberName"
 - inputText: "Rishan"
-- takeScreenshot: ${OUT}/02-new-group
+- pressKey: Enter
 - tapOn: "Create"
 - extendedWaitUntil:
     visible: "Add expense"
     timeout: 10000
-- takeScreenshot: ${OUT}/03-group
 - tapOn: "Add expense"
-# The keypad opens by itself when the amount is empty.
+# A new expense starts on Scan receipt, From photos and Enter amount.
+- tapOn: "Enter amount"
 - extendedWaitUntil:
     visible: "Done"
     timeout: 5000
@@ -31,15 +35,11 @@ tags:
 - tapOn: "2"
 - tapOn: "0"
 - tapOn: "0"
-- takeScreenshot: ${OUT}/04-keypad
 - tapOn: "Done"
 - tapOn: "What was it for?"
 - inputText: "Dinner"
-- takeScreenshot: ${OUT}/05-add-expense
 - tapOn: "Save"
 - extendedWaitUntil:
     visible: "Dinner"
     timeout: 10000
-- takeScreenshot: ${OUT}/06-group-with-expense
 - tapOn: "Settle up"
-- takeScreenshot: ${OUT}/07-settle-up

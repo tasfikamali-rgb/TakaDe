@@ -4,14 +4,25 @@ import Foundation
 /// `displayName` is stored and shown exactly as entered: never translated or normalized.
 public struct Member: Hashable, Codable, Sendable, Identifiable {
     public let id: MemberID
+    /// The person's own name. For "me" it's the account name, which can't be changed.
     public var displayName: String
     /// True for the person using this device.
     public var isMe: Bool
+    /// What this group calls the person, if anyone set one. Only this group sees it, and it
+    /// never changes `displayName`. Nil (or empty) means no nickname.
+    public var nickname: String?
 
-    public init(id: MemberID = MemberID(), displayName: String, isMe: Bool = false) {
+    public init(id: MemberID = MemberID(), displayName: String, isMe: Bool = false, nickname: String? = nil) {
         self.id = id
         self.displayName = displayName
         self.isMe = isMe
+        self.nickname = nickname
+    }
+
+    /// The nickname when there is one, otherwise the name.
+    public var shownName: String {
+        if let nickname, !nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return nickname }
+        return displayName
     }
 }
 
@@ -29,8 +40,11 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
     public var kind: GroupKind
     /// Who keeps a mess's books: meals, bazar and deposits. Nil for standard groups.
     public var managerID: MemberID?
+    /// The group's colour, taken from its photo, as "#RRGGBB". Screens turn it into a soft
+    /// tint that stays readable in light and dark. Nil means the standard lilac.
+    public var accentHex: String?
 
-    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil) {
+    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil, accentHex: String? = nil) {
         self.id = id
         self.name = name
         self.currency = currency
@@ -40,12 +54,13 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         self.simplifiesDebts = simplifiesDebts
         self.kind = kind
         self.managerID = managerID
+        self.accentHex = accentHex
     }
 
     public var isMess: Bool { kind == .mess }
 
     private enum CodingKeys: String, CodingKey {
-        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID
+        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID, accentHex
     }
 
     /// Older snapshots have no `simplifiesDebts`; they decode with it on.
@@ -60,6 +75,7 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         simplifiesDebts = try c.decodeIfPresent(Bool.self, forKey: .simplifiesDebts) ?? true
         kind = try c.decodeIfPresent(GroupKind.self, forKey: .kind) ?? .standard
         managerID = try c.decodeIfPresent(MemberID.self, forKey: .managerID)
+        accentHex = try c.decodeIfPresent(String.self, forKey: .accentHex)
     }
 }
 

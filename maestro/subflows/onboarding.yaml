@@ -1,13 +1,18 @@
-# First launch: language, account choice, name. Run after launchApp with clearState.
+# First launch: welcome, where you're from, language, account choice, name.
+# Run after launchApp with clearState.
 appId: app.takade.ios
 ---
 - extendedWaitUntil:
-    visible: "English"
+    visible: "Get started"
     timeout: 20000
-- tapOn: "English"
-- takeScreenshot: ${OUT}/00a-onboarding-language
+- tapOn: "Get started"
+# Where you're from: the suggestion is already picked.
 - tapOn: "Continue"
-- takeScreenshot: ${OUT}/00b-onboarding-account
+- extendedWaitUntil:
+    visible: "English"
+    timeout: 5000
+- tapOn: "English"
+- tapOn: "Continue"
 - tapOn: "Continue without account"
 - tapOn: "Your name"
 - inputText: "Sabit"
@@ -19,6 +24,13 @@ appId: app.takade.ios
       visible: "Start splitting"
     commands:
       - tapOn: "Start splitting"
+# iPad in portrait opens on the empty detail ("Pick a group") with the group list
+# in a collapsed sidebar. Open it so the same steps work on phone and tablet.
+- runFlow:
+    when:
+      visible: "Show Sidebar"
+    commands:
+      - tapOn: "Show Sidebar"
 - extendedWaitUntil:
     visible: "No groups yet"
     timeout: 10000

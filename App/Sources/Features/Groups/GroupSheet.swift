@@ -11,6 +11,8 @@ struct GroupSheet: View {
     let onAddMember: () -> Void
     let onAddFromContacts: () -> Void
     let onOpenMember: (Member) -> Void
+    let onRemoveMember: (Member) -> Void
+    var onAddTakaDeUser: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xl) {
@@ -21,7 +23,8 @@ struct GroupSheet: View {
                     .foregroundStyle(Color.owe)
             }
             if let balances = model.balances {
-                MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember, onAddFromContacts: onAddFromContacts, onOpenMember: onOpenMember)
+                MemberBalancesCard(group: group, balances: balances, onAddMember: onAddMember, onAddFromContacts: onAddFromContacts, onOpenMember: onOpenMember,
+                                   onRemoveMember: onRemoveMember, onAddTakaDeUser: onAddTakaDeUser)
             }
             if group.isMess {
                 MealsCard(group: group)

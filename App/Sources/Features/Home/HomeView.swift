@@ -54,8 +54,8 @@ struct HomeView: View {
             syncPath(selection)
             updateChrome()
         }
-        .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open) }
-        .sheet(isPresented: $showingJoin) { JoinGroupSheet(invite: nil, onJoined: open) }
+        .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open).rebuildsOnDynamicType() }
+        .sheet(isPresented: $showingJoin) { JoinGroupSheet(invite: nil, onJoined: open).rebuildsOnDynamicType() }
         // Opened from elsewhere, like a group just joined from a link.
         .onChange(of: model.requestedGroup, initial: true) { _, id in
             guard let id else { return }

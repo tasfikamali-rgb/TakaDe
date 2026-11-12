@@ -7,14 +7,13 @@ struct GroupShareButton: View {
     let group: ExpenseGroup
     let balances: GroupBalances
 
-    @AppStorage(DigitPreference.storageKey) private var digitPreference: DigitPreference = .automatic
     @Environment(\.locale) private var locale
     @Environment(\.displayScale) private var displayScale
     @State private var image: Image?
 
     var body: some View {
         let summary = GroupSummary(group: group, balances: balances)
-        let digits = digitPreference.resolved(for: locale)
+        let digits = DigitPreference.style(for: locale)
         let text = ShareText.make(summary, digits: digits)
         Group {
             if let image {

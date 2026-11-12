@@ -12,12 +12,16 @@ struct AppLockSection: View {
             .disabled(!lock.isAvailable && !lock.isEnabled)
         } header: {
             Text("Lock")
+                .foregroundStyle(Color.inkMuted)
         } footer: {
-            if lock.isAvailable {
-                Text("Asks for it each time you open TakaDe, and hides your groups in the app switcher.")
-            } else {
-                Text("Set a passcode for your phone in Settings to use this.")
+            Group {
+                if lock.isAvailable {
+                    Text("Asks for it each time you open TakaDe, and hides your groups in the app switcher.")
+                } else {
+                    Text("Set a passcode for your phone in Settings to use this.")
+                }
             }
+            .foregroundStyle(Color.inkMuted)
         }
     }
 

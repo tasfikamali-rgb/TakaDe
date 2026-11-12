@@ -10,14 +10,14 @@ The mark is the Bangladeshi taka sign (৳) cut on a diagonal, with the two halv
 | `icon-1024.png` | 1024×1024 PNG of the light icon, for store listings and Android later. |
 | `icon-mark.svg` | Mark alone, transparent, ink. For light backgrounds. |
 | `icon-mark-dark.svg` | Mark alone, transparent, lime. For dark backgrounds. |
-| `logo-on-light.svg` | The logo, "৳akade": the split ৳ stands in for the t, then "akade" in Inter Display Bold. Green `#1F9D55` ৳ and ink text, for white or light backgrounds. |
+| `logo-on-light.svg` | The logo, "৳akaDe" (read as TakaDe): the split ৳ stands in for the capital T, then "akaDe" in Inter Display Bold, with a capital D, the way the name is always written. Green `#1F9D55` ৳ and ink text, for white or light backgrounds. |
 | `logo-on-dark.svg` | The same logo with a lime ৳ and near-white text, for dark backgrounds. |
 | `social-preview.png` | 1280×640 link preview for the GitHub repo (Settings › Social preview) and for sharing links. |
 | `android/res/` | Android launcher icon, ready to copy into the app's `res/`: adaptive icon (lime background, ink foreground, monochrome layer for themed icons) plus legacy PNGs for every density. |
 | `android/play-store-icon-512.png` | Google Play listing icon, 512×512, opaque. Play applies its own corner mask. |
 
 ## Launch
-The iPhone launch screen shows the whole ৳ (`LaunchMark`, 96 pt) on `launchBackground` (lime in light mode, near-black in dark). `LaunchSplash` then cuts the sign into the logo's two halves with a light tap and fades to the app in about 0.9 s. Reduce Motion skips the cut. The halves are drawn in SwiftUI by `TakaMark`, generated from the same glyph.
+The iPhone launch screen shows the whole ৳ (`LaunchMark`, 96 pt) on `launchBackground` (lime in light mode, near-black in dark). `LaunchSplash` then cuts the sign into the logo's two halves with a light tap, slides it left while "akaDe" wipes in beside it, ending on the logo "৳akaDe", holds, and fades to the app in about 1.7 s. `TakaWordmark.swift` (the outlined "akaDe" and the lockup positions) is generated from `logo-on-light.svg` by `scripts/brand_wordmark_swift.py`. It plays on every open: a cold launch and each return from the background. Reduce Motion cross-fades the sign to the logo instead. The halves are drawn in SwiftUI by `TakaMark`, generated from the same glyph.
 
 ## Rules
 - Colors are the app tokens: lime `#4BE83A`, ink `#161616`, near-black `#0B0B0B`. No gradients, shadows or outlines on the mark.

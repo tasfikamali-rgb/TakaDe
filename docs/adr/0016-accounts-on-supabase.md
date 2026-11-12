@@ -6,14 +6,17 @@ Status: accepted (Sabit, 2026-11-11, on a decision card; confirmed "yeah go for 
 Sabit wants a separate Account section, Create an account and Sign in as separate choices, and sign-in with email and Microsoft as well as Apple and Google. Email sign-up needs a service that sends a code to the inbox, so an on-device-only account (ADR 11) can't do it. Supabase was chosen over Firebase (Google's SDK adds data collection to the privacy label) and over Microsoft-only (no email).
 
 ## Decision
-- **What Supabase holds:** the account only. That's the user id, email, the name the person types (kept as typed), and which sign-ins are linked (`auth.identities`). Groups, expenses, payments and receipts stay in SQLite on the phone (ADR 1). The encrypted relay in ADR 13 will later run on the same Supabase Postgres, storing only ciphertext. That part is design only, not built.
+- **What Supabase holds:** the account only. That's the user id, email, and which sign-ins are linked (`auth.identities`). No name or picture (Sabit, 2026-11-11): the name stays on the phone and in the groups. Email-code signup sends no name, Apple's name is used on the phone only, Google is asked for `openid email` without `profile`, and the app clears `name`, `full_name`, `picture` and `avatar_url` from `user_metadata` if an older version left them. Groups, expenses, payments and receipts stay in SQLite on the phone (ADR 1). The encrypted relay in ADR 13 will later run on the same Supabase Postgres, storing only ciphertext. That part is design only, not built.
+- **Names are fixed** (Sabit, 2026-11-12): a name is required at first launch and can't be removed or changed afterwards. To use another name, the person makes a new account. New groups use it without asking. Each group can give anyone an optional nickname (`member.nickname`, migration v7), which never changes the name; shared groups carry it inside the encrypted group change. A profile from an older version with no name gets one chance to set it in Account.
 - **No Supabase SDK.** The app calls Supabase Auth's REST (GoTrue) API with `URLSession` (`SupabaseAuth.swift`), so no third-party code joins the privacy manifest. The session (access and refresh tokens) is kept in the Keychain only (`AfterFirstUnlockThisDeviceOnly`). It is never stored in SQLite, logs or UserDefaults.
 - **Methods:**
   - Email: a 6-digit code sent with `POST /otp`, then checked with `POST /verify`. There are no passwords.
   - Apple: native Sign in with Apple. The ID token goes to `POST /token?grant_type=id_token`, with a SHA-256 nonce: Apple gets the hash and Supabase the raw value.
   - Google and Microsoft (Azure): Supabase OAuth in `ASWebAuthenticationSession` with PKCE (S256). The callback is `takade://auth-callback`, and the code is exchanged with `grant_type=pkce`.
+  - Google (2026-11-11): Supabase's web OAuth made Google's screen say "continue to yxsfbakrtmpsuuuuogbl.supabase.co", which Sabit found unprofessional. Google now uses the app's own iOS client (GoogleSignInService, PKCE, with a nonce) and hands the ID token to `token?grant_type=id_token` (provider google, `link_identity` to link), like Apple. The iOS client id is in the Google provider's Client IDs. If no iOS client is configured, the web flow is the fallback. Microsoft keeps the web flow.
+  - Launch switches (2026-11-11): Microsoft is skipped for launch (Sabit; the university Azure account can't register apps), and email codes wait for a custom email sender on the takadeapp.com domain and the code template. Each sits behind an xcconfig flag (`TAKADE_MICROSOFT_SIGN_IN`, `TAKADE_EMAIL_SIGN_IN`), off by default, so the code path stays and the button is hidden.
 - **Create an account vs Sign in:**
-  - First launch offers Create an account, Sign in, and Continue without account. Create asks for a name, then a method. Sign in goes straight to the methods.
+  - First launch (changed 2026-11-12, Sabit): after country and language, one screen offers Continue with Apple, Continue with Google, and Continue without account. The same button makes the account or opens an existing one. The name comes after that choice, prefilled with Apple's name when Apple sends one, and kept on the phone only. The Account tab still has separate Create an account and Sign in.
   - The wrong door is handled gently:
     - Sign in with a provider that has no account creates one (Supabase does this). The app notices the new account (`created_at` ≈ `last_sign_in_at`), says so, and asks for a name.
     - Create with an existing account signs the person in and says so.
@@ -35,8 +38,9 @@ Sabit wants a separate Account section, Create an account and Sign in as separat
 ## Privacy label
 With accounts on, TakaDe collects these data types, linked to the person and used for App Functionality (account management):
 - Email Address
-- Name
 - User ID
+
+Name was dropped on 2026-11-11 when names stopped going to the service.
 
 None are used for tracking. `PrivacyInfo.xcprivacy` declares them. The App Store Connect label must say the same at submission. The privacy policy must name Supabase as processor and its Asia-Pacific region. Groups and expenses are still not collected.
 

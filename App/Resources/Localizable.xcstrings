@@ -325,23 +325,6 @@
         }
       }
     },
-    "Add another person": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "আরেকজন যোগ করুন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add another person"
-          }
-        }
-      }
-    },
     "Add expense": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -1018,23 +1001,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Name"
-          }
-        }
-      }
-    },
-    "Names are kept exactly as you type them": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "নাম ঠিক যেভাবে লিখবেন সেভাবেই থাকবে"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Names are kept exactly as you type them"
           }
         }
       }
@@ -2858,23 +2824,6 @@
         }
       }
     },
-    "This is how you appear in groups, exactly as you type it": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "গ্রুপে আপনাকে এই নামেই দেখাবে, ঠিক যেভাবে লিখবেন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This is how you appear in groups, exactly as you type it"
-          }
-        }
-      }
-    },
     "Signed in with Apple": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -2956,23 +2905,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your profile wasn't saved. Try again."
-          }
-        }
-      }
-    },
-    "Step %lld of 3": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "৩ ধাপের %lld নম্বর"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Step %lld of 3"
           }
         }
       }
@@ -3432,23 +3364,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "For a trip, a flat or a dinner, like Cox's Bazar trip"
-          }
-        }
-      }
-    },
-    "Two people are called %@. Add something to tell them apart, like an initial.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "দুজনের নাম %@। আলাদা করে চিনতে কিছু যোগ করুন, যেমন নামের আদ্যক্ষর।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Two people are called %@. Add something to tell them apart, like an initial."
           }
         }
       }
@@ -4367,23 +4282,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Copy"
-          }
-        }
-      }
-    },
-    "Shows their bKash and bank numbers": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "তাঁর বিকাশ ও ব্যাংক নম্বর দেখায়"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shows their bKash and bank numbers"
           }
         }
       }
@@ -5527,23 +5425,6 @@
         }
       }
     },
-    "Choose from Contacts": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "কন্টাক্ট থেকে বেছে নিন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose from Contacts"
-          }
-        }
-      }
-    },
     "Type a name": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -5591,74 +5472,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "You can change this any time in Settings"
-          }
-        }
-      }
-    },
-    "Split bills with friends & family, settle up in taka": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "বন্ধু ও পরিবারের সাথে খরচ ভাগ করুন, টাকায় হিসাব মেটান"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Split bills with friends & family, settle up in taka"
-          }
-        }
-      }
-    },
-    "Sign in to your account": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "আপনার অ্যাকাউন্টে সাইন ইন করুন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sign in to your account"
-          }
-        }
-      }
-    },
-    "How do you want to sign in?": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "কীভাবে সাইন ইন করতে চান?"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "How do you want to sign in?"
-          }
-        }
-      }
-    },
-    "An account lets you sign in on a new phone. Your groups and expenses stay on this phone either way.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "অ্যাকাউন্ট থাকলে নতুন ফোনে সাইন ইন করতে পারবেন। আপনার গ্রুপ আর খরচ সবসময় এই ফোনেই থাকে।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An account lets you sign in on a new phone. Your groups and expenses stay on this phone either way."
           }
         }
       }
@@ -5714,23 +5527,6 @@
         }
       }
     },
-    "We didn't find an account for that sign-in, so we made a new one. What should we call you?": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "এই সাইন-ইনে কোনো অ্যাকাউন্ট পাওয়া যায়নি, তাই নতুন একটি খোলা হয়েছে। আপনাকে কী নামে ডাকব?"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "We didn't find an account for that sign-in, so we made a new one. What should we call you?"
-          }
-        }
-      }
-    },
     "You already had a TakaDe account, so we signed you in.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -5744,23 +5540,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "You already had a TakaDe account, so we signed you in."
-          }
-        }
-      }
-    },
-    "New to TakaDe? Go back and choose Create an account.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "TakaDe-তে নতুন? পেছনে গিয়ে অ্যাকাউন্ট খুলুন বেছে নিন।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New to TakaDe? Go back and choose Create an account."
           }
         }
       }
@@ -6084,23 +5863,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "We've sent a 6-digit code to %@."
-          }
-        }
-      }
-    },
-    "This is how you appear in new groups, exactly as you type it": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "নতুন গ্রুপে আপনাকে ঠিক এভাবেই দেখাবে, যেমন লিখেছেন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This is how you appear in new groups, exactly as you type it"
           }
         }
       }
@@ -6441,6 +6203,856 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your groups, expenses and payments stay on this phone, in an encrypted file that unlocks after you first unlock your phone. They're never uploaded."
+          }
+        }
+      }
+    },
+    "Add a photo so friends spot you quickly. It stays on this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি দিন, যাতে বন্ধুরা আপনাকে সহজে চিনতে পারে। ছবিটা এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a photo so friends spot you quickly. It stays on this phone."
+          }
+        }
+      }
+    },
+    "Add a profile photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রোফাইল ছবি দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a profile photo"
+          }
+        }
+      }
+    },
+    "Change profile photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "প্রোফাইল ছবি বদলান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change profile photo"
+          }
+        }
+      }
+    },
+    "Choose a new photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নতুন ছবি বাছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a new photo"
+          }
+        }
+      }
+    },
+    "Get started": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুরু করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get started"
+          }
+        }
+      }
+    },
+    "Remove photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি সরান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove photo"
+          }
+        }
+      }
+    },
+    "Somewhere else": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্য কোথাও"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somewhere else"
+          }
+        }
+      }
+    },
+    "Split bills with friends & family. Settle up in taka.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধু ও পরিবারের সাথে খরচ ভাগ করুন। টাকায় হিসাব মেটান।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split bills with friends & family. Settle up in taka."
+          }
+        }
+      }
+    },
+    "Step %lld of %lld": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%2$lld ধাপের %1$lld নম্বর"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %1$lld of %2$lld"
+          }
+        }
+      }
+    },
+    "That photo couldn't be used. Try another one.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ছবিটা ব্যবহার করা গেল না। অন্য একটা চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That photo couldn't be used. Try another one."
+          }
+        }
+      }
+    },
+    "This suggests your language. It stays on this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটা দেখে আপনার ভাষা বেছে দেওয়া হয়। এটা এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This suggests your language. It stays on this phone."
+          }
+        }
+      }
+    },
+    "Where are you from?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি কোথা থেকে?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where are you from?"
+          }
+        }
+      }
+    },
+    "Search countries": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দেশ খুঁজুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search countries"
+          }
+        }
+      }
+    },
+    "No country matches that": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই নামে কোনো দেশ পাওয়া যায়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No country matches that"
+          }
+        }
+      }
+    },
+    "Names can only have letters, spaces, hyphens, apostrophes and dots. No emoji, numbers or symbols.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামে শুধু অক্ষর, স্পেস, হাইফেন, অ্যাপোস্ট্রফি আর ডট থাকতে পারে। ইমোজি, সংখ্যা বা চিহ্ন নয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Names can only have letters, spaces, hyphens, apostrophes and dots. No emoji, numbers or symbols."
+          }
+        }
+      }
+    },
+    "Keep names to %lld characters or fewer.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম %lld অক্ষরের মধ্যে রাখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep names to %lld characters or fewer."
+          }
+        }
+      }
+    },
+    "%@ wasn't added. Names can't have emoji, numbers or symbols. Add them with Type a name.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ যোগ হয়নি। নামে ইমোজি, সংখ্যা বা চিহ্ন থাকতে পারে না। নাম লিখুন দিয়ে যোগ করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wasn't added. Names can't have emoji, numbers or symbols. Add them with Type a name."
+          }
+        }
+      }
+    },
+    "Add %lld": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld জন যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %lld"
+          }
+        }
+      }
+    },
+    "No contacts with a name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নামসহ কোনো কন্ট্যাক্ট নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No contacts with a name"
+          }
+        }
+      }
+    },
+    "No one matches that": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই নামে কাউকে পাওয়া যায়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one matches that"
+          }
+        }
+      }
+    },
+    "Search contacts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কন্ট্যাক্ট খুঁজুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search contacts"
+          }
+        }
+      }
+    },
+    "TakaDe can't see your contacts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আপনার কন্ট্যাক্ট দেখতে পাচ্ছে না"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe can't see your contacts"
+          }
+        }
+      }
+    },
+    "Allow Contacts in Settings to search them here, or pick people with Apple's picker.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখানে খুঁজতে সেটিংসে কন্ট্যাক্টের অনুমতি দিন, অথবা Apple-এর পিকার দিয়ে মানুষ বাছাই করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Contacts in Settings to search them here, or pick people with Apple's picker."
+          }
+        }
+      }
+    },
+    "Use Apple's picker": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apple-এর পিকার ব্যবহার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Apple's picker"
+          }
+        }
+      }
+    },
+    "Open Settings": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সেটিংস খুলুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        }
+      }
+    },
+    "This is how you appear in groups, exactly as you type it. You can't change it later, so use your real name.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপে আপনাকে ঠিক এভাবেই দেখাবে, যেমন লিখেছেন। পরে আর বদলানো যাবে না, তাই আপনার আসল নাম লিখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is how you appear in groups, exactly as you type it. You can't change it later, so use your real name."
+          }
+        }
+      }
+    },
+    "Your name can't be changed. To use a different name, make a new account.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার নাম বদলানো যায় না। অন্য নাম ব্যবহার করতে নতুন অ্যাকাউন্ট খুলুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your name can't be changed. To use a different name, make a new account."
+          }
+        }
+      }
+    },
+    "Save name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম সেভ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save name"
+          }
+        }
+      }
+    },
+    "This is how you appear in groups. You can't change it later, so use your real name.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপে আপনাকে এভাবেই দেখাবে। পরে আর বদলানো যাবে না, তাই আপনার আসল নাম লিখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is how you appear in groups. You can't change it later, so use your real name."
+          }
+        }
+      }
+    },
+    "Save “%@” as your name?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "“%@” কি আপনার নাম হিসেবে সেভ করবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save “%@” as your name?"
+          }
+        }
+      }
+    },
+    "You can't change it later.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরে আর বদলানো যাবে না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can't change it later."
+          }
+        }
+      }
+    },
+    "Nickname": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ডাকনাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nickname"
+          }
+        }
+      }
+    },
+    "Nickname (optional)": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ডাকনাম (ঐচ্ছিক)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nickname (optional)"
+          }
+        }
+      }
+    },
+    "Nickname in this group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে ডাকনাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nickname in this group"
+          }
+        }
+      }
+    },
+    "What this group calls you. Your name stays %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে আপনাকে যে নামে ডাকা হয়। আপনার নাম %@ই থাকবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What this group calls you. Your name stays %@."
+          }
+        }
+      }
+    },
+    "What this group calls them. Their name stays %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে তাকে যে নামে ডাকা হয়। তার নাম %@ই থাকবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What this group calls them. Their name stays %@."
+          }
+        }
+      }
+    },
+    "You're in it as %@. Anyone can add a nickname later.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি এতে আছেন %@ নামে। পরে যে কেউ ডাকনাম দিতে পারবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're in it as %@. Anyone can add a nickname later."
+          }
+        }
+      }
+    },
+    "Remove from group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ থেকে বাদ দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from group"
+          }
+        }
+      }
+    },
+    "Remove %@ from this group?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে এই গ্রুপ থেকে বাদ দেবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove %@ from this group?"
+          }
+        }
+      }
+    },
+    "Only people who aren't in any expense or payment can be removed.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যারা কোনো খরচ বা পেমেন্টে নেই, শুধু তাদেরই বাদ দেওয়া যায়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only people who aren't in any expense or payment can be removed."
+          }
+        }
+      }
+    },
+    "%@ is in expenses or payments in this group, so they stay. That keeps everyone's balance right.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ এই গ্রুপের খরচ বা পেমেন্টে আছেন, তাই থাকছেন। এতে সবার হিসাব ঠিক থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is in expenses or payments in this group, so they stay. That keeps everyone's balance right."
+          }
+        }
+      }
+    },
+    "%@ keeps this mess's books, so they stay.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ এই মেসের হিসাব রাখেন, তাই থাকছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ keeps this mess's books, so they stay."
+          }
+        }
+      }
+    },
+    "%@ wasn't removed. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে বাদ দেওয়া যায়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wasn't removed. Try again."
+          }
+        }
+      }
+    },
+    "Shows their nickname, bKash and bank numbers": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ডাকনাম, বিকাশ ও ব্যাংক নম্বর দেখায়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows their nickname, bKash and bank numbers"
+          }
+        }
+      }
+    },
+    "From contacts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কন্টাক্ট থেকে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From contacts"
+          }
+        }
+      }
+    },
+    "Add name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add name"
+          }
+        }
+      }
+    },
+    "Remove %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে বাদ দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove %@"
+          }
+        }
+      }
+    },
+    "%@ is already in it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ আগে থেকেই আছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is already in it."
+          }
+        }
+      }
+    },
+    "Add %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %@"
+          }
+        }
+      }
+    },
+    "Add %lld people": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld জনকে যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %lld people"
           }
         }
       }
@@ -7057,19 +7669,512 @@
         }
       }
     },
-    "The photo isn't on this phone yet. Check your connection.": {
+    "Enter amount": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ছবিটি এখনো এই ফোনে আসেনি। সংযোগ দেখে নিন।"
+            "value": "টাকার পরিমাণ লিখুন"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The photo isn't on this phone yet. Check your connection."
+            "value": "Enter amount"
+          }
+        }
+      }
+    },
+    "Add photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add photo"
+          }
+        }
+      }
+    },
+    "Add a group photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপের ছবি যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a group photo"
+          }
+        }
+      }
+    },
+    "Group photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপের ছবি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Group photo"
+          }
+        }
+      }
+    },
+    "Change photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি বদলান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change photo"
+          }
+        }
+      }
+    },
+    "Optional. The group takes its colour from the photo.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ঐচ্ছিক। ছবি থেকে গ্রুপের রং নেওয়া হয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optional. The group takes its colour from the photo."
+          }
+        }
+      }
+    },
+    "Sign in to use TakaDe on a new phone later. New here or coming back, it's the same button. Your groups and expenses stay on this phone either way.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরে নতুন ফোনে TakaDe ব্যবহার করতে সাইন ইন করুন। নতুন হোন বা ফিরে আসুন, বোতাম একই। আপনার গ্রুপ আর খরচ সবসময় এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to use TakaDe on a new phone later. New here or coming back, it's the same button. Your groups and expenses stay on this phone either way."
+          }
+        }
+      }
+    },
+    "Signing in keeps your email with your groups. It all stays on this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সাইন ইন করলে আপনার ইমেইল গ্রুপের সাথে থাকে। সবকিছু এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing in keeps your email with your groups. It all stays on this phone."
+          }
+        }
+      }
+    },
+    "You can sign in later from Account.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরে অ্যাকাউন্ট থেকে সাইন ইন করতে পারবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can sign in later from Account."
+          }
+        }
+      }
+    },
+    "Welcome back. Your name lives on your phone, so add it here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আবার স্বাগতম। আপনার নাম ফোনেই থাকে, তাই এখানে লিখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome back. Your name lives on your phone, so add it here."
+          }
+        }
+      }
+    },
+    "Sign in or continue": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সাইন ইন করুন বা এগিয়ে যান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in or continue"
+          }
+        }
+      }
+    },
+    "Scan a TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি স্ক্যান করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan a TakaDe ID"
+          }
+        }
+      }
+    },
+    "Your current ID and QR code stop working. Invites already sent to you still arrive.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার বর্তমান আইডি ও QR কোড আর কাজ করবে না। আগে পাঠানো আমন্ত্রণগুলো তবুও পৌঁছাবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your current ID and QR code stop working. Invites already sent to you still arrive."
+          }
+        }
+      }
+    },
+    "TakaDe doesn't share names between accounts, so type how the group knows them.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe এক অ্যাকাউন্টের নাম অন্য অ্যাকাউন্টকে দেখায় না, তাই গ্রুপে তাদের যে নামে চেনে সেটি লিখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe doesn't share names between accounts, so type how the group knows them."
+          }
+        }
+      }
+    },
+    "That's not a TakaDe invite link. Only links sent from a group's invite button work here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি TakaDe-এর ইনভাইট লিংক নয়। শুধু গ্রুপের ইনভাইট বোতাম থেকে পাঠানো লিংক এখানে কাজ করে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's not a TakaDe invite link. Only links sent from a group's invite button work here."
+          }
+        }
+      }
+    },
+    "Sign in to your TakaDe account in the Account tab to add people by TakaDe ID.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি দিয়ে কাউকে যোগ করতে অ্যাকাউন্ট ট্যাবে আপনার TakaDe অ্যাকাউন্টে সাইন ইন করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to your TakaDe account in the Account tab to add people by TakaDe ID."
+          }
+        }
+      }
+    },
+    "Point the camera at the QR code in your friend's Account tab.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধুর অ্যাকাউন্ট ট্যাবের QR কোডের দিকে ক্যামেরা ধরুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Point the camera at the QR code in your friend's Account tab."
+          }
+        }
+      }
+    },
+    "Share ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইডি শেয়ার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share ID"
+          }
+        }
+      }
+    },
+    "That's not a TakaDe ID. It looks like TKD-7F3K-9QXM.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি TakaDe আইডি নয়। আইডি দেখতে TKD-7F3K-9QXM-এর মতো।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's not a TakaDe ID. It looks like TKD-7F3K-9QXM."
+          }
+        }
+      }
+    },
+    "Copy ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইডি কপি করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy ID"
+          }
+        }
+      }
+    },
+    "TKD-XXXX-XXXX": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TKD-XXXX-XXXX"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TKD-XXXX-XXXX"
+          }
+        }
+      }
+    },
+    "ID copied": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইডি কপি হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID copied"
+          }
+        }
+      }
+    },
+    "They can find it in their Account tab.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তারা এটি তাদের অ্যাকাউন্ট ট্যাবে পাবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "They can find it in their Account tab."
+          }
+        }
+      }
+    },
+    "Scan their QR code": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তাদের QR কোড স্ক্যান করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan their QR code"
+          }
+        }
+      }
+    },
+    "Get a new ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নতুন আইডি নিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get a new ID"
+          }
+        }
+      }
+    },
+    "Decline": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "না করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decline"
+          }
+        }
+      }
+    },
+    "Add me on TakaDe with my ID: %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমার আইডি দিয়ে TakaDe-এ আমাকে যোগ করুন: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add me on TakaDe with my ID: %@"
+          }
+        }
+      }
+    },
+    "Add and send invite": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যোগ করে আমন্ত্রণ পাঠান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add and send invite"
+          }
+        }
+      }
+    },
+    "Invite sent": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমন্ত্রণ পাঠানো হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invite sent"
+          }
+        }
+      }
+    },
+    "Their invite is encrypted on this phone so only their phone can read it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমন্ত্রণটি এই ফোনেই এনক্রিপ্ট করা হয়, তাই শুধু তাদের ফোনই এটি পড়তে পারবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Their invite is encrypted on this phone so only their phone can read it."
           }
         }
       }
@@ -7091,19 +8196,342 @@
         }
       }
     },
-    "Remove photo": {
+    "This invite link was changed after it was sent, so it can't be used. Ask for a new one.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ছবি সরান"
+            "value": "পাঠানোর পর এই ইনভাইট লিংকটি বদলে গেছে, তাই এটি ব্যবহার করা যাবে না। নতুন লিংক চেয়ে নিন।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Remove photo"
+            "value": "This invite link was changed after it was sent, so it can't be used. Ask for a new one."
+          }
+        }
+      }
+    },
+    "That QR code isn't a TakaDe ID.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই QR কোডটি TakaDe আইডি নয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That QR code isn't a TakaDe ID."
+          }
+        }
+      }
+    },
+    "Their TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তাদের TakaDe আইডি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Their TakaDe ID"
+          }
+        }
+      }
+    },
+    "Your TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার TakaDe আইডি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your TakaDe ID"
+          }
+        }
+      }
+    },
+    "Invite sent to %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে আমন্ত্রণ পাঠানো হয়েছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invite sent to %@"
+          }
+        }
+      }
+    },
+    "Friends with TakaDe can add you to a group by scanning this code or typing your ID. It doesn't show your name, email or phone number.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe ব্যবহারকারী বন্ধুরা এই কোড স্ক্যান করে বা আপনার আইডি লিখে আপনাকে গ্রুপে যোগ করতে পারবেন। এতে আপনার নাম, ইমেইল বা ফোন নম্বর দেখা যায় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends with TakaDe can add you to a group by scanning this code or typing your ID. It doesn't show your name, email or phone number."
+          }
+        }
+      }
+    },
+    "They'll see it the next time they open TakaDe, and join as %@ in this group.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরের বার TakaDe খুললে তিনি এটি দেখবেন এবং এই গ্রুপে %@ হিসেবে যোগ দেবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "They'll see it the next time they open TakaDe, and join as %@ in this group."
+          }
+        }
+      }
+    },
+    "Sign in to your TakaDe account to use TakaDe IDs.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি ব্যবহার করতে আপনার TakaDe অ্যাকাউন্টে সাইন ইন করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to your TakaDe account to use TakaDe IDs."
+          }
+        }
+      }
+    },
+    "Get a new ID?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নতুন আইডি নেবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get a new ID?"
+          }
+        }
+      }
+    },
+    "This invite link is incomplete. Copy the whole message again and paste it here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ইনভাইট লিংকটি অসম্পূর্ণ। পুরো মেসেজটি আবার কপি করে এখানে পেস্ট করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This invite link is incomplete. Copy the whole message again and paste it here."
+          }
+        }
+      }
+    },
+    "Getting your ID…": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার আইডি আনা হচ্ছে…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Getting your ID…"
+          }
+        }
+      }
+    },
+    "Add a TakaDe user": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe ব্যবহারকারী যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a TakaDe user"
+          }
+        }
+      }
+    },
+    "Their name in this group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে তাদের নাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Their name in this group"
+          }
+        }
+      }
+    },
+    "%@ invited you to %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ আপনাকে %2$@ গ্রুপে আমন্ত্রণ জানিয়েছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ invited you to %@"
+          }
+        }
+      }
+    },
+    "No one has this TakaDe ID. Check it and try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই TakaDe আইডি কারও নেই। দেখে নিয়ে আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one has this TakaDe ID. Check it and try again."
+          }
+        }
+      }
+    },
+    "QR code for your TakaDe ID": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার TakaDe আইডির QR কোড"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "QR code for your TakaDe ID"
+          }
+        }
+      }
+    },
+    "Split bills with friends & family, settle up in taka": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধু ও পরিবারের সাথে খরচ ভাগ করুন, টাকায় হিসাব মেটান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split bills with friends & family, settle up in taka"
+          }
+        }
+      }
+    },
+    "TakaDe ID or QR code": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe আইডি বা QR কোড"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe ID or QR code"
+          }
+        }
+      }
+    },
+    "The photo isn't on this phone yet. Check your connection.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবিটি এখনো এই ফোনে আসেনি। সংযোগ দেখে নিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The photo isn't on this phone yet. Check your connection."
+          }
+        }
+      }
+    },
+    "That's your own TakaDe ID.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি আপনার নিজের TakaDe আইডি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's your own TakaDe ID."
           }
         }
       }
@@ -7142,53 +8570,36 @@
         }
       }
     },
-    "This invite link is incomplete. Copy the whole message again and paste it here.": {
+    "You'll see this group's expenses and payments and can add your own.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "এই ইনভাইট লিংকটি অসম্পূর্ণ। পুরো মেসেজটি আবার কপি করে এখানে পেস্ট করুন।"
+            "value": "আপনি এই গ্রুপের খরচ ও পেমেন্ট দেখতে পাবেন এবং নিজেরগুলোও যোগ করতে পারবেন।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This invite link is incomplete. Copy the whole message again and paste it here."
+            "value": "You'll see this group's expenses and payments and can add your own."
           }
         }
       }
     },
-    "That's not a TakaDe invite link. Only links sent from a group's invite button work here.": {
+    "Too many tries for now. Wait a while and try again.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "এটি TakaDe-এর ইনভাইট লিংক নয়। শুধু গ্রুপের ইনভাইট বোতাম থেকে পাঠানো লিংক এখানে কাজ করে।"
+            "value": "এখন অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "That's not a TakaDe invite link. Only links sent from a group's invite button work here."
-          }
-        }
-      }
-    },
-    "This invite link was changed after it was sent, so it can't be used. Ask for a new one.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "পাঠানোর পর এই ইনভাইট লিংকটি বদলে গেছে, তাই এটি ব্যবহার করা যাবে না। নতুন লিংক চেয়ে নিন।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This invite link was changed after it was sent, so it can't be used. Ask for a new one."
+            "value": "Too many tries for now. Wait a while and try again."
           }
         }
       }

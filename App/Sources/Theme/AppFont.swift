@@ -78,3 +78,18 @@ private extension Font.TextStyle {
         }
     }
 }
+
+/// AppFont's Inter faces are scaled when they're made, so a view has to be rebuilt to pick
+/// up a new Dynamic Type size. RootView does that for the main screens; screens presented
+/// over it (sheets and full-screen covers) use this, since they aren't part of that rebuild.
+struct RebuildsOnDynamicType: ViewModifier {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    func body(content: Content) -> some View {
+        content.id(dynamicTypeSize)
+    }
+}
+
+extension View {
+    func rebuildsOnDynamicType() -> some View { modifier(RebuildsOnDynamicType()) }
+}
