@@ -8654,6 +8654,23 @@
           }
         }
       }
+    },
+    "No date found on the receipt. The expense keeps the date you picked.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদে কোনো তারিখ পাওয়া যায়নি। খরচে আপনার বেছে নেওয়া তারিখই থাকবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No date found on the receipt. The expense keeps the date you picked."
+          }
+        }
+      }
     }
   }
 }
