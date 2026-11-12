@@ -17,9 +17,14 @@ create table if not exists public.friend_message (
   id         uuid primary key default gen_random_uuid(),
   to_user    uuid not null references auth.users (id) on delete cascade,
   from_user  uuid not null references auth.users (id) on delete cascade,
-  sealed     text not null check (length(sealed) between 1 and 8000),
+  sealed     text not null,
   created_at timestamptz not null default now()
 );
+-- Up to 40,000 characters: a text message, or a hello carrying a small profile photo
+-- (16 KB JPEG at most). Set here so re-running this file updates an older table too.
+alter table public.friend_message drop constraint if exists friend_message_sealed_check;
+alter table public.friend_message add constraint friend_message_sealed_check
+  check (length(sealed) between 1 and 40000);
 create index if not exists friend_message_to_idx on public.friend_message (to_user, created_at);
 
 -- Who blocked whom, so a blocked person's messages are dropped. Only reachable through
@@ -69,7 +74,7 @@ begin
   if not public.is_account() then
     raise exception 'account required' using errcode = '28000';
   end if;
-  if p_sealed is null or length(p_sealed) not between 1 and 8000 then
+  if p_sealed is null or length(p_sealed) not between 1 and 40000 then
     raise exception 'message not valid' using errcode = '22023';
   end if;
   -- Spam limits: 300 messages an hour and 2000 a day from one account.

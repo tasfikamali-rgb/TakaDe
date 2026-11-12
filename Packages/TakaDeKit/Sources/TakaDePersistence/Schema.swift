@@ -202,6 +202,14 @@ enum Schema {
                     .check { ["sending", "sent", "failed", "received"].contains($0) }
             }
         }
+        // Friends' own names arrive over the encrypted channel (Sabit, 2026-11-12): a name
+        // typed on this phone is kept, otherwise theirs is used. Earlier rows weren't asked
+        // for a name they meant to keep, so they take the friend's own name when it comes.
+        migrator.registerMigration("v10_friend_named_by_me") { db in
+            try db.alter(table: "friend") { t in
+                t.add(column: "named_by_me", .boolean).notNull().defaults(to: false)
+            }
+        }
         return migrator
     }
 }

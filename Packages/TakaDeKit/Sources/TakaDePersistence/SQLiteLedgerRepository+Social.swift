@@ -42,14 +42,15 @@ extension SQLiteLedgerRepository: SocialRepository {
     public func save(_ friend: Friend) async throws {
         try await writer.write { db in
             try db.execute(sql: """
-                INSERT INTO friend (id, account_id, code, public_key, name, status, added_at, last_message_at,
+                INSERT INTO friend (id, account_id, code, public_key, name, named_by_me, status, added_at, last_message_at,
                                     last_message_preview, unread)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET code = excluded.code, public_key = excluded.public_key,
-                    name = excluded.name, status = excluded.status, last_message_at = excluded.last_message_at,
+                    name = excluded.name, named_by_me = excluded.named_by_me, status = excluded.status,
+                    last_message_at = excluded.last_message_at,
                     last_message_preview = excluded.last_message_preview, unread = excluded.unread
                 """, arguments: [friend.id.uuidString, friend.accountID, friend.code.raw, friend.publicKey, friend.name,
-                                 friend.status.rawValue, friend.addedAt, friend.lastMessageAt, friend.lastMessagePreview,
+                                 friend.namedByMe, friend.status.rawValue, friend.addedAt, friend.lastMessageAt, friend.lastMessagePreview,
                                  friend.unread])
         }
     }
@@ -104,7 +105,7 @@ extension SQLiteLedgerRepository: SocialRepository {
         guard let id = UUID(uuidString: row["id"]), let code = FriendCode(raw: row["code"]),
               let status = Friend.Status(rawValue: row["status"]) else { return nil }
         return Friend(id: id, accountID: row["account_id"], code: code, publicKey: row["public_key"], name: row["name"],
-                      status: status, addedAt: row["added_at"], lastMessageAt: row["last_message_at"],
+                      namedByMe: row["named_by_me"], status: status, addedAt: row["added_at"], lastMessageAt: row["last_message_at"],
                       lastMessagePreview: row["last_message_preview"], unread: row["unread"])
     }
 

@@ -112,3 +112,39 @@ final class SocialRepositoryTests: XCTestCase {
         XCTAssertEqual(try JSONDecoder().decode(FriendEnvelope.self, from: data), envelope)
     }
 }
+
+final class FriendProfileTests: XCTestCase {
+    func testQRCarriesTheNameExactly() throws {
+        let code = try XCTUnwrap(FriendCode(raw: "7F3K9QXM"))
+        let url = code.url(name: "সাবিত কামালী")
+        XCTAssertEqual(FriendCode(scanned: url.absoluteString), code)
+        XCTAssertEqual(FriendCode.sharedName(inScanned: url.absoluteString), "সাবিত কামালী")
+        // No name, or not a name: the plain QR.
+        XCTAssertEqual(code.url(name: nil), code.url)
+        XCTAssertEqual(code.url(name: "🙂"), code.url)
+        XCTAssertNil(FriendCode.sharedName(inScanned: code.url.absoluteString))
+        XCTAssertNil(FriendCode.sharedName(inScanned: "takade://join?n=Rafi"))
+    }
+
+    func testDisplayNameFallsBackToTheID() throws {
+        let code = try XCTUnwrap(FriendCode(raw: "7F3K9QXM"))
+        var friend = Friend(accountID: "a", code: code, publicKey: "k", name: "", namedByMe: false)
+        XCTAssertEqual(friend.displayName, "TKD-7F3K-9QXM")
+        friend.name = "Rafi"
+        XCTAssertEqual(friend.displayName, "Rafi")
+    }
+
+    func testNamedByMeIsStored() async throws {
+        let repo = try SQLiteLedgerRepository()
+        let friend = Friend(accountID: "a", code: FriendCode(raw: "7F3K9QXM")!, publicKey: "k", name: "", namedByMe: false)
+        try await repo.save(friend)
+        var stored = try await repo.friend(id: friend.id)
+        XCTAssertEqual(stored?.namedByMe, false)
+        stored?.name = "Rafi"
+        stored?.namedByMe = true
+        try await repo.save(stored!)
+        let again = try await repo.friend(id: friend.id)
+        XCTAssertEqual(again?.namedByMe, true)
+        XCTAssertEqual(again?.name, "Rafi")
+    }
+}
