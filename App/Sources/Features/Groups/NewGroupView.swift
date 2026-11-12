@@ -260,7 +260,7 @@ struct NewGroupView: View {
     @ViewBuilder private var addSection: some View {
         Section {
             HStack(spacing: Spacing.s) {
-                Image(systemName: "magnifyingglass").foregroundStyle(Color.inkMuted).accessibilityHidden(true)
+                Image(systemName: "magnifyingglass").foregroundStyle(Color.ink).accessibilityHidden(true)
                 TextField("Search friends and contacts", text: $query,
                           prompt: Text("Search friends and contacts").foregroundStyle(Color.inkMuted))
                     .focused($focus, equals: .search)
@@ -654,7 +654,7 @@ private struct KindCard: View {
                     Spacer()
                     Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
                         .font(.title3)
-                        .foregroundStyle(isOn ? Color.ink : Color.inkMuted)
+                        .foregroundStyle(Color.ink)
                         .accessibilityHidden(true)
                 }
                 Text(title).font(AppFont.bodyEmphasis).foregroundStyle(Color.ink)
