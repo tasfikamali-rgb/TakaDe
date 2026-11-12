@@ -478,16 +478,10 @@ struct NewGroupView: View {
 
     /// Only when Contacts access was already given: the search box never asks on its own.
     private func loadContactNames() async {
-        guard contactNames.isEmpty, Self.canReadContacts(contactsStatus) else { return }
+        guard contactNames.isEmpty, ContactAccess.canRead(contactsStatus) else { return }
         contactNames = await Task.detached(priority: .userInitiated) {
             ContactSearchSheet.readNames(from: CNContactStore())
         }.value
-    }
-
-    private static func canReadContacts(_ status: CNAuthorizationStatus) -> Bool {
-        if status == .authorized { return true }
-        if #available(iOS 18.0, *) { return status == .limited }
-        return false
     }
 
     private func pickPhoto(_ data: Data) {

@@ -35,7 +35,10 @@ the CI build, not yet on a real phone.
   four orientations, which iPad multitasking needs (`scripts/ci/store_check.py`).
 
 ## Consequences
-- The group page's own "Add a person" is unchanged for now (it still allows a typed name).
+- The group page's "Add a person" menu follows the same rule (Sabit, 2026-11-12, "yes"):
+  "Type a name" became "Search friends and contacts" (`AddPeopleSheet`), which adds a tapped
+  friend or contact at once and sends a friend the sealed invite. "From contacts" and "TakaDe
+  ID or QR code" stay; email invites go through the toolbar's invite link.
 - UI flows add Apple's sample simulator contact "Kate Bell" instead of typing a name, with
   Contacts allowed in `launchApp`.
 - Bengali strings are drafted and marked for native review.
