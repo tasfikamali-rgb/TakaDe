@@ -6,11 +6,9 @@ import TakaDeCore
 /// at first launch and can't be removed or changed (Sabit, 2026-11-12).
 struct AccountView: View {
     @Environment(AccountModel.self) private var account
-    @Environment(AppModel.self) private var app
     @AppStorage(AccountModel.nameKey) private var myName = ""
     @State private var flow: SignInMode?
     @State private var addingMethod = false
-    @State private var confirmingDelete = false
     @State private var removing: AccountIdentity?
     @State private var errorMessage: String?
     @State private var working = false
@@ -86,14 +84,6 @@ struct AccountView: View {
         .sheet(isPresented: $addingMethod) {
             AccountFlowSheet(mode: .link) { addingMethod = false }.rebuildsOnDynamicType()
         }
-        .confirmationDialog("Delete your account?", isPresented: $confirmingDelete, titleVisibility: .visible) {
-            Button("Delete account, keep my groups", role: .destructive) { deleteAccount(eraseData: false) }
-            Button("Delete account and all my data", role: .destructive) { deleteAccount(eraseData: true) }
-        } message: {
-            Text(account.usesAccountService
-                 ? LocalizedStringKey("Your TakaDe account and its sign-in methods are deleted from TakaDe's sign-in service, and you're signed out on this phone. This can't be undone.")
-                 : LocalizedStringKey("This signs you out, removes TakaDe's access to your Apple or Google account, and clears sign-in data from this phone."))
-        }
         .confirmationDialog(Text("Remove this sign-in method?"), isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
                             titleVisibility: .visible, presenting: removing) { identity in
             Button("Remove", role: .destructive) { unlink(identity) }
@@ -136,9 +126,9 @@ struct AccountView: View {
         }
         Section {
             Button("Sign out", action: signOut)
-            // The app's darker red: the system red is under 4.5:1 on white.
-            Button("Delete account", role: .destructive) { confirmingDelete = true }
-                .foregroundStyle(Color.owe)
+        } footer: {
+            Text("To delete your account or your data, open Settings.")
+                .foregroundStyle(Color.inkMuted)
         }
     }
 
@@ -179,10 +169,6 @@ struct AccountView: View {
     private func unlink(_ identity: AccountIdentity) {
         removing = nil
         run { try await account.unlink(identity) }
-    }
-
-    private func deleteAccount(eraseData: Bool) {
-        run { try await account.deleteAccount(eraseData: eraseData, app: app) }
     }
 
     private func run(_ work: @escaping () async throws -> Void) {

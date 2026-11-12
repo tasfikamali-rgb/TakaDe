@@ -35,13 +35,14 @@ struct SettingsView: View {
                 NavigationLink {
                     DataAndExportView()
                 } label: {
-                    Label("Data and export", systemImage: "externaldrive")
+                    Label("Data and export", systemImage: "square.and.arrow.up")
                         .foregroundStyle(Color.ink)
                 }
             } footer: {
-                Text("Export a copy of your groups, or delete everything from this phone.")
+                Text("What's stored where, and a copy of all your groups.")
                     .foregroundStyle(Color.inkMuted)
             }
+            DeleteSection()
         }
         .readableWidth()
         .navigationTitle("Settings")

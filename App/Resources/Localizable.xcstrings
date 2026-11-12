@@ -8621,19 +8621,36 @@
         }
       }
     },
-    "Export a copy of your groups, or delete everything from this phone.": {
+    "To delete your account or your data, open Settings.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "আপনার গ্রুপগুলোর একটি কপি এক্সপোর্ট করুন, অথবা এই ফোন থেকে সবকিছু মুছে ফেলুন।"
+            "value": "অ্যাকাউন্ট বা ডেটা মুছতে সেটিংস খুলুন।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Export a copy of your groups, or delete everything from this phone."
+            "value": "To delete your account or your data, open Settings."
+          }
+        }
+      }
+    },
+    "What's stored where, and a copy of all your groups.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কোথায় কী রাখা আছে, আর আপনার সব গ্রুপের একটি কপি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What's stored where, and a copy of all your groups."
           }
         }
       }
