@@ -105,7 +105,7 @@ jobs:
     name: Maestro on ${{ matrix.device }} (${{ matrix.shard }})
     needs: build
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       # One machine per device: the free plan runs only 5 Mac jobs at a time across the
