@@ -1,3 +1,6 @@
+import SwiftUI
+import TakaDeCore
+
 /// The receipt on an expense, so everyone in the group can see what was paid. The phone
 /// that took the photo shows the photo; the others in a shared group get the text read from
 /// it (ADR 28), fetched from the relay the first time. Tap to see it full size.
