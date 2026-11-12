@@ -32,5 +32,5 @@ extension Color {
 
 /// The moving line texture behind the Home header: hairlines in the header's own ink.
 extension Color {
-    static let headerTexture = Color.onHeader.opacity(0.09)
+    static let headerTexture = Color.onHeader.opacity(0.05)
 }
