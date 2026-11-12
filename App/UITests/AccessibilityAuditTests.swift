@@ -81,6 +81,7 @@ final class AccessibilityAuditTests: XCTestCase {
 
     /// Temporary diagnostic: the same Bengali audit with the background lines moving,
     /// to see whether holding them changes the "Text clipped" report. Remove once known.
+    @MainActor
     func testBengaliLaunchesWithMovingLines() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-appLanguage", "bn", "-AppleLanguages", "(bn)", "-AppleLocale", "bn_BD"]
