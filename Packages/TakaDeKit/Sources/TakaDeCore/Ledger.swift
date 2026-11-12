@@ -43,8 +43,11 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
     /// The group's colour, taken from its photo, as "#RRGGBB". Screens turn it into a soft
     /// tint that stays readable in light and dark. Nil means the standard lilac.
     public var accentHex: String?
+    /// Who made the group. Only they can delete it, for everyone (Sabit, 2026-11-12). Set
+    /// once and never changed; nil for groups made before this was recorded.
+    public var createdBy: MemberID?
 
-    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil, accentHex: String? = nil) {
+    public init(id: GroupID = GroupID(), name: String, currency: Currency = .bdt, members: [Member], createdAt: Date = Date(), archivedAt: Date? = nil, simplifiesDebts: Bool = true, kind: GroupKind = .standard, managerID: MemberID? = nil, accentHex: String? = nil, createdBy: MemberID? = nil) {
         self.id = id
         self.name = name
         self.currency = currency
@@ -55,12 +58,18 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         self.kind = kind
         self.managerID = managerID
         self.accentHex = accentHex
+        self.createdBy = createdBy
     }
 
     public var isMess: Bool { kind == .mess }
 
+    /// The person who can delete the group. Groups made before `createdBy` existed fall back
+    /// to the first person listed: the app has always put the maker first, and every phone
+    /// keeps the same order.
+    public var ownerID: MemberID? { createdBy ?? members.first?.id }
+
     private enum CodingKeys: String, CodingKey {
-        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID, accentHex
+        case id, name, currency, members, createdAt, archivedAt, simplifiesDebts, kind, managerID, accentHex, createdBy
     }
 
     /// Older snapshots have no `simplifiesDebts`; they decode with it on.
@@ -76,6 +85,7 @@ public struct ExpenseGroup: Hashable, Codable, Sendable, Identifiable {
         kind = try c.decodeIfPresent(GroupKind.self, forKey: .kind) ?? .standard
         managerID = try c.decodeIfPresent(MemberID.self, forKey: .managerID)
         accentHex = try c.decodeIfPresent(String.self, forKey: .accentHex)
+        createdBy = try c.decodeIfPresent(MemberID.self, forKey: .createdBy)
     }
 }
 

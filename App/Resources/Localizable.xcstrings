@@ -10542,6 +10542,210 @@
         }
       }
     },
+    "Drag to move the photo. Pinch to zoom.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবি সরাতে টেনে আনুন। বড়-ছোট করতে দুই আঙুলে চাপুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag to move the photo. Pinch to zoom."
+          }
+        }
+      }
+    },
+    "Zoom in": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বড় করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom in"
+          }
+        }
+      }
+    },
+    "Zoom out": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছোট করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom out"
+          }
+        }
+      }
+    },
+    "Use photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবিটি নিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use photo"
+          }
+        }
+      }
+    },
+    "Delete group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ মুছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete group"
+          }
+        }
+      }
+    },
+    "Delete %@?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ মুছবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete %@?"
+          }
+        }
+      }
+    },
+    "Asks first. Deletes the group and everything in it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আগে জিজ্ঞেস করবে। গ্রুপ আর এর সবকিছু মুছে যাবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asks first. Deletes the group and everything in it."
+          }
+        }
+      }
+    },
+    "The group, its expenses, payments and history are deleted for everyone in it. This can't be undone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ, এর খরচ, পেমেন্ট আর ইতিহাস সবার জন্য মুছে যাবে। এটা আর ফেরানো যাবে না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The group, its expenses, payments and history are deleted for everyone in it. This can't be undone."
+          }
+        }
+      }
+    },
+    "The group, its expenses, payments and history are deleted from this phone. This can't be undone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ, এর খরচ, পেমেন্ট আর ইতিহাস এই ফোন থেকে মুছে যাবে। এটা আর ফেরানো যাবে না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The group, its expenses, payments and history are deleted from this phone. This can't be undone."
+          }
+        }
+      }
+    },
+    "You're offline. Connect to the internet to delete this group for everyone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনি অফলাইনে আছেন। সবার জন্য গ্রুপটি মুছতে ইন্টারনেটে যুক্ত হন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're offline. Connect to the internet to delete this group for everyone."
+          }
+        }
+      }
+    },
+    "Only the person who made this group can delete it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুধু যিনি গ্রুপটি বানিয়েছেন তিনিই এটি মুছতে পারবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the person who made this group can delete it."
+          }
+        }
+      }
+    },
+    "The group wasn't deleted. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপটি মোছা যায়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The group wasn't deleted. Try again."
+          }
+        }
+      }
+    },
     "Use your Google photo?": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {

@@ -9,6 +9,9 @@ public protocol LedgerRepository: Sendable {
     /// (no expense, deleted ones included, no payment, no meal count) and they aren't "me"
     /// or the mess manager; otherwise throws `MemberRemovalError` and changes nothing.
     func removeMember(_ member: MemberID, from group: GroupID, actor: MemberID?) async throws
+    /// Deletes the group and everything in it from this phone: people, expenses, payments,
+    /// meal counts, its history and any changes still waiting to sync. Can't be undone.
+    func deleteGroup(_ group: GroupID) async throws
 
     func expenses(in group: GroupID, includeDeleted: Bool) async throws -> [Expense]
     func save(_ expense: Expense, actor: MemberID?) async throws

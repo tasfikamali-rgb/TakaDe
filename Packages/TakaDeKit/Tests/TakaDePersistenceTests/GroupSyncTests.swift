@@ -268,6 +268,90 @@ final class GroupSyncTests: XCTestCase {
         let shared = try await phone.sharedGroups()
         XCTAssertTrue(shared.isEmpty)
     }
+
+    // MARK: Deleting a group for everyone
+
+    private func deletion(of group: GroupID, by member: MemberID) throws -> SyncChange {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return SyncChange(groupID: group, entity: .groupDeleted, body: try encoder.encode(GroupDeletion(groupID: group, deletedBy: member)))
+    }
+
+    private func joinedFriend(of phone: SQLiteLedgerRepository, group: ExpenseGroup) async throws -> (SQLiteLedgerRepository, Int64) {
+        try await phone.startSharing(group.id)
+        let sent = try await phone.pendingChanges(in: group.id, limit: 100)
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        _ = try await friend.apply(relay(sent), in: group.id, syncedAt: Date())
+        try await friend.setMe(group.members[1].id, in: group.id)
+        return (friend, Int64(sent.count))
+    }
+
+    func testMakersDeletionDeletesTheGroupOnOtherPhones() async throws {
+        let (phone, group, _) = try await makeShared()
+        let (friend, last) = try await joinedFriend(of: phone, group: group)
+        // A change after the deletion in the same batch is not applied: the group stays gone.
+        var renamed = group
+        renamed.name = "Back again"
+        let later = SyncChange(groupID: group.id, entity: .group, body: try JSONEncoder.iso.encode(renamed.forSharing))
+        let result = try await friend.apply(relay([try deletion(of: group.id, by: group.members[0].id), later], from: last),
+                                            in: group.id, syncedAt: Date())
+        XCTAssertTrue(result.groupDeleted)
+        let gone = try await friend.group(group.id)
+        XCTAssertNil(gone)
+        let expenses = try await friend.expenses(in: group.id, includeDeleted: true)
+        XCTAssertTrue(expenses.isEmpty)
+        let history = try await friend.history(of: group.id)
+        XCTAssertTrue(history.isEmpty)
+        let state = try await friend.sharedState(of: group.id)
+        XCTAssertNil(state)
+    }
+
+    func testDeletionFromSomeoneElseIsIgnored() async throws {
+        let (phone, group, _) = try await makeShared()
+        let (friend, last) = try await joinedFriend(of: phone, group: group)
+        let result = try await friend.apply(relay([try deletion(of: group.id, by: group.members[1].id)], from: last),
+                                            in: group.id, syncedAt: Date())
+        XCTAssertFalse(result.groupDeleted)
+        XCTAssertEqual(result.rejected, 1)
+        let still = try await friend.group(group.id)
+        XCTAssertNotNil(still)
+    }
+
+    func testRecordedMakerCantBeChangedByAnotherPhone() async throws {
+        let phone = try SQLiteLedgerRepository()
+        let me = Member(displayName: "Sabit", isMe: true)
+        let rafi = Member(displayName: "Rafi")
+        let group = ExpenseGroup(name: "Car", members: [me, rafi], createdBy: me.id)
+        try await phone.save(group, actor: me.id)
+        let (friend, last) = try await joinedFriend(of: phone, group: group)
+        let joined = try await friend.group(group.id)
+        XCTAssertEqual(joined?.createdBy, me.id)
+
+        var hijack = group.forSharing
+        hijack.createdBy = rafi.id
+        let change = SyncChange(groupID: group.id, entity: .group, body: try JSONEncoder.iso.encode(hijack))
+        _ = try await friend.apply(relay([change], from: last), in: group.id, syncedAt: Date())
+        let after = try await friend.group(group.id)
+        XCTAssertEqual(after?.createdBy, me.id)
+    }
+
+    func testDeletingLocallyRemovesEverything() async throws {
+        let (phone, group, _) = try await makeShared()
+        try await phone.startSharing(group.id)
+        try await phone.deleteGroup(group.id)
+        let gone = try await phone.group(group.id)
+        XCTAssertNil(gone)
+        let pending = try await phone.pendingChanges(in: group.id, limit: 100)
+        XCTAssertTrue(pending.isEmpty)
+        let history = try await phone.history(of: group.id)
+        XCTAssertTrue(history.isEmpty)
+        // History stays append-only for everything else.
+        let other = ExpenseGroup(name: "Flat", members: [Member(displayName: "Sabit", isMe: true)])
+        try await phone.save(other, actor: nil)
+        let otherHistory = try await phone.history(of: other.id)
+        XCTAssertEqual(otherHistory.count, 1)
+    }
 }
 
 private extension JSONEncoder {
@@ -285,4 +369,5 @@ private extension JSONDecoder {
         d.dateDecodingStrategy = .iso8601
         return d
     }
+
 }
