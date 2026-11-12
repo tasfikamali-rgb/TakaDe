@@ -8,6 +8,7 @@ struct AddExpenseView: View {
     @State private var showingKeypad = false
     @State private var saveError: String?
     @State private var confirmingDelete = false
+    @State private var openReceipt: OpenReceipt?
     private let onDelete: ((Expense) -> Void)?
 
     init(group: ExpenseGroup) {
@@ -65,7 +66,7 @@ struct AddExpenseView: View {
                 }
 
                 if draft.hasReceipt {
-                    ReceiptPhotoSection(draft: draft)
+                    ReceiptPhotoSection(draft: draft) { openReceipt = $0 }
                 }
 
                 PaidBySection(draft: draft)
@@ -95,6 +96,8 @@ struct AddExpenseView: View {
                 AmountKeypadSheet(expression: $draft.amountExpression, currency: draft.group.currency)
                     .presentationDetents([.large])
             }
+            // Here, outside the Form, so syncing and row rebuilds can't close it.
+            .fullScreenCover(item: $openReceipt) { ReceiptViewer(receipt: $0) }
             .alert("Delete this expense?", isPresented: $confirmingDelete) {
                 Button("Yes", role: .destructive, action: deleteExpense)
                 Button("No", role: .cancel) {}

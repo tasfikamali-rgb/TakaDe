@@ -12394,6 +12394,40 @@
           }
         }
       }
+    },
+    "The photo is on the phone of the person who added this receipt. You see the text read from it, encrypted on the way here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবিটি আছে যিনি রসিদটি যোগ করেছেন তাঁর ফোনে। আপনি এর থেকে পড়া লেখা দেখছেন, যা এখানে আসার পথে এনক্রিপ্ট করা ছিল।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The photo is on the phone of the person who added this receipt. You see the text read from it, encrypted on the way here."
+          }
+        }
+      }
+    },
+    "The photo stays on the phone of the person who added it. This is the text read from it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ছবিটি যিনি যোগ করেছেন তাঁর ফোনেই থাকে। এটি সেই ছবি থেকে পড়া লেখা।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The photo stays on the phone of the person who added it. This is the text read from it."
+          }
+        }
+      }
     }
   }
 }
