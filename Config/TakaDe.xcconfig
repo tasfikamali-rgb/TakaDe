@@ -30,7 +30,7 @@ TAKADE_EMAIL_SIGN_IN = NO
 // app always uses the main project. The spare's anon key goes in Supabase.local.xcconfig.
 TAKADE_SUPABASE_SPARE_HOST = luvqbyikhonhcydafiia.supabase.co
 TAKADE_SUPABASE_SPARE_ANON_KEY =
-TAKADE_SERVER_SWITCH_URL =
+TAKADE_SERVER_SWITCH_URL = pub-16b26049c05d4da7991939de4698b34b.r2.dev/switch.json
 
 #include? "Supabase.local.xcconfig"
 
