@@ -18,7 +18,9 @@ struct GroupPickerSheet: View {
                             Text(verbatim: group.name).foregroundStyle(Color.ink)
                         }
                     }
+                    .listRowBackground(Color.surface)
                 }
+                .texturedBackground()
                 .navigationTitle("Which group?")
                 .navigationBarTitleDisplayMode(.inline)
             }

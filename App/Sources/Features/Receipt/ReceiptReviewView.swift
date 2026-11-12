@@ -28,7 +28,7 @@ struct ReceiptReviewView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 Section {
                     Text(suggestion.confidence >= 0.8
                          ? LocalizedStringKey("Check these before using them")

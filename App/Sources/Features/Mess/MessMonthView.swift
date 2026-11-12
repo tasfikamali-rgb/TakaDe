@@ -36,7 +36,7 @@ struct MessMonthView: View {
             .padding(.vertical, Spacing.m)
             .readableWidth()
         }
-        .background(Color.canvas)
+        .background(TexturedBackground())
         .navigationTitle("Mess month")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

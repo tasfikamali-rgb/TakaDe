@@ -17,7 +17,7 @@ struct AccountView: View {
     @SceneStorage("account.showingSettings") private var showingSettings = false
 
     var body: some View {
-        Form {
+        AppForm {
             Section {
                 ProfileHeader(name: myName, email: account.profile?.accountEmail ?? account.account?.email, isSignedIn: account.isSignedIn)
                     .listRowBackground(Color.clear)

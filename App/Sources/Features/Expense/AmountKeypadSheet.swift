@@ -33,7 +33,7 @@ struct AmountKeypadSheet: View {
         .padding(.bottom, Spacing.m)
         .frame(maxWidth: 480)
         .frame(maxWidth: .infinity)
-        .background(Color.canvas)
+        .background(TexturedBackground())
     }
 
     private func press(_ key: KeypadKey) {

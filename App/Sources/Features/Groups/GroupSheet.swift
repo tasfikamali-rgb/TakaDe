@@ -52,8 +52,8 @@ struct GroupSheet: View {
         .padding(.bottom, Spacing.huge * 2)
         .readableWidth()
         .background(
-            UnevenRoundedRectangle(topLeadingRadius: Radius.sheet, topTrailingRadius: Radius.sheet, style: .continuous)
-                .fill(Color.canvas)
+            TexturedBackground()
+                .clipShape(UnevenRoundedRectangle(topLeadingRadius: Radius.sheet, topTrailingRadius: Radius.sheet, style: .continuous))
         )
         .offset(y: -Radius.sheet)
         .padding(.bottom, -Radius.sheet)

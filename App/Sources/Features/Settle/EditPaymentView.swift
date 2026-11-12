@@ -28,7 +28,7 @@ struct EditPaymentView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 Section {
                     LabeledContent {
                         TextField("0", text: $amountText)
@@ -54,8 +54,6 @@ struct EditPaymentView: View {
                     Section { Text(verbatim: saveError).foregroundStyle(Color.owe) }
                 }
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.canvas)
             .navigationTitle("Edit payment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

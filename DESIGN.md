@@ -58,7 +58,7 @@ If either download fails, stop and ask me to grab them manually from fontshare.c
 
 ## 1. Visual theme and atmosphere
 
-Calm, tactile, money you can touch. Light gray canvas, white sheets that slide up over the wallet header (white in light mode, near-black only in dark mode), one hot lime accent that only appears when something happens (selected tab, money sent, debt settled). Big numbers do the talking. Everything feels physical: sheets have weight, the nav notch is liquid, confirmation is a swipe, not a tap.
+Calm, tactile, money you can touch, like a khata ledger. Cream paper in light mode and deep navy in dark, with fine ruled lines that ripple slowly behind every screen. Lighter cream sheets slide up over the wallet header. One red accent appears only where something happens (selected tab, the main button, money sent). All color is flat and matte: no gloss, gradients or glows (Sabit, 2026-11-12). Big numbers do the talking. Everything feels physical: sheets have weight, the nav notch is liquid, confirmation is a swipe, not a tap.
 
 Density is low on home and high only inside transaction lists. One memorable thing per screen, everything around it quiet.
 
@@ -88,27 +88,34 @@ Take the specific idea from each reference, not the whole look. These are the pa
 
 ## 2. Color palette and roles
 
-| Token | Hex | Role |
-|---|---|---|
-| `canvas` | `#F2F2F2` | App background, light mode |
-| `surface` | `#FFFFFF` | Sheets, cards, keypad keys |
-| `ink` | `#161616` | Primary text |
-| `header` | `#FFFFFF` | Wallet header, nav bar, swipe track. Light in light mode: dark surfaces belong to dark mode only (Sabit, 2026-11-11) |
-| `inkMuted` | `#5E5E5E` | Secondary text (5.7:1 on canvas, so it passes WCAG AA for small text), "Available" labels, decimals |
-| `lime` | `#4BE83A` | Active tab circle, success screen, settle up. Never for body text |
-| `lilac` | `#DAD7EE` | Optional soft header tint for group screens |
-| `owed` | `#1F9D55` | "You are owed" amounts (readable green, lime is too light for text) |
-| `owe` | `#E5533D` | "You owe" amounts |
-| `bkash` | `#E2136E` | Only on bKash pay and settle buttons and the bKash logo badge |
+Palette (Sabit, 2026-11-12): maroon `#780000`, red `#C1121F`, cream `#FDF0D5`, navy `#003049`, steel blue `#669BBC`. Every token comes from these five, or a lighter or darker step of one of them.
 
-Dark mode: canvas `#0E0E0E`, surface `#1C1C1E`, raised surface `#2A2A2C`, ink becomes `#F5F5F5`, inkMuted becomes `#9A9A9F`, owed becomes `#3DD27A`, owe becomes `#FF6B57`. Lime and bKash pink stay the same. In dark mode the wallet header (`#2A2A2C`) must still separate from the canvas, so it uses `#1C1C1E` with the sheet at `#000000` or the reverse; never two near identical blacks touching. Define every color in an asset catalog with light and dark variants; never hardcode hex in views.
+| Token | Light | Dark | Role |
+|---|---|---|---|
+| `canvas` | `#FFF8EA` | `#001E2E` | App background and sheets |
+| `header` | `#FDF0D5` cream | `#003049` navy | Wallet header, tab bar, swipe track. Light in light mode: dark surfaces belong to dark mode only (Sabit, 2026-11-11) |
+| `surface` | `#FFFDF8` | `#0A3A55` | Cards, form rows, keypad keys |
+| `surfaceRaised` | `#F8EBD0` | `#124764` | Card within a card |
+| `ink` / `onHeader` | `#003049` | `#FDF0D5` | Primary text |
+| `inkMuted` | `#4A6274` | `#A9BFCC` | Secondary text and decimals (AA on every surface) |
+| `lime` (accent) | `#C1121F` | `#C1121F` | Selected tab, main buttons. The token keeps its old name; it is the red accent now. Never body text |
+| `onLime` | `#FDF0D5` | `#FDF0D5` | Text and icons on the accent (5.5:1) |
+| `lilac` | `#DCE8F1` | `#164B6B` | Steel blue tint for form headers and groups without a color |
+| `owe` | `#780000` maroon | `#F6A79E` | "You owe" amounts |
+| `owed` | `#2F6690` | `#8FBBD6` | "You are owed" amounts (steel blue, darkened for text) |
+| `oweTint` / `owedTint` | `#F8DEDA` / `#DCE8F1` | `#3D1A26` / `#0F4462` | Pills behind owe and owed text |
+| `toggleOn` | `#2F6690` | `#669BBC` | Switches when on |
+| `texture` | navy at 11% | cream at 9% | The moving ruled lines (`FlowingLines`) |
+| `bkash` | `#E2136E` | `#E2136E` | Only on bKash pay and settle buttons and the bKash logo badge |
+
+Every screen sits on `TexturedBackground` (a flat token color with `FlowingLines` over it); forms use `AppForm`, lists use `.texturedBackground()` with rows on `surface`. Define every color in an asset catalog with light and dark variants; never hardcode hex in views.
 
 ### Contrast and appearance, both modes perfect
 
 The app follows the system appearance and must look finished in light mode and in dark mode. Neither is an afterthought.
 
 1. Every text and background pair meets WCAG AA (4.5:1 for body, 3:1 for large numbers and icons) in both modes. Check each pair; do not eyeball it.
-2. Text on lime is always `#161616` in both modes. Text on bKash pink is always white.
+2. Text on the red accent is always cream `#FDF0D5` in both modes. Text on bKash pink is always white.
 3. Tinted pills (gains, losses, status) get their own light and dark tints so the text stays readable on both.
 4. Shadows fade out in dark mode; separation comes from the lighter raised surface instead.
 5. Check every screen with `.preferredColorScheme(.light)` and `.preferredColorScheme(.dark)` previews side by side, plus Increase Contrast and the largest Dynamic Type size. A screen is not done until all of these look right.
@@ -151,7 +158,7 @@ Register fonts through `Font.custom(_:size:relativeTo:)` so Dynamic Type still s
 
 5. **Swipe to confirm**. Replaces the pay button on send and settle. A track with a thumb the user drags right; it tracks 1:1 with the finger, rubber bands past the end, and springs back if released before 70%. On commit, haptic success.
 
-6. **Success screen**. Full screen lime, big checkmark, amount in Inter Display, "Sent to Pavlo" in Inter. Enters by expanding from the confirm thumb's position. Tap anywhere to close; it collapses back the same way it came.
+6. **Success screen**. Full screen red accent, big checkmark, amount in Inter Display, "Sent to Pavlo" in Inter. Enters by expanding from the confirm thumb's position. Tap anywhere to close; it collapses back the same way it came.
 
 7. **Send again grid**. 2×2 avatar tiles with a plus tile, next to a small income or balance trend card, as in the wallet reference.
 
@@ -183,9 +190,9 @@ Every gesture driven animation must be interruptible: grab a moving sheet and it
 
 ## 8. Do and don't
 
-Do: let the numbers be big, keep lime rare, make confirmation physical, write labels that say exactly what happens ("Split equally", "Settle up", "Remind Rishan").
+Do: let the numbers be big, keep the red accent rare, make confirmation physical, write labels that say exactly what happens ("Split equally", "Settle up", "Remind Rishan").
 
-Don't: use red and green as the only signal for owe and owed (add the words), put lime text on white, use gradients as decoration, use stock SF Symbols where a custom icon is needed for brand (bKash), or apologize in error messages. Errors say what went wrong and how to fix it.
+Don't: use color as the only signal for owe and owed (add the words), put red accent text on cream, use gradients as decoration, use stock SF Symbols where a custom icon is needed for brand (bKash), or apologize in error messages. Errors say what went wrong and how to fix it.
 
 ## 9. Accessibility
 

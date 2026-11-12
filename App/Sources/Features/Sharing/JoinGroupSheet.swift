@@ -29,7 +29,7 @@ struct JoinGroupSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 switch stage {
                 case .paste: pasteSection
                 case .confirm: confirmSection

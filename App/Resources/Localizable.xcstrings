@@ -2484,23 +2484,6 @@
         }
       }
     },
-    "Split costs with friends and see who pays whom": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "বন্ধুদের সাথে খরচ ভাগ করুন, দেখুন কে কাকে দেবে"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Split costs with friends and see who pays whom"
-          }
-        }
-      }
-    },
     "%@ left to assign": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -9042,6 +9025,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Expenses, payments and edits in any group show up here"
+          }
+        }
+      }
+    },
+    "Who owes who?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কে কাকে দেবে?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who owes who?"
+          }
+        }
+      }
+    },
+    "We got receipts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "হিসাব একদম ক্লিয়ার"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We got receipts"
+          }
+        }
+      }
+    },
+    "Who owes who? We got receipts!": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কে কাকে দেবে? হিসাব একদম ক্লিয়ার!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who owes who? We got receipts!"
           }
         }
       }

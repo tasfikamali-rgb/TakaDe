@@ -28,7 +28,7 @@ struct AppLockScreen: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.lilac.ignoresSafeArea())
+        .background(TexturedBackground(base: .lilac).ignoresSafeArea())
         .environment(\.locale, language.locale ?? .autoupdatingCurrent)
         .accessibilityAddTraits(.isModal)
     }
