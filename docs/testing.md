@@ -25,7 +25,7 @@ minutes 10×, so only the cheap checks run on every push:
 | Rotation keeps state | `UI flows…` / `03_resize_keeps_state` | The open group survives a width change (rotation stands in for folding) |
 | iPhone Duo | `UI flows…` / iPhone Duo | Runs the flows on the iPhone Duo simulator on the newest runner Xcode. If the runner has no such simulator, the job says **NOT TESTED** in its summary instead of passing silently. Folded/unfolded poses are switched in Xcode's Device Hub, so the second pose is a manual check for now |
 | Onboarding and delete-all-data | `UI flows…` / `subflows/onboarding`, `04_delete_all_data` | Every flow starts with first-launch onboarding; deleting all data returns to onboarding with no groups left. Delete account (signed in) needs a test Apple/Google account and is checked by hand |
-| UI flows | `UI flows and screenshots` | Creates a group, adds an expense with the keypad, opens settle up, switches language; on iPhone 16 and iPad Pro 13-inch, light and dark |
+| UI flows | `UI flows and screenshots` | Creates a group, adds an expense with the keypad, opens settle up, switches language; all flows on iPhone 16 split across two machines, the main journey again in dark mode, and the layout flows on iPad Pro 13-inch |
 
 ### When a flow fails
 
@@ -35,7 +35,11 @@ screenshot and logs, and prints the text that was on screen.
 
 ### Speed
 
-- Jobs run side by side instead of one after another.
+- Jobs run side by side instead of one after another: one Maestro job per device.
+- The free plan runs at most 5 Mac jobs at a time across the whole repo, so most of the
+  wait is queueing when several branches run at once. Each run asks for 4 Macs (build,
+  accessibility, iPhone, iPad); the iPhone Duo job only runs when started by hand.
+- Simulators boot while the app builds or Maestro downloads, not before.
 - Swift packages are cached between runs.
 - A new push cancels the run that was still going for the same branch.
 - Store checks on source run on Linux, which starts much faster than macOS.
