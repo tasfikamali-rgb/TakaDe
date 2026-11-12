@@ -36,8 +36,8 @@ struct OnboardingHeader: View {
 
     static let stepCount = 4
 
-    /// Where you're from, language, the account choice, then the details (name or
-    /// sign-in method). The welcome screen comes before and has no header.
+    /// Where you're from, language, sign in or not, then your name. The welcome screen
+    /// comes before and has no header.
     private var progress: Int {
         switch step {
         case .welcome, .region: 0
@@ -51,10 +51,8 @@ struct OnboardingHeader: View {
         switch (step, mode) {
         case (.welcome, _), (.region, _): "Where are you from?"
         case (.language, _): "Choose your language"
-        case (.account, _): "Set up your account"
+        case (.account, _), (.method, _): "Sign in or continue"
         case (.name, _): "What should your friends call you?"
-        case (.method, .signIn): "Sign in to your account"
-        case (.method, _): "How do you want to sign in?"
         }
     }
 }

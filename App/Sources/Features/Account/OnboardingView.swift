@@ -1,10 +1,13 @@
 import SwiftUI
 import TakaDeCore
 
-/// First launch (Sabit, 2026-11-11): a welcome screen with the logo, where you're from,
-/// language, then Create an account, Sign in, or Continue without account, then a name
-/// (and photo) and a sign-in method as needed. Groups and expenses always stay on this phone.
+/// First launch (Sabit, 2026-11-11, order changed 2026-11-12): a welcome screen with the
+/// logo, where you're from, language, then Continue with Apple, Continue with Google or
+/// Continue without account, and only then your name (and photo). Apple's name, when it
+/// sends one, fills the name in; it stays on this phone. Groups and expenses always stay on
+/// this phone.
 struct OnboardingView: View {
+    /// `method` is no longer shown; it's kept so a step saved by an older version maps back.
     enum Step: Int { case welcome, region, language, account, name, method }
     enum Mode: String { case create, signIn, guest }
 
@@ -37,7 +40,7 @@ struct OnboardingView: View {
         .onAppear {
             if name.isEmpty { name = savedName }
             // A sign-in isn't kept across launches until the profile exists, so start over.
-            if step == .method || step == .name && mode == .signIn { stepRaw = Step.account.rawValue }
+            if step == .method || step == .name && mode != .guest { stepRaw = Step.account.rawValue }
         }
     }
 
@@ -75,7 +78,7 @@ struct OnboardingView: View {
                     case .language: languageStep
                     case .account: accountStep
                     case .name: nameStep
-                    case .method: methodStep
+                    case .method: accountStep
                     }
                 }
                 .padding(.horizontal, Spacing.screenMargin)
@@ -232,17 +235,17 @@ struct OnboardingView: View {
     }
 
     private var accountStep: some View {
-        VStack(alignment: .leading, spacing: Spacing.s) {
+        VStack(alignment: .leading, spacing: Spacing.m) {
             Text(account.usesAccountService
-                 ? LocalizedStringKey("An account lets you sign in on a new phone. Your groups and expenses stay on this phone either way.")
-                 : LocalizedStringKey("Signing in keeps your name and email with your groups. It all stays on this phone."))
+                 ? LocalizedStringKey("Sign in to use TakaDe on a new phone later. New here or coming back, it's the same button. Your groups and expenses stay on this phone either way.")
+                 : LocalizedStringKey("Signing in keeps your email with your groups. It all stays on this phone."))
                 .font(AppFont.body)
                 .foregroundStyle(Color.inkMuted)
-                .padding(.bottom, Spacing.s)
-            Button("Create an account") { start(.create, at: .name) }
-                .buttonStyle(PillButtonStyle())
-            Button { start(.signIn, at: .method) } label: {
-                Text("Sign in")
+                .fixedSize(horizontal: false, vertical: true)
+            // Creates the account if there isn't one yet, or signs in to it.
+            SignInMethods(mode: .create, name: nil, onFinished: handleSignIn)
+            Button { start(.guest) } label: {
+                Text("Continue without account")
                     .font(AppFont.bodyEmphasis)
                     .frame(maxWidth: .infinity, minHeight: 52)
                     .foregroundStyle(Color.ink)
@@ -250,10 +253,9 @@ struct OnboardingView: View {
                     .overlay(Capsule().stroke(Color.ink.opacity(0.2), lineWidth: 1))
             }
             .buttonStyle(PressScaleButtonStyle())
-            Button("Continue without account") { start(.guest, at: .name) }
-                .font(AppFont.bodyEmphasis)
-                .foregroundStyle(Color.ink)
-                .frame(maxWidth: .infinity, minHeight: 48)
+            Text("You can sign in later from Account.")
+                .font(AppFont.caption)
+                .foregroundStyle(Color.inkMuted)
             Button("Back") { go(to: .language) }
                 .font(AppFont.label)
                 .foregroundStyle(Color.inkMuted)
@@ -284,7 +286,7 @@ struct OnboardingView: View {
             TextField("Your name", text: $name, prompt: Text("Your name").foregroundStyle(Color.inkMuted))
                 .font(AppFont.headline)
                 .textContentType(.name)
-                .submitLabel(asksForMethod ? .next : .done)
+                .submitLabel(.done)
                 .onSubmit(nameDone)
                 .padding(Spacing.m)
                 .frame(minHeight: 56)
@@ -299,7 +301,7 @@ struct OnboardingView: View {
                 Text(verbatim: errorMessage).font(AppFont.caption).foregroundStyle(Color.owe)
             }
             Spacer(minLength: Spacing.l)
-            Button(asksForMethod ? LocalizedStringKey("Continue") : LocalizedStringKey("Start splitting"), action: nameDone)
+            Button("Start splitting", action: nameDone)
                 .buttonStyle(PillButtonStyle())
                 .disabled(!PersonName.isValid(trimmedName) || saving)
             Button("Back", action: backToWelcome)
@@ -309,38 +311,23 @@ struct OnboardingView: View {
         }
     }
 
-    private var methodStep: some View {
-        VStack(alignment: .leading, spacing: Spacing.m) {
-            SignInMethods(mode: mode == .signIn ? .signIn : .create, name: mode == .create ? trimmedName : nil, onFinished: handleSignIn)
-            if mode == .signIn {
-                Text("New to TakaDe? Go back and choose Create an account.")
-                    .font(AppFont.caption)
-                    .foregroundStyle(Color.inkMuted)
-            }
-            Button("Back") { go(to: mode == .create ? .name : .account) }
-                .font(AppFont.label)
-                .foregroundStyle(Color.inkMuted)
-                .frame(maxWidth: .infinity, minHeight: 44)
-        }
-    }
-
     // MARK: Actions
 
     private var trimmedName: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
-    private var asksForMethod: Bool { mode == .create && !signedIn }
 
     private func go(to next: Step) { stepRaw = next.rawValue }
 
-    private func start(_ mode: Mode, at step: Step) {
+    /// Without an account: straight to the name.
+    private func start(_ mode: Mode) {
         modeRaw = mode.rawValue
         notice = nil
         signedIn = false
-        go(to: step)
+        go(to: .name)
     }
 
     private func nameDone() {
         guard PersonName.isValid(trimmedName) else { return }
-        if asksForMethod { go(to: .method) } else { finish() }
+        finish()
     }
 
     private func backToWelcome() {
@@ -352,31 +339,21 @@ struct OnboardingView: View {
         go(to: .account)
     }
 
-    /// Picking the other door is fine: a sign-in that made a new account becomes Create,
-    /// and Create with an existing account just signs in.
+    /// After Apple or Google, new account or not, the name comes next. Apple's name, sent
+    /// only the first time someone uses Apple with TakaDe, fills it in; names never come from
+    /// or go to the server, so someone coming back types theirs again.
     private func handleSignIn(_ outcome: AccountModel.SignInOutcome) {
+        modeRaw = outcome.isNew ? Mode.create.rawValue : Mode.signIn.rawValue
         signedIn = true
-        let serverName = outcome.name?.trimmingCharacters(in: .whitespacesAndNewlines)
-        switch mode {
-        case .signIn where outcome.isNew && account.usesAccountService:
-            notice = "We didn't find an account for that sign-in, so we made a new one. What should we call you?"
-            if trimmedName.isEmpty, let serverName { name = serverName }
-            go(to: .name)
-        case .create where !outcome.isNew && account.usesAccountService:
-            notice = "You already had a TakaDe account, so we signed you in."
-            if let serverName, !serverName.isEmpty { name = serverName }
-            go(to: .name)
-        case .signIn:
-            if let serverName, !serverName.isEmpty {
-                name = serverName
-                finish()
-            } else {
-                notice = nil
-                go(to: .name)
-            }
-        case .create, .guest:
-            finish()
+        if let given = outcome.name?.trimmingCharacters(in: .whitespacesAndNewlines), !given.isEmpty, trimmedName.isEmpty {
+            name = given
         }
+        if !outcome.isNew && account.usesAccountService {
+            notice = "Welcome back. Your name lives on your phone, so add it here."
+        } else {
+            notice = nil
+        }
+        go(to: .name)
     }
 
     private func finish() {

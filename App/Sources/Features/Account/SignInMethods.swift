@@ -75,7 +75,8 @@ struct SignInMethods: View {
 
     private var appleLabel: SignInWithAppleButton.Label {
         switch mode {
-        case .create: .signUp
+        // "Continue", like Google's button: the same button makes or opens the account.
+        case .create: .continue
         case .signIn: .signIn
         case .link: .continue
         }

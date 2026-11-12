@@ -5494,57 +5494,6 @@
       },
       "extractionState": "stale"
     },
-    "Sign in to your account": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "আপনার অ্যাকাউন্টে সাইন ইন করুন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sign in to your account"
-          }
-        }
-      }
-    },
-    "How do you want to sign in?": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "কীভাবে সাইন ইন করতে চান?"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "How do you want to sign in?"
-          }
-        }
-      }
-    },
-    "An account lets you sign in on a new phone. Your groups and expenses stay on this phone either way.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "অ্যাকাউন্ট থাকলে নতুন ফোনে সাইন ইন করতে পারবেন। আপনার গ্রুপ আর খরচ সবসময় এই ফোনেই থাকে।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An account lets you sign in on a new phone. Your groups and expenses stay on this phone either way."
-          }
-        }
-      }
-    },
     "Signing in keeps your name and email with your groups. It all stays on this phone.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -5596,23 +5545,6 @@
         }
       }
     },
-    "We didn't find an account for that sign-in, so we made a new one. What should we call you?": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "এই সাইন-ইনে কোনো অ্যাকাউন্ট পাওয়া যায়নি, তাই নতুন একটি খোলা হয়েছে। আপনাকে কী নামে ডাকব?"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "We didn't find an account for that sign-in, so we made a new one. What should we call you?"
-          }
-        }
-      }
-    },
     "You already had a TakaDe account, so we signed you in.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -5626,23 +5558,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "You already had a TakaDe account, so we signed you in."
-          }
-        }
-      }
-    },
-    "New to TakaDe? Go back and choose Create an account.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "TakaDe-তে নতুন? পেছনে গিয়ে অ্যাকাউন্ট খুলুন বেছে নিন।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New to TakaDe? Go back and choose Create an account."
           }
         }
       }
@@ -6408,23 +6323,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remove photo"
-          }
-        }
-      }
-    },
-    "Set up your account": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "আপনার অ্যাকাউন্ট সেট আপ করুন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Set up your account"
           }
         }
       }
@@ -7921,6 +7819,91 @@
           "stringUnit": {
             "state": "translated",
             "value": "Optional. The group takes its colour from the photo."
+          }
+        }
+      }
+    },
+    "Sign in to use TakaDe on a new phone later. New here or coming back, it's the same button. Your groups and expenses stay on this phone either way.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরে নতুন ফোনে TakaDe ব্যবহার করতে সাইন ইন করুন। নতুন হোন বা ফিরে আসুন, বোতাম একই। আপনার গ্রুপ আর খরচ সবসময় এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to use TakaDe on a new phone later. New here or coming back, it's the same button. Your groups and expenses stay on this phone either way."
+          }
+        }
+      }
+    },
+    "Signing in keeps your email with your groups. It all stays on this phone.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সাইন ইন করলে আপনার ইমেইল গ্রুপের সাথে থাকে। সবকিছু এই ফোনেই থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing in keeps your email with your groups. It all stays on this phone."
+          }
+        }
+      }
+    },
+    "You can sign in later from Account.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরে অ্যাকাউন্ট থেকে সাইন ইন করতে পারবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can sign in later from Account."
+          }
+        }
+      }
+    },
+    "Welcome back. Your name lives on your phone, so add it here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আবার স্বাগতম। আপনার নাম ফোনেই থাকে, তাই এখানে লিখুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome back. Your name lives on your phone, so add it here."
+          }
+        }
+      }
+    },
+    "Sign in or continue": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সাইন ইন করুন বা এগিয়ে যান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in or continue"
           }
         }
       }
