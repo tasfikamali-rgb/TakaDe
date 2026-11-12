@@ -57,8 +57,12 @@ tags:
 - tapOn: "Done"
 - tapOn: "What was it for?"
 - inputText: "Dinner"
+# Close the keyboard first: a tap on Save while the predictions bar updates was
+# sometimes lost. "Dinner" is also in the open form, so wait for Settle up,
+# which only shows on the group page once the debt exists.
+- hideKeyboard
 - tapOn: "Save"
 - extendedWaitUntil:
-    visible: "Dinner"
+    visible: "Settle up"
     timeout: 10000
 - tapOn: "Settle up"
