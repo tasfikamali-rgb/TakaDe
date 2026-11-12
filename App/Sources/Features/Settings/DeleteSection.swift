@@ -15,13 +15,18 @@ struct DeleteSection: View {
 
     var body: some View {
         Section {
+            // The app's darker red, set on the label: the system red is under 4.5:1 on white,
+            // and a Form draws a destructive-role button in system red whatever its style
+            // (the accessibility audit failed "Delete all my data"). The alerts that follow
+            // keep their destructive Yes buttons.
             if account.isSignedIn {
-                // The app's darker red: the system red is under 4.5:1 on white.
-                Button("Delete account", role: .destructive) { confirmingAccount = true }
-                    .foregroundStyle(Color.owe)
+                Button { confirmingAccount = true } label: {
+                    Text("Delete account").foregroundStyle(Color.owe)
+                }
             }
-            Button("Delete all my data", role: .destructive) { confirmingErase = true }
-                .foregroundStyle(Color.owe)
+            Button { confirmingErase = true } label: {
+                Text("Delete all my data").foregroundStyle(Color.owe)
+            }
             if let errorMessage {
                 Text(verbatim: errorMessage).foregroundStyle(Color.owe)
             }
