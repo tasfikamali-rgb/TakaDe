@@ -36,10 +36,22 @@ struct SettleUpView: View {
                 if let selected, selected.from == group.me?.id, !payeeHandles.isEmpty {
                     Section {
                         ForEach(payeeHandles) { PaymentHandleRow(handle: $0) }
+                        CopyRow(title: String(localized: "Amount", bundle: .appLanguage),
+                                display: MoneyFormatter.format(selected.amount).plain,
+                                value: KeypadText.plain(selected.amount))
+                        ForEach(walletApps, id: \.self) { rail in
+                            if let url = rail.walletAppURL {
+                                Link(destination: url) {
+                                    Label("Open \(rail.label)", systemImage: "arrow.up.forward.app")
+                                        .font(AppFont.bodyEmphasis)
+                                }
+                                .accessibilityHint(Text("Opens the \(rail.label) app, or its App Store page if it isn't installed"))
+                            }
+                        }
                     } header: {
                         Text("Send to \(group.storedName(of: selected.to))")
                     } footer: {
-                        Text("Copy the number into bKash or your bank app, pay there, then come back and record it.")
+                        Text("Copy the number and amount, pay in the app, then come back and record it. TakaDe doesn't send money or see the payment.")
                     }
                 }
                 if let selected, let me = group.me, selected.to == me.id {
@@ -90,6 +102,13 @@ struct SettleUpView: View {
     private var myTransfers: [SuggestedTransfer] {
         guard let me = group.me else { return [] }
         return BalanceCalculator.transfers(balances, simplify: isSimplified).filter { $0.from == me.id || $0.to == me.id }
+    }
+
+    /// One "Open" button per wallet the person takes, in their order.
+    private var walletApps: [PaymentHandle.Rail] {
+        var seen: [PaymentHandle.Rail] = []
+        for rail in payeeHandles.map(\.rail) where rail.walletAppURL != nil && !seen.contains(rail) { seen.append(rail) }
+        return seen
     }
 
     private var isSimplified: Bool { simplifies ?? group.simplifiesDebts }

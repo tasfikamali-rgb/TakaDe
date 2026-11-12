@@ -1481,23 +1481,6 @@
         }
       }
     },
-    "Recorded by you, not verified": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "আপনি লিখেছেন, যাচাই হয়নি"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recorded by you, not verified"
-          }
-        }
-      }
-    },
     "Reversed": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -4282,23 +4265,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Send to %@"
-          }
-        }
-      }
-    },
-    "Copy the number into bKash or your bank app, pay there, then come back and record it.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "নম্বরটি কপি করে বিকাশ বা ব্যাংক অ্যাপে পেমেন্ট করুন, তারপর ফিরে এসে এখানে লিখে রাখুন।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Copy the number into bKash or your bank app, pay there, then come back and record it."
           }
         }
       }
@@ -11592,6 +11558,125 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ is in the group, but their invite didn't go: %@"
+          }
+        }
+      }
+    },
+    "Reported paid, not confirmed yet": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরিশোধ করা হয়েছে বলে জানানো হয়েছে, এখনও নিশ্চিত হয়নি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reported paid, not confirmed yet"
+          }
+        }
+      }
+    },
+    "Copy the number and amount, pay in the app, then come back and record it. TakaDe doesn't send money or see the payment.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নম্বর আর টাকার পরিমাণ কপি করে অ্যাপে পেমেন্ট করুন, তারপর ফিরে এসে লিখে রাখুন। TakaDe টাকা পাঠায় না, পেমেন্টও দেখতে পায় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy the number and amount, pay in the app, then come back and record it. TakaDe doesn't send money or see the payment."
+          }
+        }
+      }
+    },
+    "Open %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ খুলুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open %@"
+          }
+        }
+      }
+    },
+    "Opens the %@ app, or its App Store page if it isn't installed": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ অ্যাপ খোলে, ইনস্টল না থাকলে App Store-এ এর পেজ খোলে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens the %@ app, or its App Store page if it isn't installed"
+          }
+        }
+      }
+    },
+    "I got it": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পেয়েছি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I got it"
+          }
+        }
+      }
+    },
+    "Marks this payment received. Only do this once the money has reached you.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই পেমেন্টটি পাওয়া হিসেবে চিহ্নিত করে। টাকা হাতে আসার পরই এটি করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marks this payment received. Only do this once the money has reached you."
+          }
+        }
+      }
+    },
+    "The payment wasn't marked received. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পেমেন্টটি পাওয়া হিসেবে চিহ্নিত হয়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The payment wasn't marked received. Try again."
           }
         }
       }
