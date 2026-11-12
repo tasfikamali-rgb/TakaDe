@@ -45,8 +45,17 @@ enum ActivityFeed {
             case .group, .member, .meal:
                 break
             }
-            return ActivityItem(id: event.id, group: group, occurredAt: event.occurredAt,
+            return ActivityItem(id: event.id, group: group, occurredAt: event.occurredAt, actor: event.actor,
+                                isMine: isMine(event), isFromOthers: isFromOthers(event),
                                 headline: HistoryDescription.text(for: event, in: group), details: [], amount: nil, isRemoved: false)
+        }
+
+        private func isMine(_ event: AuditEvent) -> Bool {
+            event.actor != nil && event.actor == group.me?.id
+        }
+
+        private func isFromOthers(_ event: AuditEvent) -> Bool {
+            event.source == .sync && !isMine(event)
         }
 
         private var someone: String { String(localized: "Someone", bundle: .appLanguage) }
@@ -77,7 +86,8 @@ enum ActivityFeed {
                     if let old { details = ExpenseChange.between(old, expense).map(describe) }
                 }
             }
-            return ActivityItem(id: event.id, group: group, occurredAt: event.occurredAt, headline: headline, details: details,
+            return ActivityItem(id: event.id, group: group, occurredAt: event.occurredAt, actor: event.actor,
+                                isMine: isMine(event), isFromOthers: isFromOthers(event), headline: headline, details: details,
                                 amount: expense.total, isRemoved: expense.deletedAt != nil)
         }
 
@@ -93,7 +103,8 @@ enum ActivityFeed {
                 headline = String(localized: "\(who) edited a payment", bundle: .appLanguage)
                 if let old { details += SettlementChange.between(old, settlement).map(describe) }
             }
-            return ActivityItem(id: event.id, group: group, occurredAt: event.occurredAt, headline: headline, details: details,
+            return ActivityItem(id: event.id, group: group, occurredAt: event.occurredAt, actor: event.actor,
+                                isMine: isMine(event), isFromOthers: isFromOthers(event), headline: headline, details: details,
                                 amount: settlement.amount, isRemoved: settlement.status == .reversed || settlement.status == .failed)
         }
 

@@ -4,9 +4,11 @@ import Foundation
 /// (docs/adr/0025-group-change-notifications.md). Worked out on the phone, after the
 /// changes are decrypted, so names and amounts never pass through the relay in the clear.
 ///
-/// Only changes this person is part of count: an expense they paid for or have a share in,
-/// or a payment to or from them. Nothing is said when the phone doesn't know which person
-/// it is yet, because "you" would be a guess.
+/// Every change someone else made counts (Sabit, 2026-11-12: "whenever there is a new
+/// change, you get a notification"). An expense this person is in also says their share,
+/// and a payment to or from them says so. Their own changes made on another phone say
+/// nothing. Nothing is said when the phone doesn't know which person it is yet, because
+/// "you" would be a guess.
 public struct GroupNotice: Hashable, Sendable {
     public enum Event: Hashable, Sendable {
         /// Someone added, edited, deleted or restored an expense. `myShare` is this person's
@@ -18,6 +20,8 @@ public struct GroupNotice: Hashable, Sendable {
         case markedReceived(by: MemberID, amount: Money)
         /// Any other change to a payment this person is in (edited, withdrawn).
         case paymentChanged(by: MemberID?, amount: Money)
+        /// Someone recorded a payment between two other people. Their word, not proof.
+        case othersPayment(from: MemberID, to: MemberID, amount: Money)
     }
 
     public let groupID: GroupID
@@ -31,8 +35,8 @@ public struct GroupNotice: Hashable, Sendable {
         self.myBalance = myBalance
     }
 
-    /// The notice for a batch of changes from other phones, or nil when none involve this
-    /// person. `group` is the group after the changes, with this phone's "me" marked.
+    /// The notice for a batch of changes from other phones, or nil when they were all this
+    /// person's own. `group` is the group after the changes, with this phone's "me" marked.
     public static func make(group: ExpenseGroup, changes: [AppliedChange], myBalance: Money?) -> GroupNotice? {
         guard let me = group.members.first(where: \.isMe)?.id else { return nil }
         let events = changes.compactMap { event(for: $0, me: me) }
@@ -46,13 +50,17 @@ public struct GroupNotice: Hashable, Sendable {
             // Made on another phone by the same person: nothing new for them.
             if expense.changedBy == me { return nil }
             let share = expense.allocation.shares[me].flatMap { $0.minorUnits > 0 ? $0 : nil }
-            let paid = expense.paidBy[me].map { $0.minorUnits > 0 } ?? false
-            guard share != nil || paid else { return nil }
             let shown = expense.deletedAt == nil ? share : nil
             return .expense(title: expense.title, action: change.action, by: expense.changedBy, myShare: shown)
 
         case .settlement(let settlement):
-            guard settlement.from == me || settlement.to == me else { return nil }
+            guard settlement.from == me || settlement.to == me else {
+                if settlement.changedBy == me { return nil }
+                if change.action == .created {
+                    return .othersPayment(from: settlement.from, to: settlement.to, amount: settlement.amount)
+                }
+                return .paymentChanged(by: settlement.changedBy, amount: settlement.amount)
+            }
             let other = settlement.from == me ? settlement.to : settlement.from
             let actor = settlement.changedBy ?? other
             if actor == me { return nil }
