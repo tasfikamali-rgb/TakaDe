@@ -16,6 +16,7 @@ struct GroupDetailContent: View {
     @State private var newMemberName = ""
     @State private var duplicateMember: String?
     @State private var paymentMember: Member?
+    @State private var removingMember: Member?
     @State private var recentlyDeleted: Expense?
     @State private var editing: Expense?
     @State private var errorMessage: String?
@@ -32,7 +33,8 @@ struct GroupDetailContent: View {
                     onDelete: delete,
                     onAddMember: askForMember,
                     onAddFromContacts: { pickingContacts = true },
-                    onOpenMember: openMember)
+                    onOpenMember: openMember,
+                    onRemoveMember: { removingMember = $0 })
             }
             .frame(maxWidth: .infinity)
         }
@@ -94,7 +96,16 @@ struct GroupDetailContent: View {
             }
         }
         .sheet(item: $paymentMember) { member in
-            MemberPaymentSheet(group: group, member: member)
+            // The sheet asks first, then closes itself.
+            MemberPaymentSheet(group: group, member: member) { remove(member) }
+        }
+        .confirmationDialog(
+            Text("Remove \(removingMember.map { group.displayName(of: $0.id) } ?? "") from this group?"),
+            isPresented: Binding(get: { removingMember != nil }, set: { if !$0 { removingMember = nil } }),
+            titleVisibility: .visible,
+            presenting: removingMember
+        ) { member in
+            Button("Remove", role: .destructive) { remove(member) }
         }
         .alert("Add a person", isPresented: $showingAddMember) {
             TextField("Name", text: $newMemberName)
@@ -137,6 +148,25 @@ struct GroupDetailContent: View {
     }
 
     private func askForMember() { showingAddMember = true }
+
+    /// Removes someone who isn't in any expense, payment or meal count. Otherwise says why
+    /// they stay, so balances and history never change behind anyone's back.
+    private func remove(_ member: Member) {
+        removingMember = nil
+        let name = group.displayName(of: member.id)
+        Task {
+            do {
+                try await app.removeMember(member, from: group)
+                errorMessage = nil
+            } catch MemberRemovalError.hasEntries {
+                errorMessage = String(localized: "\(name) is in expenses or payments in this group, so they stay. That keeps everyone's balance right.", bundle: .appLanguage)
+            } catch MemberRemovalError.isManager {
+                errorMessage = String(localized: "\(name) keeps this mess's books, so they stay.", bundle: .appLanguage)
+            } catch {
+                errorMessage = String(localized: "\(name) wasn't removed. Try again.", bundle: .appLanguage)
+            }
+        }
+    }
 
     private func openMember(_ member: Member) {
         recentlyDeleted = nil

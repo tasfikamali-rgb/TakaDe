@@ -325,23 +325,6 @@
         }
       }
     },
-    "Add another person": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "আরেকজন যোগ করুন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add another person"
-          }
-        }
-      }
-    },
     "Add expense": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -3385,23 +3368,6 @@
         }
       }
     },
-    "Two people are called %@. Add something to tell them apart, like an initial.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "দুজনের নাম %@। আলাদা করে চিনতে কিছু যোগ করুন, যেমন নামের আদ্যক্ষর।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Two people are called %@. Add something to tell them apart, like an initial."
-          }
-        }
-      }
-    },
     "Items": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -4316,23 +4282,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Copy"
-          }
-        }
-      }
-    },
-    "Shows their bKash and bank numbers": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "তাঁর বিকাশ ও ব্যাংক নম্বর দেখায়"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shows their bKash and bank numbers"
           }
         }
       }
@@ -5472,23 +5421,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Payment"
-          }
-        }
-      }
-    },
-    "Choose from Contacts": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "কন্টাক্ট থেকে বেছে নিন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose from Contacts"
           }
         }
       }
@@ -7020,6 +6952,227 @@
           "stringUnit": {
             "state": "translated",
             "value": "You're in it as %@. Anyone can add a nickname later."
+          }
+        }
+      }
+    },
+    "Remove from group": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "গ্রুপ থেকে বাদ দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from group"
+          }
+        }
+      }
+    },
+    "Remove %@ from this group?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে এই গ্রুপ থেকে বাদ দেবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove %@ from this group?"
+          }
+        }
+      }
+    },
+    "Only people who aren't in any expense or payment can be removed.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যারা কোনো খরচ বা পেমেন্টে নেই, শুধু তাদেরই বাদ দেওয়া যায়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only people who aren't in any expense or payment can be removed."
+          }
+        }
+      }
+    },
+    "%@ is in expenses or payments in this group, so they stay. That keeps everyone's balance right.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ এই গ্রুপের খরচ বা পেমেন্টে আছেন, তাই থাকছেন। এতে সবার হিসাব ঠিক থাকে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is in expenses or payments in this group, so they stay. That keeps everyone's balance right."
+          }
+        }
+      }
+    },
+    "%@ keeps this mess's books, so they stay.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ এই মেসের হিসাব রাখেন, তাই থাকছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ keeps this mess's books, so they stay."
+          }
+        }
+      }
+    },
+    "%@ wasn't removed. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে বাদ দেওয়া যায়নি। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wasn't removed. Try again."
+          }
+        }
+      }
+    },
+    "Shows their nickname, bKash and bank numbers": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ডাকনাম, বিকাশ ও ব্যাংক নম্বর দেখায়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows their nickname, bKash and bank numbers"
+          }
+        }
+      }
+    },
+    "From contacts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কন্টাক্ট থেকে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From contacts"
+          }
+        }
+      }
+    },
+    "Add name": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নাম যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add name"
+          }
+        }
+      }
+    },
+    "Remove %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে বাদ দিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove %@"
+          }
+        }
+      }
+    },
+    "%@ is already in it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ আগে থেকেই আছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is already in it."
+          }
+        }
+      }
+    },
+    "Add %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@-কে যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %@"
+          }
+        }
+      }
+    },
+    "Add %lld people": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld জনকে যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %lld people"
           }
         }
       }

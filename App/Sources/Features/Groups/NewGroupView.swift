@@ -9,12 +9,16 @@ struct NewGroupView: View {
     @AppStorage(AccountModel.nameKey) private var myName = ""
     @State private var name = ""
     @State private var kind: GroupKind = .standard
-    @State private var others: [DraftName] = [DraftName()]
+    /// Everyone else, in the order added. Each shows as a row with a remove button.
+    @State private var people: [DraftName] = []
+    @State private var newPerson = ""
+    /// Why a name wasn't added, like "Rishan is already in it".
+    @State private var note: String?
     @State private var error: String?
     @State private var pickingContacts = false
     @FocusState private var focus: Field?
 
-    private enum Field: Hashable { case group, other(UUID) }
+    private enum Field: Hashable { case group, newPerson }
 
     var body: some View {
         NavigationStack {
@@ -40,7 +44,7 @@ struct NewGroupView: View {
                     TextField("Group name", text: $name, prompt: Text("Group name").foregroundStyle(Color.inkMuted), axis: .vertical)
                         .focused($focus, equals: .group)
                         .submitLabel(.next)
-                        .returnMovesOn($name) { focus = others.first.map { Field.other($0.id) } }
+                        .returnMovesOn($name) { focus = .newPerson }
                 } footer: {
                     Group {
                         if kind == .mess {
@@ -52,15 +56,35 @@ struct NewGroupView: View {
                     .foregroundStyle(Color.inkMuted)
                 }
                 Section {
-                    ForEach($others) { $person in
-                        TextField("Name", text: $person.text, prompt: Text("Name").foregroundStyle(Color.inkMuted), axis: .vertical)
-                            .focused($focus, equals: .other(person.id))
-                            .submitLabel(.next)
-                            .returnMovesOn($person.text) { focusAfter(person.id) }
+                    ForEach(people) { person in
+                        HStack(spacing: Spacing.s) {
+                            Avatar(name: person.text, size: 32)
+                            Text(verbatim: person.text)
+                                .font(AppFont.body)
+                                .foregroundStyle(Color.ink)
+                            Spacer()
+                            Button { remove(person) } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(Color.inkMuted)
+                                    .frame(minWidth: 44, minHeight: 44)
+                            }
+                            .buttonStyle(.borderless)
+                            .accessibilityLabel(Text("Remove \(person.text)"))
+                        }
                     }
-                    Button("Add another person", systemImage: "plus", action: addRow)
-                    Button("Choose from Contacts", systemImage: "person.crop.circle.badge.plus") { pickingContacts = true }
-                        .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
+                    .onDelete { people.remove(atOffsets: $0) }
+                    HStack(spacing: Spacing.s) {
+                        TextField("Add name", text: $newPerson, prompt: Text("Add name").foregroundStyle(Color.inkMuted))
+                            .textContentType(.name)
+                            .focused($focus, equals: .newPerson)
+                            .submitLabel(.next)
+                            .onSubmit(addTyped)
+                        Button("Add", action: addTyped)
+                            .buttonStyle(.borderless)
+                            .disabled(!PersonName.isValid(trimmedNewPerson))
+                    }
+                    Button("From contacts", systemImage: "person.crop.circle.badge.plus") { pickingContacts = true }
                 } header: {
                     Text("Who else is in it")
                         .foregroundStyle(Color.inkMuted)
@@ -70,9 +94,11 @@ struct NewGroupView: View {
                         if !trimmedMyName.isEmpty {
                             Text("You're in it as \(trimmedMyName). Anyone can add a nickname later.")
                         }
-                        NameRuleText(names: cleanedOthers)
-                        if let duplicate = duplicateName {
-                            Text("Two people are called \(duplicate). Add something to tell them apart, like an initial.")
+                        if !trimmedNewPerson.isEmpty {
+                            NameRuleText(newPerson)
+                        }
+                        if let note {
+                            Text(verbatim: note)
                         }
                     }
                     .foregroundStyle(Color.inkMuted)
@@ -82,6 +108,7 @@ struct NewGroupView: View {
                 }
             }
             .readableWidth()
+            .sheet(isPresented: $pickingContacts) { ContactSearchSheet(onPick: addContacts).rebuildsOnDynamicType() }
             .navigationTitle("New group")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -93,60 +120,57 @@ struct NewGroupView: View {
         }
     }
 
-    private var cleanedOthers: [String] {
-        others.map { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
-    }
-
-    /// The first name used twice, compared without case or extra spaces. Names are never
-    /// changed for the person; this only warns, because both are allowed.
-    private var duplicateName: String? {
-        var seen = Set<String>()
-        for name in [trimmedMyName] + cleanedOthers where !name.isEmpty {
-            let key = name.lowercased()
-            if seen.contains(key) { return name }
-            seen.insert(key)
-        }
-        return nil
-    }
-
     private var trimmedMyName: String { myName.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var trimmedNewPerson: String { newPerson.trimmingCharacters(in: .whitespacesAndNewlines) }
 
-    /// Your name was checked when the account was made, so only the others are checked here.
+    /// Everyone to add, including a name still in the field, so Create works without
+    /// tapping Add first.
+    private var allOthers: [String] {
+        let listed = people.map(\.text)
+        return PersonName.isValid(trimmedNewPerson) && !isTaken(trimmedNewPerson) ? listed + [trimmedNewPerson] : listed
+    }
+
+    /// Your name was checked when the account was made, so only the others are checked.
     private var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && !trimmedMyName.isEmpty
-            && !cleanedOthers.isEmpty
-            && cleanedOthers.allSatisfy(PersonName.isValid)
+            && !allOthers.isEmpty
+            && (trimmedNewPerson.isEmpty || PersonName.isValid(trimmedNewPerson))
     }
 
-    private func addRow() { others.append(DraftName()) }
-
-    /// Fills empty rows first, then adds rows. Names already typed are left alone.
-    private func addContacts(_ names: [String]) {
-        for name in names {
-            if let empty = others.firstIndex(where: { $0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
-                others[empty].text = name
-            } else {
-                var row = DraftName()
-                row.text = name
-                others.append(row)
-            }
-        }
+    /// Same name as you or someone already listed, ignoring case and extra spaces.
+    private func isTaken(_ name: String) -> Bool {
+        let key = name.lowercased()
+        return trimmedMyName.lowercased() == key || people.contains { $0.text.lowercased() == key }
     }
 
-    /// Return in the last filled name adds a row, so a group can be typed without the mouse
-    /// or a tap; Return in an empty last row closes the keyboard.
-    private func focusAfter(_ id: UUID) {
-        guard let index = others.firstIndex(where: { $0.id == id }) else { return }
-        if index + 1 < others.count {
-            focus = .other(others[index + 1].id)
-        } else if !others[index].text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let row = DraftName()
-            others.append(row)
-            focus = .other(row.id)
+    /// Adds the typed name as a row and clears the field for the next one.
+    private func addTyped() {
+        let typed = trimmedNewPerson
+        guard PersonName.isValid(typed) else { return }
+        if isTaken(typed) {
+            note = String(localized: "\(typed) is already in it.", bundle: .appLanguage)
         } else {
-            focus = nil
+            people.append(DraftName(text: typed))
+            note = nil
         }
+        newPerson = ""
+        focus = .newPerson
+    }
+
+    private func remove(_ person: DraftName) {
+        people.removeAll { $0.id == person.id }
+    }
+
+    /// Everyone picked shows up as a row right away. Anyone already listed is skipped.
+    private func addContacts(_ names: [String]) {
+        var skipped: [String] = []
+        for picked in names {
+            let name = picked.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard PersonName.isValid(name) else { continue }
+            if isTaken(name) { skipped.append(name) } else { people.append(DraftName(text: name)) }
+        }
+        note = skipped.isEmpty ? nil : String(localized: "\(skipped.formatted(.list(type: .and))) is already in it.", bundle: .appLanguage)
     }
 
     private func cancel() { dismiss() }
@@ -157,7 +181,7 @@ struct NewGroupView: View {
                 let group = try await model.createGroup(
                     name: name.trimmingCharacters(in: .whitespacesAndNewlines),
                     myName: trimmedMyName,
-                    otherNames: cleanedOthers,
+                    otherNames: allOthers,
                     kind: kind)
                 dismiss()
                 onCreated(group.id)

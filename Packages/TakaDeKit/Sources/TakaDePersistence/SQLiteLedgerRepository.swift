@@ -78,6 +78,36 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
         }
     }
 
+    public func removeMember(_ member: MemberID, from group: GroupID, actor: MemberID?) async throws {
+        let id = member.description
+        let groupID = group.description
+        let encoder = self.encoder
+        try await db.write { db in
+            guard let row = try Row.fetchOne(db, sql: "SELECT is_me FROM member WHERE id = ? AND group_id = ?", arguments: [id, groupID]) else { return }
+            if row["is_me"] as Bool { throw MemberRemovalError.isMe }
+            if try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM expense_group WHERE id = ? AND manager_id = ?)", arguments: [groupID, id]) ?? false {
+                throw MemberRemovalError.isManager
+            }
+            // Expenses keep members inside their JSON (who paid, the split). A member id is a
+            // UUID, so a text match can't hit anything else. Deleted expenses count too: they
+            // can be brought back.
+            let pattern = "%\(id)%"
+            let mentioned = try Bool.fetchOne(db, sql: """
+                SELECT EXISTS(SELECT 1 FROM expense WHERE group_id = ? AND payload LIKE ?)
+                    OR EXISTS(SELECT 1 FROM settlement WHERE group_id = ? AND (from_member = ? OR to_member = ?))
+                    OR EXISTS(SELECT 1 FROM meal_count WHERE group_id = ? AND member_id = ?)
+                """, arguments: [groupID, pattern, groupID, id, id, groupID, id]) ?? false
+            if mentioned { throw MemberRemovalError.hasEntries }
+            // Their saved bKash or bank numbers go with them (foreign key cascade).
+            try db.execute(sql: "DELETE FROM member WHERE id = ?", arguments: [id])
+            if let groupRow = try Row.fetchOne(db, sql: "SELECT * FROM expense_group WHERE id = ?", arguments: [groupID]) {
+                let updated = try Self.group(from: groupRow, db: db)
+                try Self.audit(db, AuditEvent(groupID: group, entity: .group, entityID: group.rawValue, action: .edited, actor: actor,
+                                              snapshot: try encoder.encode(updated)))
+            }
+        }
+    }
+
     // MARK: Expenses
 
     public func expenses(in group: GroupID, includeDeleted: Bool) async throws -> [Expense] {

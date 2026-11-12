@@ -30,6 +30,10 @@ struct AddExpenseView: View {
                         .foregroundStyle(Color.ink.opacity(0.72))
                         .lineLimit(1)
                     AmountField(draft: draft, size: .balance, onTap: openKeypad)
+                    // Up top, next to the amount it fills, so it's never under the keypad.
+                    ReceiptScanButton(onReviewed: draft.apply)
+                        .font(AppFont.label)
+                        .tint(Color.ink)
                 }
             } content: {
                 Section {
@@ -47,7 +51,6 @@ struct AddExpenseView: View {
                     } label: {
                         Text("Category")
                     }
-                    ReceiptScanButton(onReviewed: draft.apply)
                 }
 
                 PaidBySection(draft: draft)

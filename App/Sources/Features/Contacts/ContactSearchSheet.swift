@@ -38,16 +38,13 @@ struct ContactSearchSheet: View {
                     list
                 }
             }
-            .navigationTitle("Choose from Contacts")
+            .navigationTitle("From contacts")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 if state == .ready {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button {
-                            onPick(selected)
-                            dismiss()
-                        } label: {
+                        Button(action: finish) {
                             selected.isEmpty ? Text("Add") : Text("Add \(selected.count)")
                         }
                         .disabled(selected.isEmpty)
@@ -90,6 +87,20 @@ struct ContactSearchSheet: View {
         }
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: Text("Search contacts"))
         .autocorrectionDisabled()
+        // While searching, iOS hides the navigation bar's buttons, so Add also sits at the
+        // bottom, above the keyboard, whenever someone is picked (Sabit, 2026-11-12).
+        .safeAreaInset(edge: .bottom) {
+            if !selected.isEmpty {
+                Button(action: finish) {
+                    Text(selected.count == 1 ? LocalizedStringKey("Add \(selected[0])") : LocalizedStringKey("Add \(selected.count) people"))
+                        .lineLimit(1)
+                }
+                .buttonStyle(PillButtonStyle())
+                .padding(.horizontal, Spacing.screenMargin)
+                .padding(.vertical, Spacing.xs)
+                .background(Color.canvas)
+            }
+        }
     }
 
     private var denied: some View {
@@ -110,6 +121,11 @@ struct ContactSearchSheet: View {
         let query = query.trimmingCharacters(in: .whitespaces)
         guard !query.isEmpty else { return contacts }
         return contacts.filter { $0.name.localizedStandardContains(query) }
+    }
+
+    private func finish() {
+        onPick(selected)
+        dismiss()
     }
 
     private func toggle(_ entry: Entry) {

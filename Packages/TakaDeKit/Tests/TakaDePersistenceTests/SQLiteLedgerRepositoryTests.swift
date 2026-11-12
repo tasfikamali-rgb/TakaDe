@@ -35,6 +35,40 @@ final class SQLiteLedgerRepositoryTests: XCTestCase {
         XCTAssertNil(cleared?.members[1].nickname)
     }
 
+    func testRemovingAMemberOnlyWhileNothingMentionsThem() async throws {
+        let repo = try SQLiteLedgerRepository()
+        let me = Member(displayName: "Sabit", isMe: true)
+        let zawad = Member(displayName: "Zawad")
+        let rishan = Member(displayName: "Rishan")
+        let group = ExpenseGroup(name: "Flat", members: [me, zawad, rishan])
+        try await repo.save(group, actor: me.id)
+        let dinner = try Expense(groupID: group.id, title: "Dinner", total: Money(minorUnits: 600, currency: group.currency),
+                                 paidBy: [me.id: Money(minorUnits: 600, currency: group.currency)], splitRule: .equal([me.id, rishan.id]))
+        try await repo.save(dinner, actor: me.id)
+
+        // Zawad was added by mistake and is in nothing: removed.
+        try await repo.removeMember(zawad.id, from: group.id, actor: me.id)
+        let afterRemove = try await repo.group(group.id)
+        XCTAssertEqual(afterRemove?.members.map(\.displayName), ["Sabit", "Rishan"])
+
+        // Rishan is in an expense, even a deleted one: kept.
+        try await repo.delete(dinner.id, actor: me.id)
+        do {
+            try await repo.removeMember(rishan.id, from: group.id, actor: me.id)
+            XCTFail("Rishan is in an expense")
+        } catch let error as MemberRemovalError {
+            XCTAssertEqual(error, .hasEntries)
+        }
+        do {
+            try await repo.removeMember(me.id, from: group.id, actor: me.id)
+            XCTFail("Can't remove yourself")
+        } catch let error as MemberRemovalError {
+            XCTAssertEqual(error, .isMe)
+        }
+        let kept = try await repo.group(group.id)
+        XCTAssertEqual(kept?.members.count, 2)
+    }
+
     func testSimplifyDebtsSettingRoundTrips() async throws {
         let repo = try SQLiteLedgerRepository()
         var group = makeGroup()

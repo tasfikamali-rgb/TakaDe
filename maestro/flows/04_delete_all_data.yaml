@@ -12,7 +12,7 @@ tags:
 - tapOn: "Create a group"
 - tapOn: "Group name"
 - inputText: "Trip"
-- tapOn: "Name"
+- tapOn: "Add name"
 - inputText: "Rishan"
 - tapOn: "Create"
 - extendedWaitUntil:

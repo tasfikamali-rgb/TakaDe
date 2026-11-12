@@ -9,6 +9,8 @@ struct MemberPaymentSheet: View {
     @Environment(\.dismiss) private var dismiss
     let group: ExpenseGroup
     let member: Member
+    /// Asks to take the person out of the group. Not offered for yourself.
+    var onRemove: (() -> Void)?
 
     @State private var handles: [PaymentHandle] = []
     @State private var rail: PaymentHandle.Rail = .bkash
@@ -16,6 +18,7 @@ struct MemberPaymentSheet: View {
     @State private var errorMessage: String?
     @State private var nickname = ""
     @State private var savedNickname = ""
+    @State private var confirmingRemove = false
 
     var body: some View {
         NavigationStack {
@@ -76,6 +79,20 @@ struct MemberPaymentSheet: View {
                     Text("Add a number")
                 } footer: {
                     Text("Only the number people send money to. TakaDe never asks for a PIN, password or OTP. Saved on this phone only.")
+                }
+
+                if !member.isMe, let onRemove {
+                    Section {
+                        Button("Remove from group", systemImage: "person.badge.minus", role: .destructive) { confirmingRemove = true }
+                            .confirmationDialog(Text("Remove \(name) from this group?"), isPresented: $confirmingRemove, titleVisibility: .visible) {
+                                Button("Remove", role: .destructive) {
+                                    dismiss()
+                                    onRemove()
+                                }
+                            }
+                    } footer: {
+                        Text("Only people who aren't in any expense or payment can be removed.")
+                    }
                 }
             }
             .readableWidth()

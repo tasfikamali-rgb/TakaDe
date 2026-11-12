@@ -93,6 +93,13 @@ final class AppModel {
         await reload()
     }
 
+    /// Takes someone out of a group, if nothing in it mentions them (see
+    /// `LedgerRepository.removeMember`). Throws `MemberRemovalError` otherwise.
+    func removeMember(_ member: Member, from group: ExpenseGroup) async throws {
+        try await repository.removeMember(member.id, from: group.id, actor: group.me?.id)
+        await reload()
+    }
+
     /// Sets or clears what this group calls someone. The person's name never changes.
     func setNickname(_ nickname: String?, for member: MemberID, in group: ExpenseGroup) async throws {
         var updated = self.group(group.id) ?? group

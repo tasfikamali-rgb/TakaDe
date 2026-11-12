@@ -14,7 +14,7 @@ tags:
 - tapOn: "Group name"
 - inputText: "Sajek trip"
 # Your own name comes from onboarding; the new group never asks for it.
-- tapOn: "Name"
+- tapOn: "Add name"
 - inputText: "Rishan"
 - takeScreenshot: ${OUT}/02-new-group
 - tapOn: "Create"

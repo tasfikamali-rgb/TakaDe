@@ -8,12 +8,13 @@ struct MemberBalancesCard: View {
     let onAddFromContacts: () -> Void
     /// Opens the person's bKash, Nagad, Rocket, upay or bank numbers.
     let onOpenMember: (Member) -> Void
+    let onRemoveMember: (Member) -> Void
 
     var body: some View {
         SectionCard(title: "Balances") {
             Menu {
                 Button("Type a name", systemImage: "character.cursor.ibeam", action: onAddMember)
-                Button("Choose from Contacts", systemImage: "person.crop.circle", action: onAddFromContacts)
+                Button("From contacts", systemImage: "person.crop.circle", action: onAddFromContacts)
             } label: {
                 Label("Add a person", systemImage: "person.badge.plus")
             }
@@ -36,7 +37,15 @@ struct MemberBalancesCard: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityHint(Text("Shows their bKash and bank numbers"))
+                .accessibilityHint(Text("Shows their nickname, bKash and bank numbers"))
+                .contextMenu {
+                    if !member.isMe {
+                        Button("Remove from group", systemImage: "person.badge.minus", role: .destructive) { onRemoveMember(member) }
+                    }
+                }
+                .accessibilityAction(named: Text("Remove from group")) {
+                    if !member.isMe { onRemoveMember(member) }
+                }
             }
             if let me = group.me, let unverified = balances.unverifiedSettled[me.id], !unverified.isZero {
                 HStack(spacing: Spacing.xxs) {
