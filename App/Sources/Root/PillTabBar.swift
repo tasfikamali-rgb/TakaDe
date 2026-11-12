@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Compact floating pill with four tabs, each an icon over a short label. A lime capsule
+/// Compact floating pill with three tabs, each an icon over a short label. A lime capsule
 /// sits behind the selected tab and springs across to the next one (DESIGN.md section 4.1).
 /// Colors come only from the `tabBar…` tokens, so the palette can change without touching this.
 struct PillTabBar: View {

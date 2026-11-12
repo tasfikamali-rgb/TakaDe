@@ -17,7 +17,6 @@ struct TabContent: View {
         case .home: HomeView()
         case .activity: NavigationStack { ActivityView() }
         case .account: NavigationStack { AccountView() }
-        case .settings: NavigationStack { SettingsView() }
         }
     }
 }

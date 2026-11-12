@@ -8,6 +8,8 @@ tags:
 - launchApp:
     clearState: true
 - runFlow: ../subflows/onboarding.yaml
+# Settings opens from the gear on the Account tab.
+- tapOn: "Account"
 - tapOn: "Settings"
 - scrollUntilVisible:
     element: "বাংলা"

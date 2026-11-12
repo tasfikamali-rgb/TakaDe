@@ -32,6 +32,8 @@ tags:
     commands:
       - tapOn: "Back"
 - tapOn: "Account"
+- tapOn: "Settings"
+- tapOn: "Data and export"
 - scrollUntilVisible:
     element: "Delete all my data"
     direction: DOWN
