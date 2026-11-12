@@ -10,6 +10,21 @@ set -euo pipefail
 data="${1:?usage: refill-spare.sh data.sql}"
 : "${SPARE_DB_URL:?SPARE_DB_URL is not set}"
 
+# Never refill the main project by mistake (a pasted-into-the-wrong-box secret would
+# otherwise wipe it). Supabase pooler URLs carry the project ref in the user name,
+# postgres.<ref>; refuse when it's missing or when both URLs point at the same project.
+ref_of() { sed -nE 's#^postgres(ql)?://postgres\.([a-z0-9]+)[:@].*#\2#p' <<<"$1"; }
+spare_ref=$(ref_of "$SPARE_DB_URL")
+main_ref=$(ref_of "${SUPABASE_DB_URL:-}")
+if [ -z "$spare_ref" ]; then
+  echo "SPARE_DB_URL isn't a Session pooler URL (postgres.<project ref>@...); leaving everything as it is." >&2
+  exit 1
+fi
+if [ -n "$main_ref" ] && [ "$spare_ref" = "$main_ref" ]; then
+  echo "SPARE_DB_URL and SUPABASE_DB_URL point at the same project; refusing to refill it." >&2
+  exit 1
+fi
+
 # The tables the dump fills, e.g. "public"."sync_change" and "auth"."users".
 tables=$(grep -E '^COPY ' "$data" | sed -E 's/^COPY ([^ (]+).*/\1/' | sort -u | paste -sd, - || true)
 if [ -z "$tables" ]; then
