@@ -5,8 +5,8 @@ import Observation
 @Observable
 final class AppChrome {
     /// True while a pushed screen (a group) owns the bottom edge for its own actions,
-    /// so the notch bar steps aside instead of covering "Settle up".
+    /// so the pill bar steps aside instead of covering "Settle up".
     var hidesTabBar = false
-    /// Whether this window uses the floating notch bar (set by RootView from the window shape).
-    var showsNotchBar = true
+    /// Whether this window uses the floating pill bar (set by RootView from the window shape).
+    var showsPillBar = true
 }
