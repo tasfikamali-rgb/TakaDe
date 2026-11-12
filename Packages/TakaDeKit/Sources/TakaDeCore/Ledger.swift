@@ -4,14 +4,25 @@ import Foundation
 /// `displayName` is stored and shown exactly as entered: never translated or normalized.
 public struct Member: Hashable, Codable, Sendable, Identifiable {
     public let id: MemberID
+    /// The person's own name. For "me" it's the account name, which can't be changed.
     public var displayName: String
     /// True for the person using this device.
     public var isMe: Bool
+    /// What this group calls the person, if anyone set one. Only this group sees it, and it
+    /// never changes `displayName`. Nil (or empty) means no nickname.
+    public var nickname: String?
 
-    public init(id: MemberID = MemberID(), displayName: String, isMe: Bool = false) {
+    public init(id: MemberID = MemberID(), displayName: String, isMe: Bool = false, nickname: String? = nil) {
         self.id = id
         self.displayName = displayName
         self.isMe = isMe
+        self.nickname = nickname
+    }
+
+    /// The nickname when there is one, otherwise the name.
+    public var shownName: String {
+        if let nickname, !nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return nickname }
+        return displayName
     }
 }
 

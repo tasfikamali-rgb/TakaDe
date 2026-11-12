@@ -93,6 +93,16 @@ final class AppModel {
         await reload()
     }
 
+    /// Sets or clears what this group calls someone. The person's name never changes.
+    func setNickname(_ nickname: String?, for member: MemberID, in group: ExpenseGroup) async throws {
+        var updated = self.group(group.id) ?? group
+        guard let index = updated.members.firstIndex(where: { $0.id == member }) else { return }
+        let trimmed = nickname?.trimmingCharacters(in: .whitespacesAndNewlines)
+        updated.members[index].nickname = trimmed?.isEmpty == false ? trimmed : nil
+        try await repository.save(updated, actor: updated.me?.id)
+        await reload()
+    }
+
     // MARK: Monthly repeats
 
     @ObservationIgnored private var addingRepeats = false

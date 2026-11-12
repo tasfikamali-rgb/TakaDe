@@ -257,9 +257,13 @@ final class AccountModel {
         }
     }
 
-    func rename(to name: String) async throws {
+    /// Sets the name once, for a profile that has none (made by an older version). A name
+    /// can never be removed or changed after that (Sabit, 2026-11-12): to use another name,
+    /// the person makes a new account.
+    func setMissingName(_ name: String) async throws {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard var profile, PersonName.isValid(trimmed), trimmed != profile.displayName else { return }
+        guard var profile, profile.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              PersonName.isValid(trimmed) else { return }
         profile.displayName = trimmed
         try await save(profile)
     }

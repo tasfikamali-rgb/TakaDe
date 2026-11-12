@@ -68,11 +68,11 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
             let profileID = try String.fetchOne(db, sql: "SELECT id FROM local_profile LIMIT 1")
             for (position, member) in group.members.enumerated() {
                 try db.execute(sql: """
-                    INSERT INTO member (id, group_id, display_name, is_me, position, profile_id) VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO member (id, group_id, display_name, is_me, position, profile_id, nickname) VALUES (?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(id) DO UPDATE SET display_name = excluded.display_name, is_me = excluded.is_me,
-                        position = excluded.position, profile_id = excluded.profile_id
+                        position = excluded.position, profile_id = excluded.profile_id, nickname = excluded.nickname
                     """, arguments: [member.id.description, group.id.description, member.displayName, member.isMe, position,
-                                     member.isMe ? profileID : nil])
+                                     member.isMe ? profileID : nil, member.nickname])
             }
             try Self.audit(db, AuditEvent(groupID: group.id, entity: .group, entityID: group.id.rawValue, action: exists ? .edited : .created, actor: actor, snapshot: snapshot))
         }
@@ -191,7 +191,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
     private static func group(from row: Row, db: Database) throws -> ExpenseGroup {
         let id: String = row["id"]
         let members = try Row.fetchAll(db, sql: "SELECT * FROM member WHERE group_id = ? ORDER BY position", arguments: [id]).map { m in
-            Member(id: MemberID(UUID(uuidString: m["id"])!), displayName: m["display_name"], isMe: m["is_me"])
+            Member(id: MemberID(UUID(uuidString: m["id"])!), displayName: m["display_name"], isMe: m["is_me"], nickname: m["nickname"])
         }
         return ExpenseGroup(
             id: GroupID(UUID(uuidString: id)!),

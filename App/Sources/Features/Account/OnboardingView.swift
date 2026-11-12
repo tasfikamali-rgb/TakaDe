@@ -287,7 +287,7 @@ struct OnboardingView: View {
                 .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
             NameRuleText(name)
                 .font(AppFont.caption)
-            Text("This is how you appear in groups, exactly as you type it")
+            Text("This is how you appear in groups, exactly as you type it. You can't change it later, so use your real name.")
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)

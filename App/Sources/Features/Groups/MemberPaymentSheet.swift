@@ -14,10 +14,36 @@ struct MemberPaymentSheet: View {
     @State private var rail: PaymentHandle.Rail = .bkash
     @State private var number = ""
     @State private var errorMessage: String?
+    @State private var nickname = ""
+    @State private var savedNickname = ""
 
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    TextField("Nickname", text: $nickname, prompt: Text("Nickname (optional)").foregroundStyle(Color.inkMuted))
+                        .textInputAutocapitalization(.words)
+                        .submitLabel(.done)
+                        .onSubmit(saveNickname)
+                } header: {
+                    Text("Nickname in this group")
+                        .foregroundStyle(Color.inkMuted)
+                } footer: {
+                    VStack(alignment: .leading, spacing: Spacing.xxs) {
+                        if !nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            NameRuleText(nickname)
+                        }
+                        Group {
+                            if member.isMe {
+                                Text("What this group calls you. Your name stays \(member.displayName).")
+                            } else {
+                                Text("What this group calls them. Their name stays \(member.displayName).")
+                            }
+                        }
+                        .foregroundStyle(Color.inkMuted)
+                    }
+                }
+
                 Section {
                     if handles.isEmpty {
                         Text("No numbers saved yet")
@@ -58,13 +84,29 @@ struct MemberPaymentSheet: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done", action: close) }
             }
-            .task { await load() }
+            .task {
+                savedNickname = currentMember.nickname ?? ""
+                nickname = savedNickname
+                await load()
+            }
         }
     }
 
     private var name: String { group.displayName(of: member.id) }
+    private var currentMember: Member { app.group(group.id)?.member(member.id) ?? member }
 
-    private func close() { dismiss() }
+    private func close() {
+        saveNickname()
+        dismiss()
+    }
+
+    /// Saves a changed nickname. Empty clears it; one that breaks the name rule isn't saved.
+    private func saveNickname() {
+        let trimmed = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed != savedNickname, trimmed.isEmpty || PersonName.isValid(trimmed) else { return }
+        savedNickname = trimmed
+        Task { try? await app.setNickname(trimmed, for: member.id, in: group) }
+    }
 
     private func load() async {
         handles = (try? await app.profiles.paymentHandles(for: member.id)) ?? []

@@ -2,7 +2,8 @@ import SwiftUI
 import TakaDeCore
 
 /// The Account tab: who you are, how you sign in, and your data. Settings (language,
-/// appearance, numbers, app lock) has its own tab.
+/// appearance, app lock) has its own tab. The name is shown, not edited: it's set once
+/// at first launch and can't be removed or changed (Sabit, 2026-11-12).
 struct AccountView: View {
     @Environment(AccountModel.self) private var account
     @Environment(AppModel.self) private var app
@@ -13,6 +14,8 @@ struct AccountView: View {
     @State private var removing: AccountIdentity?
     @State private var errorMessage: String?
     @State private var working = false
+    @State private var newName = ""
+    @State private var confirmingName = false
 
     var body: some View {
         Form {
@@ -20,19 +23,30 @@ struct AccountView: View {
                 ProfileHeader(name: myName, email: account.profile?.accountEmail ?? account.account?.email, isSignedIn: account.isSignedIn)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
-            }
-            Section {
-                TextField("Your name", text: $myName, prompt: Text("Your name").foregroundStyle(Color.inkMuted))
-                    .textContentType(.name)
-                    .onSubmit(saveName)
-            } header: {
-                Text("Your name")
-                    .foregroundStyle(Color.inkMuted)
             } footer: {
-                VStack(alignment: .leading, spacing: Spacing.xxs) {
-                    NameRuleText(myName)
-                    Text("This is how you appear in new groups, exactly as you type it")
+                if hasName {
+                    Text("Your name can't be changed. To use a different name, make a new account.")
                         .foregroundStyle(Color.inkMuted)
+                }
+            }
+            if !hasName {
+                // Only for a profile from an older version that has no name yet. It's set
+                // once and then locked like everyone else's.
+                Section {
+                    TextField("Your name", text: $newName, prompt: Text("Your name").foregroundStyle(Color.inkMuted))
+                        .textContentType(.name)
+                        .onSubmit { if PersonName.isValid(trimmedNewName) { confirmingName = true } }
+                    Button("Save name") { confirmingName = true }
+                        .disabled(!PersonName.isValid(trimmedNewName))
+                } header: {
+                    Text("Your name")
+                        .foregroundStyle(Color.inkMuted)
+                } footer: {
+                    VStack(alignment: .leading, spacing: Spacing.xxs) {
+                        NameRuleText(newName)
+                        Text("This is how you appear in groups. You can't change it later, so use your real name.")
+                            .foregroundStyle(Color.inkMuted)
+                    }
                 }
             }
             if account.isSignedIn {
@@ -46,7 +60,11 @@ struct AccountView: View {
             }
         }
         .disabled(working)
-        .onDisappear(perform: saveName)
+        .confirmationDialog(Text("Save “\(trimmedNewName)” as your name?"), isPresented: $confirmingName, titleVisibility: .visible) {
+            Button("Save name", action: saveName)
+        } message: {
+            Text("You can't change it later.")
+        }
         .readableWidth()
         .navigationTitle("Account")
         .refreshable { await account.refreshAccount() }
@@ -132,9 +150,12 @@ struct AccountView: View {
 
     // MARK: Actions
 
+    private var hasName: Bool { !myName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    private var trimmedNewName: String { newName.trimmingCharacters(in: .whitespacesAndNewlines) }
+
     private func saveName() {
-        let name = myName
-        Task { try? await account.rename(to: name) }
+        let name = trimmedNewName
+        run { try await account.setMissingName(name) }
     }
 
     private func signOut() {
@@ -178,12 +199,12 @@ private struct ProfileHeader: View {
         HStack(spacing: Spacing.m) {
             ProfilePhotoPicker(name: name, size: 72)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Group {
-                    if name.isEmpty { Text("Add your name below") } else { Text(verbatim: name) }
+                if !name.isEmpty {
+                    Text(verbatim: name)
+                        .font(AppFont.title)
+                        .foregroundStyle(Color.ink)
+                        .lineLimit(2)
                 }
-                .font(AppFont.title)
-                .foregroundStyle(Color.ink)
-                .lineLimit(2)
                 if let email {
                     Text(verbatim: email).font(AppFont.label).foregroundStyle(Color.inkMuted)
                 } else {

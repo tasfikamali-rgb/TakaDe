@@ -14,7 +14,7 @@ struct NewGroupView: View {
     @State private var pickingContacts = false
     @FocusState private var focus: Field?
 
-    private enum Field: Hashable { case group, me, other(UUID) }
+    private enum Field: Hashable { case group, other(UUID) }
 
     var body: some View {
         NavigationStack {
@@ -40,7 +40,7 @@ struct NewGroupView: View {
                     TextField("Group name", text: $name, prompt: Text("Group name").foregroundStyle(Color.inkMuted), axis: .vertical)
                         .focused($focus, equals: .group)
                         .submitLabel(.next)
-                        .returnMovesOn($name) { focus = .me }
+                        .returnMovesOn($name) { focus = others.first.map { Field.other($0.id) } }
                 } footer: {
                     Group {
                         if kind == .mess {
@@ -50,19 +50,6 @@ struct NewGroupView: View {
                         }
                     }
                     .foregroundStyle(Color.inkMuted)
-                }
-                Section {
-                    TextField("Your name", text: $myName, prompt: Text("Your name").foregroundStyle(Color.inkMuted), axis: .vertical)
-                        .textContentType(.name)
-                        .focused($focus, equals: .me)
-                        .submitLabel(.next)
-                        .returnMovesOn($myName) { focus = others.first.map { Field.other($0.id) } }
-                } footer: {
-                    VStack(alignment: .leading, spacing: Spacing.xxs) {
-                        NameRuleText(myName)
-                        Text("Names are kept exactly as you type them")
-                            .foregroundStyle(Color.inkMuted)
-                    }
                 }
                 Section {
                     ForEach($others) { $person in
@@ -79,6 +66,10 @@ struct NewGroupView: View {
                         .foregroundStyle(Color.inkMuted)
                 } footer: {
                     Group {
+                        // Your own name comes from your account; it's never asked for here.
+                        if !trimmedMyName.isEmpty {
+                            Text("You're in it as \(trimmedMyName). Anyone can add a nickname later.")
+                        }
                         NameRuleText(names: cleanedOthers)
                         if let duplicate = duplicateName {
                             Text("Two people are called \(duplicate). Add something to tell them apart, like an initial.")
@@ -110,7 +101,7 @@ struct NewGroupView: View {
     /// changed for the person; this only warns, because both are allowed.
     private var duplicateName: String? {
         var seen = Set<String>()
-        for name in [myName.trimmingCharacters(in: .whitespacesAndNewlines)] + cleanedOthers where !name.isEmpty {
+        for name in [trimmedMyName] + cleanedOthers where !name.isEmpty {
             let key = name.lowercased()
             if seen.contains(key) { return name }
             seen.insert(key)
@@ -118,11 +109,13 @@ struct NewGroupView: View {
         return nil
     }
 
+    private var trimmedMyName: String { myName.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    /// Your name was checked when the account was made, so only the others are checked here.
     private var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && !myName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !trimmedMyName.isEmpty
             && !cleanedOthers.isEmpty
-            && PersonName.isValid(myName)
             && cleanedOthers.allSatisfy(PersonName.isValid)
     }
 
@@ -163,7 +156,7 @@ struct NewGroupView: View {
             do {
                 let group = try await model.createGroup(
                     name: name.trimmingCharacters(in: .whitespacesAndNewlines),
-                    myName: myName.trimmingCharacters(in: .whitespacesAndNewlines),
+                    myName: trimmedMyName,
                     otherNames: cleanedOthers,
                     kind: kind)
                 dismiss()

@@ -136,6 +136,13 @@ enum Schema {
                 t.uniqueKey(["provider", "provider_user_id"])
             }
         }
+        // Per-group nicknames (Sabit, 2026-11-12). The name itself stays as entered; a
+        // nickname is only what this group calls someone.
+        migrator.registerMigration("v7_member_nickname") { db in
+            try db.alter(table: "member") { t in
+                t.add(column: "nickname", .text)
+            }
+        }
         return migrator
     }
 }

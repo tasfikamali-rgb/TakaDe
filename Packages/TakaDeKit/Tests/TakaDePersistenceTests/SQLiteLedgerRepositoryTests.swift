@@ -16,6 +16,25 @@ final class SQLiteLedgerRepositoryTests: XCTestCase {
         XCTAssertEqual(loaded?.name, "Cox's Bazar trip")
     }
 
+    func testNicknameRoundTripsAndNeverChangesTheName() async throws {
+        let repo = try SQLiteLedgerRepository()
+        var group = ExpenseGroup(name: "Flat", members: [Member(displayName: "Sabit", isMe: true), Member(displayName: "Rishan Ahmed")])
+        try await repo.save(group, actor: group.members[0].id)
+        group.members[1].nickname = "Rishu"
+        try await repo.save(group, actor: group.members[0].id)
+        let loaded = try await repo.group(group.id)
+        XCTAssertEqual(loaded?.members[1].nickname, "Rishu")
+        XCTAssertEqual(loaded?.members[1].displayName, "Rishan Ahmed")
+        XCTAssertEqual(loaded?.members[1].shownName, "Rishu")
+        XCTAssertNil(loaded?.members[0].nickname)
+        XCTAssertEqual(loaded?.members[0].shownName, "Sabit")
+
+        group.members[1].nickname = nil
+        try await repo.save(group, actor: group.members[0].id)
+        let cleared = try await repo.group(group.id)
+        XCTAssertNil(cleared?.members[1].nickname)
+    }
+
     func testSimplifyDebtsSettingRoundTrips() async throws {
         let repo = try SQLiteLedgerRepository()
         var group = makeGroup()

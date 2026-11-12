@@ -25,7 +25,7 @@ struct MealsCard: View {
                         .foregroundStyle(Color.ink)
                     Spacer()
                     MealStepper(halfMeals: counts[member.id] ?? 0) { set($0, for: member) }
-                        .accessibilityLabel(Text("Meals for \(member.displayName)"))
+                        .accessibilityLabel(Text("Meals for \(group.displayName(of: member.id))"))
                 }
                 .padding(.vertical, Spacing.xxs)
             }

@@ -13,7 +13,7 @@ tags:
 - tapOn: "Create a group"
 - tapOn: "Group name"
 - inputText: "Sajek trip"
-# "Your name" is prefilled from onboarding.
+# Your own name comes from onboarding; the new group never asks for it.
 - tapOn: "Name"
 - inputText: "Rishan"
 - takeScreenshot: ${OUT}/02-new-group
