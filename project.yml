@@ -48,7 +48,7 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: "TakaDe uses the camera to scan receipts and friends' TakaDe ID QR codes. A receipt photo stays with its expense; in a shared group it's encrypted before it's sent."
-        NSContactsUsageDescription: TakaDe shows your contacts so you can search and pick people to add to a group. Only the names you pick are kept, on this phone. Your contacts are never uploaded.
+        NSContactsUsageDescription: TakaDe shows your contacts so you can search and pick people to add to a group. Only the names, photos and mobile numbers of the people you pick are kept, on this phone. Your contacts are never uploaded.
         NSFaceIDUsageDescription: TakaDe uses Face ID to unlock the app when you turn on the lock in Settings. Your face data stays with iOS.
         # Google OAuth client for "Continue with Google"; empty hides the button (Config/Google.local.xcconfig).
         TakaDeGoogleClientID: $(TAKADE_GOOGLE_CLIENT_ID)

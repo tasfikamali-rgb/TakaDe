@@ -14,6 +14,7 @@ struct AccountView: View {
     @State private var working = false
     @State private var newName = ""
     @State private var confirmingName = false
+    @SceneStorage("account.showingSettings") private var showingSettings = false
 
     var body: some View {
         Form {
@@ -67,9 +68,7 @@ struct AccountView: View {
         .navigationTitle("Account")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    SettingsView()
-                } label: {
+                Button { showingSettings = true } label: {
                     Image(systemName: "gearshape")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(Color.ink)
@@ -77,6 +76,9 @@ struct AccountView: View {
                 .accessibilityLabel(Text("Settings"))
             }
         }
+        // Changing the language rebuilds the whole app so every string switches. Scene
+        // storage keeps Settings open through that, instead of dropping back to Account.
+        .navigationDestination(isPresented: $showingSettings) { SettingsView() }
         .refreshable { await account.refreshAccount() }
         .sheet(item: $flow) { mode in
             AccountFlowSheet(mode: mode) { flow = nil }.rebuildsOnDynamicType()

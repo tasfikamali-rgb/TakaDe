@@ -89,10 +89,10 @@ final class AppModel {
 
     var canAddGroup: Bool { groups.count < Self.groupLimit }
 
-    func createGroup(name: String, myName: String, otherNames: [String], kind: GroupKind = .standard, photo: Data? = nil) async throws -> ExpenseGroup {
+    func createGroup(name: String, myName: String, others people: [PickedContact], kind: GroupKind = .standard, photo: Data? = nil) async throws -> ExpenseGroup {
         guard canAddGroup else { throw GroupLimitReached() }
         let me = Member(displayName: myName, isMe: true)
-        let others = otherNames.map { Member(displayName: $0) }
+        let others = people.map { Member(displayName: $0.name) }
         // In a mess, whoever sets it up on their phone keeps the books.
         var group = ExpenseGroup(name: name, members: [me] + others, kind: kind, managerID: kind == .mess ? me.id : nil)
         // A photo that can't be read is skipped; the group is still made.
@@ -100,6 +100,7 @@ final class AppModel {
             group.accentHex = saved.accentHex
         }
         try await repository.save(group, actor: me.id)
+        await saveContactDetails(zip(others, people).map { $0 })
         await reload()
         return group
     }
@@ -131,20 +132,44 @@ final class AppModel {
     /// earlier add isn't overwritten.
     @discardableResult
     func addMembers(named names: [String], to group: ExpenseGroup) async throws -> [Member] {
-        guard !names.isEmpty else { return [] }
+        try await addMembers(names.map { PickedContact(name: $0) }, to: group)
+    }
+
+    /// Adds people picked from Contacts. Their names go into the group; their photo and
+    /// mobile number stay on this phone (see `saveContactDetails`).
+    @discardableResult
+    func addMembers(_ people: [PickedContact], to group: ExpenseGroup) async throws -> [Member] {
+        guard !people.isEmpty else { return [] }
         var updated = self.group(group.id) ?? group
-        let added = names.map { Member(displayName: $0) }
+        let added = people.map { Member(displayName: $0.name) }
         updated.members.append(contentsOf: added)
         try await repository.save(updated, actor: group.me?.id)
+        await saveContactDetails(zip(added, people).map { $0 })
         await reload()
         changed(group.id)
         return added
+    }
+
+    /// The contact photo becomes the member's avatar and the mobile number their bKash
+    /// number, both on this phone only: neither is in the group's sync. Either can fail
+    /// (an unreadable photo, say) without undoing the add; the person is still in the group.
+    private func saveContactDetails(_ pairs: [(Member, PickedContact)]) async {
+        for (member, contact) in pairs {
+            if let data = contact.photo, let image = try? await MemberPhotoFile.save(data, for: member.id) {
+                MemberPhotos.didSave(image, for: member.id)
+            }
+            if let number = contact.mobileNumber, let handle = try? PaymentHandle(memberID: member.id, rail: .bkash, handle: number) {
+                try? await profiles.save(handle)
+            }
+        }
     }
 
     /// Takes someone out of a group, if nothing in it mentions them (see
     /// `LedgerRepository.removeMember`). Throws `MemberRemovalError` otherwise.
     func removeMember(_ member: Member, from group: ExpenseGroup) async throws {
         try await repository.removeMember(member.id, from: group.id, actor: group.me?.id)
+        MemberPhotoFile.remove(member.id)
+        MemberPhotos.didRemove(member.id)
         await reload()
         changed(group.id)
     }
@@ -270,13 +295,14 @@ final class AppModel {
         return try BalanceCalculator.balances(members: group.members.map(\.id), currency: group.currency, expenses: expenses, settlements: settlements)
     }
 
-    /// Most recent expenses across every group, newest first.
-    func recentActivity(limit: Int = 50) async -> [ActivityItem] {
+    /// Expenses and payments added, edited or deleted across every group, newest first,
+    /// with who did it and what each edit changed.
+    func recentActivity(limit: Int = 100, locale: Locale) async -> [ActivityItem] {
         var items: [ActivityItem] = []
         for group in groups {
-            let expenses = (try? await repository.expenses(in: group.id, includeDeleted: false)) ?? []
-            items += expenses.map { ActivityItem(group: group, expense: $0) }
+            let events = (try? await repository.history(of: group.id)) ?? []
+            items += ActivityFeed.items(for: events, in: group, entities: [.expense, .settlement], locale: locale)
         }
-        return Array(items.sorted { $0.expense.occurredAt > $1.expense.occurredAt }.prefix(limit))
+        return Array(items.sorted { $0.occurredAt > $1.occurredAt }.prefix(limit))
     }
 }

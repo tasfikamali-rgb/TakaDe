@@ -30,9 +30,10 @@ final class ExpenseDraft {
     var method: SplitMethod = .equal
     var included: Set<MemberID>
     private var exactText: [MemberID: String] = [:]
-    private var percentText: [MemberID: String] = [:]
     private var shareCounts: [MemberID: Int] = [:]
-    private var adjustText: [MemberID: String] = [:]
+    /// True when a saved expense used a split the form no longer offers (percent or
+    /// extras). It opens as each person's exact amount, so nothing moves unless edited.
+    private(set) var showsOldSplitAsAmounts = false
 
     init(group: ExpenseGroup) {
         self.group = group
@@ -64,17 +65,15 @@ final class ExpenseDraft {
         case .exact(let amounts):
             method = .exact
             exactText = amounts.mapValues(KeypadText.plain)
-        case .percentage(let basisPoints):
-            method = .percentage
-            let percent = Currency(code: "PCT", minorUnitDigits: 2)
-            percentText = basisPoints.mapValues { KeypadText.plain(Money(minorUnits: Int64($0), currency: percent)) }
         case .shares(let weights):
             method = .shares
             shareCounts = Dictionary(uniqueKeysWithValues: group.members.map { ($0.id, weights[$0.id, default: 0]) })
-        case .adjusted(let adjustments):
-            method = .adjusted
-            included = Set(adjustments.keys)
-            adjustText = adjustments.filter { !$0.value.isZero }.mapValues(Self.signedText)
+        case .percentage, .adjusted:
+            // Splits by percent or with extras were dropped from the form (Sabit, 2026-11-12).
+            // Older ones open as the exact amounts they worked out to.
+            method = .exact
+            exactText = expense.allocation.shares.filter { !$0.value.isZero }.mapValues(KeypadText.plain)
+            showsOldSplitAsAmounts = true
         }
     }
 
@@ -89,11 +88,6 @@ final class ExpenseDraft {
     subscript(exactFor id: MemberID) -> String {
         get { exactText[id, default: ""] }
         set { exactText[id] = newValue }
-    }
-
-    subscript(percentFor id: MemberID) -> String {
-        get { percentText[id, default: ""] }
-        set { percentText[id] = newValue }
     }
 
     subscript(sharesFor id: MemberID) -> Int {
@@ -130,12 +124,6 @@ final class ExpenseDraft {
         return left == 0 ? nil : Money(minorUnits: left, currency: total.currency)
     }
 
-    /// "+150" or "-60": the extra (or less) this person pays on top of an equal part.
-    subscript(adjustFor id: MemberID) -> String {
-        get { adjustText[id, default: ""] }
-        set { adjustText[id] = newValue }
-    }
-
     subscript(includes id: MemberID) -> Bool {
         get { included.contains(id) }
         set { if newValue { included.insert(id) } else { included.remove(id) } }
@@ -157,37 +145,10 @@ final class ExpenseDraft {
                 amounts[member.id] = value
             }
             return amounts.isEmpty ? nil : .exact(amounts)
-        case .percentage:
-            var basisPoints: [MemberID: Int] = [:]
-            for member in group.members {
-                let text = percentText[member.id, default: ""]
-                guard !text.isEmpty else { continue }
-                // Percent with up to two decimals, as basis points (12.5% -> 1250).
-                guard let value = try? Money.parse(text, currency: Currency(code: "PCT", minorUnitDigits: 2)), value.minorUnits > 0 else { return nil }
-                basisPoints[member.id] = Int(value.minorUnits)
-            }
-            return basisPoints.isEmpty ? nil : .percentage(basisPoints)
         case .shares:
             let weights = Dictionary(uniqueKeysWithValues: group.members.map { ($0.id, shareCounts[$0.id, default: 1]) }).filter { $0.value > 0 }
             return weights.isEmpty ? nil : .shares(weights)
-        case .adjusted:
-            var adjustments: [MemberID: Money] = [:]
-            for member in group.members where included.contains(member.id) {
-                var text = adjustText[member.id, default: ""].trimmingCharacters(in: .whitespaces)
-                if text.hasPrefix("+") { text.removeFirst() }
-                if text.isEmpty || text == "-" {
-                    adjustments[member.id] = .zero(group.currency)
-                    continue
-                }
-                guard let value = try? Money.parse(text, currency: group.currency) else { return nil }
-                adjustments[member.id] = value
-            }
-            return adjustments.isEmpty ? nil : .adjusted(adjustments)
         }
-    }
-
-    private static func signedText(_ money: Money) -> String {
-        money.isNegative ? "-" + KeypadText.plain(money.magnitude) : "+" + KeypadText.plain(money)
     }
 
     var preview: Result<Allocation, SplitError>? {

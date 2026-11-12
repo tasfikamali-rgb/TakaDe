@@ -31,7 +31,7 @@ struct MemberBalancesCard: View {
             ForEach(group.members) { member in
                 Button { onOpenMember(member) } label: {
                     HStack(spacing: Spacing.s) {
-                        Avatar(name: member.displayName, size: 36)
+                        MemberAvatar(member: member, size: 36)
                         Text(verbatim: group.displayName(of: member.id))
                             .font(AppFont.body)
                             .foregroundStyle(Color.ink)

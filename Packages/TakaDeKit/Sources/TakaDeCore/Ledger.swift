@@ -106,6 +106,10 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
     /// A photo of the receipt, kept as a file on the phone (and, in a shared group,
     /// encrypted on the relay). Nil when there's no photo.
     public var receiptID: UUID?
+    /// Who made this version: the person in the group who added, edited or deleted it.
+    /// Set by the repository on save, so a shared group's Activity can say who edited
+    /// something on another phone. Nil for older saves and automatic monthly copies.
+    public var changedBy: MemberID?
 
     public init(id: ExpenseID = ExpenseID(), groupID: GroupID, title: String, total: Money, paidBy: [MemberID: Money], splitRule: SplitRule, occurredAt: Date = Date(), note: String? = nil, category: ExpenseCategory? = nil, version: Int = 1, deletedAt: Date? = nil, repeatsMonthly: Bool = false, repeatOf: ExpenseID? = nil, receiptID: UUID? = nil) throws {
         self.id = id
@@ -127,7 +131,7 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, groupID, title, total, paidBy, splitRule, allocation, occurredAt, note, category, version, deletedAt, repeatsMonthly, repeatOf, receiptID
+        case id, groupID, title, total, paidBy, splitRule, allocation, occurredAt, note, category, version, deletedAt, repeatsMonthly, repeatOf, receiptID, changedBy
     }
 
     /// Expenses saved before monthly repeats decode as not repeating.
@@ -148,6 +152,7 @@ public struct Expense: Hashable, Codable, Sendable, Identifiable {
         repeatsMonthly = try c.decodeIfPresent(Bool.self, forKey: .repeatsMonthly) ?? false
         repeatOf = try c.decodeIfPresent(ExpenseID.self, forKey: .repeatOf)
         receiptID = try c.decodeIfPresent(UUID.self, forKey: .receiptID)
+        changedBy = try c.decodeIfPresent(MemberID.self, forKey: .changedBy)
     }
 
     public func validate() throws {
@@ -171,4 +176,7 @@ public enum LedgerError: Error, Equatable, Sendable {
     case nonPositiveSettlement
     case illegalStatusTransition(from: SettlementStatus, to: SettlementStatus)
     case onlyRecipientCanAcknowledge
+    /// The amount of a payment the provider confirmed, or that the person paid marked
+    /// received, can only be changed by them (and a confirmed one not at all).
+    case settlementAmountLocked
 }

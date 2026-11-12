@@ -125,6 +125,8 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
 
     public func save(_ expense: Expense, actor: MemberID?) async throws {
         try expense.validate()
+        var expense = expense
+        expense.changedBy = actor
         let payload = try encoder.encode(expense)
         try await db.write { db in
             let existingVersion = try Int.fetchOne(db, sql: "SELECT version FROM expense WHERE id = ?", arguments: [expense.id.description])
@@ -149,6 +151,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
             guard expense.deletedAt == nil else { return }
             expense.deletedAt = Date()
             expense.version += 1
+            expense.changedBy = actor
             let payload = try encoder.encode(expense)
             try db.execute(sql: "UPDATE expense SET deleted_at = ?, version = ?, payload = ? WHERE id = ?",
                            arguments: [expense.deletedAt, expense.version, payload, id.description])
@@ -169,6 +172,8 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
     }
 
     public func save(_ settlement: Settlement, actor: MemberID?) async throws {
+        var settlement = settlement
+        settlement.changedBy = actor
         let payload = try encoder.encode(settlement)
         let decoder = self.decoder
         try await db.write { db in
@@ -182,10 +187,20 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                 // No provider evidence path exists in this storage layer.
                 throw LedgerError.illegalStatusTransition(from: previous.status, to: settlement.status)
             }
+            if let previous {
+                // An edit fixes the amount, method or transaction id; who paid whom stays.
+                guard previous.groupID == settlement.groupID, previous.from == settlement.from, previous.to == settlement.to else {
+                    throw LedgerError.invalidPayment
+                }
+                if previous.amount != settlement.amount,
+                   !Settlement.canChangeAmount(status: previous.status, to: previous.to, by: actor) {
+                    throw LedgerError.settlementAmountLocked
+                }
+            }
             try db.execute(sql: """
                 INSERT INTO settlement (id, group_id, from_member, to_member, amount_minor, status, payload)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET status = excluded.status, payload = excluded.payload
+                ON CONFLICT(id) DO UPDATE SET amount_minor = excluded.amount_minor, status = excluded.status, payload = excluded.payload
                 """, arguments: [settlement.id.description, settlement.groupID.description, settlement.from.description,
                                  settlement.to.description, settlement.amount.minorUnits, settlement.status.rawValue, payload])
             let action: AuditEvent.Action = previous == nil ? .created : (previous!.status != settlement.status ? .statusChanged : .edited)

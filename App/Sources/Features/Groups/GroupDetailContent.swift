@@ -22,6 +22,7 @@ struct GroupDetailContent: View {
     @State private var removingMember: Member?
     @State private var recentlyDeleted: Expense?
     @State private var editing: Expense?
+    @State private var editingPayment: Settlement?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -36,6 +37,7 @@ struct GroupDetailContent: View {
                     errorMessage: errorMessage,
                     onOpen: open,
                     onDelete: delete,
+                    onEditPayment: openPayment,
                     onAddMember: askForMember,
                     onAddFromContacts: { pickingContacts = true },
                     onOpenMember: openMember,
@@ -114,6 +116,9 @@ struct GroupDetailContent: View {
         .sheet(item: $editing) { expense in
             AddExpenseView(editing: expense, in: group, onDelete: delete)
         }
+        .sheet(item: $editingPayment) { settlement in
+            EditPaymentView(group: group, settlement: settlement, settlements: model.settlements)
+        }
         .sheet(isPresented: $showingSettle) {
             if let balances = model.balances {
                 SettleUpView(group: group, balances: balances, settlements: model.settlements)
@@ -169,6 +174,11 @@ struct GroupDetailContent: View {
     private func open(_ expense: Expense) {
         recentlyDeleted = nil
         editing = expense
+    }
+
+    private func openPayment(_ settlement: Settlement) {
+        recentlyDeleted = nil
+        editingPayment = settlement
     }
 
     private func askForMember() { showingAddMember = true }
@@ -228,24 +238,26 @@ struct GroupDetailContent: View {
         }
     }
 
-    /// Adds everyone picked. Someone already in the group, by the same name ignoring case
-    /// and spaces, is left out and named in a note, so a double tap doesn't add them twice.
-    private func addContacts(_ names: [String]) {
+    /// Adds everyone picked, with their contact photo and mobile number. Someone already in
+    /// the group, by the same name ignoring case and spaces, is left out and named in a note,
+    /// so a double tap doesn't add them twice.
+    private func addContacts(_ picked: [PickedContact]) {
         let existing = Set(group.members.map { $0.displayName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
         var seen = existing
         var skipped: [String] = []
-        var toAdd: [String] = []
+        var toAdd: [PickedContact] = []
         // Contact names with emoji or symbols are left out; they can be typed by hand.
-        let notNames = names.filter { !PersonName.isValid($0) }
-        for name in names where PersonName.isValid(name) {
-            let key = name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            if seen.contains(key) { skipped.append(name) } else { seen.insert(key); toAdd.append(name) }
+        let notNames = picked.map(\.name).filter { !PersonName.isValid($0) }
+        for contact in picked where PersonName.isValid(contact.name) {
+            let key = contact.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            if seen.contains(key) { skipped.append(contact.name) } else { seen.insert(key); toAdd.append(contact) }
         }
+        let names = toAdd.map(\.name)
         Task {
             do {
-                try await app.addMembers(named: toAdd, to: group)
+                try await app.addMembers(toAdd, to: group)
             } catch {
-                errorMessage = String(localized: "\(toAdd.formatted(.list(type: .and))) wasn't added. Try again.", bundle: .appLanguage)
+                errorMessage = String(localized: "\(names.formatted(.list(type: .and))) wasn't added. Try again.", bundle: .appLanguage)
                 return
             }
             if !skipped.isEmpty {

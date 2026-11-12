@@ -181,8 +181,15 @@ extension SQLiteLedgerRepository: SyncRepository {
             .compactMap(UUID.init(uuidString:)).map(MemberID.init))
     }
 
-    private static func syncAudit(_ db: Database, group: GroupID, entity: AuditEvent.Entity, id: UUID, action: AuditEvent.Action, body: Data) throws {
-        try audit(db, AuditEvent(groupID: group, entity: entity, entityID: id, action: action, actor: nil, source: .sync, snapshot: body))
+    private static func syncAudit(_ db: Database, group: GroupID, entity: AuditEvent.Entity, id: UUID, action: AuditEvent.Action,
+                                  actor: MemberID? = nil, body: Data) throws {
+        try audit(db, AuditEvent(groupID: group, entity: entity, entityID: id, action: action, actor: actor, source: .sync, snapshot: body))
+    }
+
+    /// Who the other phone says made the change, kept only when that person is in the group.
+    private static func knownActor(_ id: MemberID?, in members: Set<MemberID>) -> MemberID? {
+        guard let id, members.contains(id) else { return nil }
+        return id
     }
 
     /// The group's settings come from the other phone. People are merged, never removed, and
@@ -252,7 +259,10 @@ extension SQLiteLedgerRepository: SyncRepository {
         case (false, true, false): action = .restored
         default: action = .edited
         }
-        if logs { try syncAudit(db, group: group, entity: .expense, id: expense.id.rawValue, action: action, body: body) }
+        if logs {
+            try syncAudit(db, group: group, entity: .expense, id: expense.id.rawValue, action: action,
+                          actor: knownActor(expense.changedBy, in: members), body: body)
+        }
     }
 
     /// A payment from another phone follows the same rules as one made here. Above all,
@@ -267,7 +277,13 @@ extension SQLiteLedgerRepository: SyncRepository {
             .map { try syncDecoder.decode(Settlement.self, from: $0) }
         if let previous {
             guard previous.groupID == group, previous.from == settlement.from, previous.to == settlement.to,
-                  previous.amount == settlement.amount else { throw SyncApplyError.invalid }
+                  previous.amount.currency == settlement.amount.currency else { throw SyncApplyError.invalid }
+            // Same rule as an edit on this phone: once the person paid marked it received,
+            // only they can change the amount, and a confirmed amount never changes.
+            if previous.amount != settlement.amount,
+               !Settlement.canChangeAmount(status: previous.status, to: previous.to, by: settlement.changedBy) {
+                throw LedgerError.settlementAmountLocked
+            }
             if previous.status != settlement.status,
                !previous.status.canTransition(to: settlement.status, withProviderEvidence: false) {
                 throw LedgerError.illegalStatusTransition(from: previous.status, to: settlement.status)
@@ -278,11 +294,14 @@ extension SQLiteLedgerRepository: SyncRepository {
         try db.execute(sql: """
             INSERT INTO settlement (id, group_id, from_member, to_member, amount_minor, status, payload)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET status = excluded.status, payload = excluded.payload
+            ON CONFLICT(id) DO UPDATE SET amount_minor = excluded.amount_minor, status = excluded.status, payload = excluded.payload
             """, arguments: [settlement.id.description, group.description, settlement.from.description,
                              settlement.to.description, settlement.amount.minorUnits, settlement.status.rawValue, body])
         let action: AuditEvent.Action = previous == nil ? .created : (previous!.status != settlement.status ? .statusChanged : .edited)
-        if logs { try syncAudit(db, group: group, entity: .settlement, id: settlement.id.rawValue, action: action, body: body) }
+        if logs {
+            try syncAudit(db, group: group, entity: .settlement, id: settlement.id.rawValue, action: action,
+                          actor: knownActor(settlement.changedBy, in: members), body: body)
+        }
     }
 
     private static func applyMeal(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws {

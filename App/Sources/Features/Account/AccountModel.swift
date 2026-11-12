@@ -309,6 +309,8 @@ final class AccountModel {
         }
         ProfilePhotoFile.remove()
         GroupPhotoFile.removeAll()
+        MemberPhotoFile.removeAll()
+        MemberPhotos.reset()
         photo = nil
         profile = nil
         identities = []
