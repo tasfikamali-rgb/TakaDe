@@ -1,20 +1,15 @@
 import SwiftUI
 
 /// The bottom of Settings: delete your account (when signed in) and delete all data on this
-/// phone. Both ask first; neither can be undone (Sabit, 2026-11-12: these live in Settings).
-/// Anything that wipes all data asks a second time, so one stray tap can't do it (Sabit,
-/// 2026-11-12).
+/// phone (Sabit, 2026-11-12: these live in Settings). Each asks a short centred Yes / No
+/// question; deleting all data asks twice, so one stray tap can't do it (Sabit, 2026-11-12).
+/// Deleting the account keeps groups on this phone; "Delete all my data" removes them.
 struct DeleteSection: View {
-    /// The wipes that need a second "yes".
-    private enum Wipe {
-        case allData, accountAndData
-    }
-
     @Environment(AccountModel.self) private var account
     @Environment(AppModel.self) private var app
     @State private var confirmingAccount = false
     @State private var confirmingErase = false
-    @State private var lastCheck: Wipe?
+    @State private var confirmingEraseAgain = false
     @State private var working = false
     @State private var errorMessage: String?
 
@@ -35,35 +30,22 @@ struct DeleteSection: View {
                 .foregroundStyle(Color.inkMuted)
         }
         .disabled(working)
-        .confirmationDialog("Delete your account?", isPresented: $confirmingAccount, titleVisibility: .visible) {
-            Button("Delete account, keep my groups", role: .destructive) { deleteAccount(eraseData: false) }
-            Button("Delete account and all my data", role: .destructive) { lastCheck = .accountAndData }
-        } message: {
-            Text(account.usesAccountService
-                 ? LocalizedStringKey("Your TakaDe account and its sign-in methods are deleted from TakaDe's sign-in service, and you're signed out on this phone. This can't be undone.")
-                 : LocalizedStringKey("This signs you out, removes TakaDe's access to your Apple or Google account, and clears sign-in data from this phone."))
+        .alert("Delete your account?", isPresented: $confirmingAccount) {
+            Button("Yes", role: .destructive) { deleteAccount() }
+            Button("No", role: .cancel) {}
         }
-        .confirmationDialog("Delete all your data?", isPresented: $confirmingErase, titleVisibility: .visible) {
-            Button("Delete everything", role: .destructive) { lastCheck = .allData }
-        } message: {
-            Text("Every group, expense, payment and its history, your profile and your sign-in are removed from this phone. This can't be undone. Export first if you want a copy.")
+        .alert("Delete all your data?", isPresented: $confirmingErase) {
+            Button("Yes", role: .destructive) { confirmingEraseAgain = true }
+            Button("No", role: .cancel) {}
         }
-        .alert("Are you sure?", isPresented: Binding(get: { lastCheck != nil }, set: { if !$0 { lastCheck = nil } }),
-               presenting: lastCheck) { wipe in
-            Button("Yes, delete everything", role: .destructive) {
-                switch wipe {
-                case .allData: erase()
-                case .accountAndData: deleteAccount(eraseData: true)
-                }
-            }
-            Button("Keep my data", role: .cancel) {}
-        } message: { _ in
-            Text("This is the last step. All your groups and expenses will be gone from this phone for good.")
+        .alert("Are you sure?", isPresented: $confirmingEraseAgain) {
+            Button("Yes", role: .destructive, action: erase)
+            Button("No", role: .cancel) {}
         }
     }
 
-    private func deleteAccount(eraseData: Bool) {
-        run(failure: nil) { try await account.deleteAccount(eraseData: eraseData, app: app) }
+    private func deleteAccount() {
+        run(failure: nil) { try await account.deleteAccount(eraseData: false, app: app) }
     }
 
     private func erase() {

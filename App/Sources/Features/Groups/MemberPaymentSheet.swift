@@ -85,11 +85,12 @@ struct MemberPaymentSheet: View {
                     Section {
                         Button("Remove from group", systemImage: "person.badge.minus", role: .destructive) { confirmingRemove = true }
                             .foregroundStyle(Color.owe)
-                            .confirmationDialog(Text("Remove \(name) from this group?"), isPresented: $confirmingRemove, titleVisibility: .visible) {
-                                Button("Remove", role: .destructive) {
+                            .alert(Text("Remove \(name) from this group?"), isPresented: $confirmingRemove) {
+                                Button("Yes", role: .destructive) {
                                     dismiss()
                                     onRemove()
                                 }
+                                Button("No", role: .cancel) {}
                             }
                     } footer: {
                         Text("Only people who aren't in any expense or payment can be removed.")

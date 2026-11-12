@@ -129,15 +129,14 @@ struct ChatView: View {
         } message: {
             Text("Their messages stop reaching you. They aren't told. You can unblock them in Social.")
         }
-        .confirmationDialog(Text("Remove from Social?"), isPresented: $confirmingRemove, titleVisibility: .visible) {
-            Button("Remove", role: .destructive) {
+        .alert(Text("Remove from Social?"), isPresented: $confirmingRemove) {
+            Button("Yes", role: .destructive) {
                 Task {
                     await social.remove(friend)
                     dismiss()
                 }
             }
-        } message: {
-            Text("\(friend.displayName) and your chat are removed from this phone. If they write again, it shows as a request.")
+            Button("No", role: .cancel) {}
         }
     }
 

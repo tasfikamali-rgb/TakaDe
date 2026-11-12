@@ -82,11 +82,10 @@ struct AccountView: View {
         .sheet(isPresented: $addingMethod, onDismiss: { account.offerGooglePhotoIfNeeded() }) {
             AccountFlowSheet(mode: .link) { addingMethod = false }.rebuildsOnDynamicType()
         }
-        .confirmationDialog(Text("Remove this sign-in method?"), isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
-                            titleVisibility: .visible, presenting: removing) { identity in
-            Button("Remove", role: .destructive) { unlink(identity) }
-        } message: { identity in
-            Text("You won't be able to sign in with \(Text(identity.provider.label)) any more. Your other sign-in methods still work.")
+        .alert(Text("Remove this sign-in method?"), isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
+               presenting: removing) { identity in
+            Button("Yes", role: .destructive) { unlink(identity) }
+            Button("No", role: .cancel) {}
         }
     }
 

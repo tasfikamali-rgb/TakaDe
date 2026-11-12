@@ -34,11 +34,10 @@ struct SocialView: View {
             AddFriendSheet { id in path = [id] }
                 .rebuildsOnDynamicType()
         }
-        .confirmationDialog(Text("Remove from Social?"), isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
-                            titleVisibility: .visible, presenting: removing) { friend in
-            Button("Remove", role: .destructive) { Task { await social.remove(friend) } }
-        } message: { friend in
-            Text("\(friend.displayName) and your chat are removed from this phone. If they write again, it shows as a request.")
+        .alert(Text("Remove from Social?"), isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
+               presenting: removing) { friend in
+            Button("Yes", role: .destructive) { Task { await social.remove(friend) } }
+            Button("No", role: .cancel) {}
         }
         // Signing in or out changes whose friends these are.
         .task(id: account.profile?.accountID) { await social.start() }
