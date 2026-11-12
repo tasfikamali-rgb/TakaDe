@@ -41,10 +41,11 @@ tags:
     element: "Delete all my data"
     direction: DOWN
 - tapOn: "Delete all my data"
-- tapOn: "Delete everything"
-# It asks a second time before wiping anything.
+# Short centred Yes / No alerts; it asks a second time before wiping anything.
+- assertVisible: "Delete all your data?"
+- tapOn: "Yes"
 - assertVisible: "Are you sure?"
-- tapOn: "Yes, delete everything"
+- tapOn: "Yes"
 # Back to first launch, and the group is gone.
 - extendedWaitUntil:
     visible: "Get started"
