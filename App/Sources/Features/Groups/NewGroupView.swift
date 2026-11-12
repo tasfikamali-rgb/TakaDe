@@ -92,7 +92,7 @@ struct NewGroupView: View {
                 Section {
                     ForEach(people) { person in
                         HStack(spacing: Spacing.s) {
-                            Avatar(name: person.text, size: 32)
+                            Avatar(name: person.text, size: 32, photo: person.preview)
                             Text(verbatim: person.text)
                                 .font(AppFont.body)
                                 .foregroundStyle(Color.ink)
@@ -163,9 +163,9 @@ struct NewGroupView: View {
 
     /// Everyone to add, including a name still in the field, so Create works without
     /// tapping Add first.
-    private var allOthers: [String] {
-        let listed = people.map(\.text)
-        return PersonName.isValid(trimmedNewPerson) && !isTaken(trimmedNewPerson) ? listed + [trimmedNewPerson] : listed
+    private var allOthers: [PickedContact] {
+        let listed = people.map(\.picked)
+        return PersonName.isValid(trimmedNewPerson) && !isTaken(trimmedNewPerson) ? listed + [PickedContact(name: trimmedNewPerson)] : listed
     }
 
     /// Your name was checked when the account was made, so only the others are checked.
@@ -200,13 +200,18 @@ struct NewGroupView: View {
         people.removeAll { $0.id == person.id }
     }
 
-    /// Everyone picked shows up as a row right away. Anyone already listed is skipped.
-    private func addContacts(_ names: [String]) {
+    /// Everyone picked shows up as a row right away, with their contact photo. Anyone
+    /// already listed is skipped.
+    private func addContacts(_ picked: [PickedContact]) {
         var skipped: [String] = []
-        for picked in names {
-            let name = picked.trimmingCharacters(in: .whitespacesAndNewlines)
+        for contact in picked {
+            let name = contact.name.trimmingCharacters(in: .whitespacesAndNewlines)
             guard PersonName.isValid(name) else { continue }
-            if isTaken(name) { skipped.append(name) } else { people.append(DraftName(text: name)) }
+            if isTaken(name) {
+                skipped.append(name)
+            } else {
+                people.append(DraftName(text: name, contact: contact, preview: contact.photo.flatMap(UIImage.init(data:))))
+            }
         }
         note = skipped.isEmpty ? nil : String(localized: "\(skipped.formatted(.list(type: .and))) is already in it.", bundle: .appLanguage)
     }
@@ -229,7 +234,7 @@ struct NewGroupView: View {
                 let group = try await model.createGroup(
                     name: name.trimmingCharacters(in: .whitespacesAndNewlines),
                     myName: trimmedMyName,
-                    otherNames: allOthers,
+                    others: allOthers,
                     kind: kind,
                     photo: photoData)
                 dismiss()

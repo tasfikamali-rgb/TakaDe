@@ -156,7 +156,7 @@ private struct MessMemberRow: View {
 
     var body: some View {
         HStack(spacing: Spacing.s) {
-            Avatar(name: member.displayName, size: 36)
+            MemberAvatar(member: member, size: 36)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(verbatim: group.displayName(of: member.id))
                     .font(AppFont.body)
