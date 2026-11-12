@@ -12224,6 +12224,125 @@
           }
         }
       }
+    },
+    "Don't share": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শেয়ার করবেন না"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't share"
+          }
+        }
+      }
+    },
+    "Share shop names": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দোকানের নাম শেয়ার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share shop names"
+          }
+        }
+      }
+    },
+    "Share shop names from receipts": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদ থেকে দোকানের নাম শেয়ার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share shop names from receipts"
+          }
+        }
+      }
+    },
+    "Share shop names?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দোকানের নাম শেয়ার করবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share shop names?"
+          }
+        }
+      }
+    },
+    "Shop names": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "দোকানের নাম"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shop names"
+          }
+        }
+      }
+    },
+    "TakaDe would count the shop names from receipts you scan, with your country and the month, to learn which shops people use and plan ads. It isn't linked to you: your name, email, account, amounts, items and photo aren't sent. You can change this in Settings > Data and export.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার স্ক্যান করা রসিদের দোকানের নাম আপনার দেশ ও মাস সহ গোনা হবে, যাতে TakaDe জানতে পারে মানুষ কোন দোকানে কেনাকাটা করে এবং বিজ্ঞাপনের পরিকল্পনা করতে পারে। এটি আপনার সাথে যুক্ত নয়: আপনার নাম, ইমেইল, অ্যাকাউন্ট, টাকার পরিমাণ, আইটেম ও ছবি পাঠানো হয় না। সেটিংস > ডেটা ও এক্সপোর্ট থেকে এটি বদলাতে পারবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe would count the shop names from receipts you scan, with your country and the month, to learn which shops people use and plan ads. It isn't linked to you: your name, email, account, amounts, items and photo aren't sent. You can change this in Settings > Data and export."
+          }
+        }
+      }
+    },
+    "When on, the shop name you confirm after scanning a receipt is counted with your country and the month, to learn which shops people use and plan ads in TakaDe. It isn't linked to you: your name, email, account, amounts, items and photo aren't sent.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "চালু থাকলে, রসিদ স্ক্যান করার পর আপনি যে দোকানের নাম নিশ্চিত করেন, তা আপনার দেশ ও মাস সহ গোনা হয়, যাতে জানা যায় মানুষ কোন দোকান ব্যবহার করে এবং TakaDe-তে বিজ্ঞাপনের পরিকল্পনা করা যায়। এটি আপনার সাথে যুক্ত নয়: আপনার নাম, ইমেইল, অ্যাকাউন্ট, টাকার পরিমাণ, আইটেম ও ছবি পাঠানো হয় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When on, the shop name you confirm after scanning a receipt is counted with your country and the month, to learn which shops people use and plan ads in TakaDe. It isn't linked to you: your name, email, account, amounts, items and photo aren't sent."
+          }
+        }
+      }
     }
   }
 }

@@ -57,6 +57,11 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
 7. **Keep quiet groups a year:** run `migrations/20261112050000_keep_groups_one_year.sql`
    (ADR 0028). The nightly cleanup then removes a shared group only after 365 days with no
    change, instead of 90. Safe to re-run.
+8. **Shop name counts:** run `migrations/20261112060000_store_name_counts.sql` (ADR 0032).
+   Only people who say yes in the app send the shop name from a scanned receipt; it is
+   counted by month and country with no link to the person. See the top shops with
+   `select * from public.top_store_names(3, 'BD');` (last 3 months, Bangladesh; `null` for
+   everywhere).
 
 ## Social tab messages (ADR 0025)
 
