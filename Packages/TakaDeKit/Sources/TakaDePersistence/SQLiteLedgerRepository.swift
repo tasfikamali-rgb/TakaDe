@@ -54,6 +54,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
 
     public func save(_ group: ExpenseGroup, actor: MemberID?) async throws {
         let snapshot = try encoder.encode(group)
+        let shared = try encoder.encode(group.forSharing)
         try await db.write { db in
             let exists = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM expense_group WHERE id = ?)", arguments: [group.id.description]) ?? false
             try db.execute(sql: """
@@ -63,8 +64,8 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                     simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id
                 """, arguments: [group.id.description, group.name, group.currency.code, group.currency.minorUnitDigits, group.createdAt, group.archivedAt,
                                  group.simplifiesDebts, group.kind.rawValue, group.managerID?.description])
-            // Members: upsert listed members. Removing a member who has entries is not allowed
-            // in v1, so members are never deleted here.
+            // Members: upsert listed members. Nobody is deleted here; `removeMember` does that,
+            // and only for someone nothing in the group mentions.
             let profileID = try String.fetchOne(db, sql: "SELECT id FROM local_profile LIMIT 1")
             for (position, member) in group.members.enumerated() {
                 try db.execute(sql: """
@@ -75,6 +76,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                                      member.isMe ? profileID : nil, member.nickname])
             }
             try Self.audit(db, AuditEvent(groupID: group.id, entity: .group, entityID: group.id.rawValue, action: exists ? .edited : .created, actor: actor, snapshot: snapshot))
+            try Self.enqueue(db, group: group.id, entity: .group, body: shared)
         }
     }
 
@@ -104,6 +106,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                 let updated = try Self.group(from: groupRow, db: db)
                 try Self.audit(db, AuditEvent(groupID: group, entity: .group, entityID: group.rawValue, action: .edited, actor: actor,
                                               snapshot: try encoder.encode(updated)))
+                try Self.enqueue(db, group: group, entity: .group, body: try encoder.encode(updated.forSharing))
             }
         }
     }
@@ -134,6 +137,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                                  expense.total.currency.code, expense.occurredAt, expense.version, expense.deletedAt, payload])
             try Self.audit(db, AuditEvent(groupID: expense.groupID, entity: .expense, entityID: expense.id.rawValue,
                                           action: existingVersion == nil ? .created : .edited, actor: actor, snapshot: payload))
+            try Self.enqueue(db, group: expense.groupID, entity: .expense, body: payload)
         }
     }
 
@@ -149,6 +153,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
             try db.execute(sql: "UPDATE expense SET deleted_at = ?, version = ?, payload = ? WHERE id = ?",
                            arguments: [expense.deletedAt, expense.version, payload, id.description])
             try Self.audit(db, AuditEvent(groupID: expense.groupID, entity: .expense, entityID: id.rawValue, action: .deleted, actor: actor, snapshot: payload))
+            try Self.enqueue(db, group: expense.groupID, entity: .expense, body: payload)
         }
     }
 
@@ -185,6 +190,7 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                                  settlement.to.description, settlement.amount.minorUnits, settlement.status.rawValue, payload])
             let action: AuditEvent.Action = previous == nil ? .created : (previous!.status != settlement.status ? .statusChanged : .edited)
             try Self.audit(db, AuditEvent(groupID: settlement.groupID, entity: .settlement, entityID: settlement.id.rawValue, action: action, actor: actor, snapshot: payload))
+            try Self.enqueue(db, group: settlement.groupID, entity: .settlement, body: payload)
         }
     }
 
@@ -218,7 +224,16 @@ public final class SQLiteLedgerRepository: LedgerRepository, @unchecked Sendable
                              event.action.rawValue, event.actor?.description, event.source.rawValue, event.occurredAt, event.snapshot])
     }
 
-    private static func group(from row: Row, db: Database) throws -> ExpenseGroup {
+    /// Queues a change for upload when the group is shared. Runs inside the caller's
+    /// transaction, so the change and its upload record are saved together or not at all.
+    static func enqueue(_ db: Database, group: GroupID, entity: SyncChange.Entity, body: Data) throws {
+        let shared = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM group_sync WHERE group_id = ?)", arguments: [group.description]) ?? false
+        guard shared else { return }
+        try db.execute(sql: "INSERT INTO sync_outbox (change_id, group_id, entity, body, made_at) VALUES (?, ?, ?, ?, ?)",
+                       arguments: [UUID().uuidString, group.description, entity.rawValue, body, Date()])
+    }
+
+    static func group(from row: Row, db: Database) throws -> ExpenseGroup {
         let id: String = row["id"]
         let members = try Row.fetchAll(db, sql: "SELECT * FROM member WHERE group_id = ? ORDER BY position", arguments: [id]).map { m in
             Member(id: MemberID(UUID(uuidString: m["id"])!), displayName: m["display_name"], isMe: m["is_me"], nickname: m["nickname"])

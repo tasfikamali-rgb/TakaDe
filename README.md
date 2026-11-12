@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/brand/logo-on-dark.svg">
+    <img src="docs/brand/logo-on-light.svg" alt="TakaDe" width="320">
+  </picture>
+</p>
+
 # TakaDe
 
 A Bangladesh-first app for recording shared expenses, seeing who owes whom, and settling up.

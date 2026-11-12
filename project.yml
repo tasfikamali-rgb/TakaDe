@@ -35,6 +35,12 @@ targets:
       properties:
         CFBundleDisplayName: TakaDe
         CFBundleLocalizations: [en, bn]
+        # takade://join?… opens a shared group's invite (docs/adr/0019-shared-groups.md);
+        # takade://auth-callback is the sign-in return. Universal links on takadeapp.com
+        # come later: they need the domain and a paid developer team (Associated Domains).
+        CFBundleURLTypes:
+          - CFBundleURLName: app.takade.links
+            CFBundleURLSchemes: [takade]
         UILaunchScreen:
           UIColorName: launchBackground
           UIImageName: LaunchMark

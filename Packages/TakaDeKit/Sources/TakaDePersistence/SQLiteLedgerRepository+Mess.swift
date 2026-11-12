@@ -32,6 +32,7 @@ extension SQLiteLedgerRepository: MessRepository {
             }
             try Self.audit(db, AuditEvent(groupID: group, entity: .meal, entityID: meal.memberID.rawValue, action: .edited,
                                           actor: actor, snapshot: snapshot))
+            try Self.enqueue(db, group: group, entity: .meal, body: snapshot)
         }
     }
 }

@@ -93,6 +93,12 @@ struct EmailCodeForm: View {
     private func send() {
         guard looksLikeEmail, !working else { return }
         let address = trimmedEmail
+        // Courtesy check so people learn why before waiting for a code. The server enforces
+        // the same list for every sign-up and email change.
+        if DisposableEmail.bundled.isDisposable(address) {
+            errorMessage = SignInErrorText.disposableEmailMessage
+            return
+        }
         working = true
         Task {
             defer { working = false }

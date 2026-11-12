@@ -7,15 +7,17 @@ import TakaDeCore
 struct HomeView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(AppChrome.self) private var chrome
+    @Environment(AppModel.self) private var model
     @State private var selection: GroupID?
     @State private var path: [GroupID] = []
     @State private var showingNewGroup = false
+    @State private var showingJoin = false
 
     var body: some View {
         Group {
             if horizontalSizeClass == .regular {
                 NavigationSplitView {
-                    HomeOverview(selection: $selection, onNewGroup: showNewGroup)
+                    HomeOverview(selection: $selection, onNewGroup: showNewGroup, onJoin: showJoin)
                         .navigationSplitViewColumnWidth(min: 320, ideal: 380)
                 } detail: {
                     NavigationStack {
@@ -38,7 +40,7 @@ struct HomeView: View {
                 }
             } else {
                 NavigationStack(path: $path) {
-                    HomeOverview(selection: $selection, onNewGroup: showNewGroup)
+                    HomeOverview(selection: $selection, onNewGroup: showNewGroup, onJoin: showJoin)
                         .navigationDestination(for: GroupID.self) { GroupDetailView(groupID: $0) }
                 }
             }
@@ -53,6 +55,13 @@ struct HomeView: View {
             updateChrome()
         }
         .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open).rebuildsOnDynamicType() }
+        .sheet(isPresented: $showingJoin) { JoinGroupSheet(invite: nil, onJoined: open).rebuildsOnDynamicType() }
+        // Opened from elsewhere, like a group just joined from a link.
+        .onChange(of: model.requestedGroup, initial: true) { _, id in
+            guard let id else { return }
+            selection = id
+            model.requestedGroup = nil
+        }
     }
 
     /// Inside a group on a phone, the group's own "Settle up" takes the bottom edge.
@@ -61,6 +70,8 @@ struct HomeView: View {
     }
 
     private func showNewGroup() { showingNewGroup = true }
+
+    private func showJoin() { showingJoin = true }
 
     private func open(_ id: GroupID) { selection = id }
 
@@ -72,5 +83,6 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView().environment(AppModel.preview()).environment(AppChrome())
+    let app = AppModel.preview()
+    return HomeView().environment(app).environment(AppChrome()).environment(GroupSync(app: app, config: nil))
 }

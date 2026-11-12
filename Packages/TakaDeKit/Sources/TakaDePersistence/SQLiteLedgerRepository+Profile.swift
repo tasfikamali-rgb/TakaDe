@@ -105,6 +105,8 @@ extension SQLiteLedgerRepository: ProfileRepository {
                 DELETE FROM member;
                 DELETE FROM expense_group;
                 DELETE FROM account_identity;
+                DELETE FROM sync_outbox;
+                DELETE FROM group_sync;
                 DELETE FROM local_profile;
                 CREATE TRIGGER audit_event_no_delete BEFORE DELETE ON audit_event
                 BEGIN SELECT RAISE(ABORT, 'audit_event is append-only'); END;

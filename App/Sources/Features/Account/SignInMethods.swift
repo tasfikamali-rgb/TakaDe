@@ -153,6 +153,8 @@ enum SignInErrorText {
             String(localized: "That code didn't work. Check it, or send a new one.", bundle: .appLanguage)
         case SupabaseAuth.Failure.lastSignInMethod:
             String(localized: "This is your only way to sign in, so it can't be removed.", bundle: .appLanguage)
+        case SupabaseAuth.Failure.disposableEmail:
+            disposableEmailMessage
         case SupabaseAuth.Failure.notSignedIn:
             String(localized: "You've been signed out. Sign in again to continue.", bundle: .appLanguage)
         case SupabaseAuth.Failure.server(_, .some("identity_already_exists")):
@@ -164,6 +166,11 @@ enum SignInErrorText {
         default:
             String(localized: "Signing in didn't finish. Try again.", bundle: .appLanguage)
         }
+    }
+
+    /// Shown before sending a code to a throwaway address, and when the server refuses one.
+    static var disposableEmailMessage: String {
+        String(localized: "Temporary email addresses can't be used with TakaDe. Use an email you'll keep, so you can always sign back in.", bundle: .appLanguage)
     }
 }
 

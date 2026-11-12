@@ -6,6 +6,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(AccountModel.self) private var account
+    @Environment(GroupSync.self) private var sync
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -71,6 +72,13 @@ struct RootView: View {
         .fullScreenCover(isPresented: Binding(get: { account.needsOnboarding }, set: { _ in })) {
             OnboardingView().rebuildsOnDynamicType()
         }
+        // A tapped invite link. Waits until onboarding is done for someone new to TakaDe.
+        .sheet(item: Binding(get: { account.needsOnboarding ? nil : sync.pendingInvite }, set: { sync.pendingInvite = $0 })) { pending in
+            JoinGroupSheet(invite: pending.invite) { id in
+                tab = .home
+                model.requestedGroup = id
+            }
+        }
         .overlay(alignment: .top) {
             if let error = model.loadError {
                 ErrorBanner(message: error)
@@ -82,4 +90,5 @@ struct RootView: View {
 #Preview {
     let app = AppModel.preview()
     return RootView().environment(app).environment(AccountModel(store: app.profiles, google: nil))
+        .environment(GroupSync(app: app, config: nil))
 }

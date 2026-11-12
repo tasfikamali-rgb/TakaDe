@@ -1,4 +1,4 @@
-# Supabase (accounts only)
+# Supabase (accounts and shared groups)
 
 TakaDe uses Supabase Auth for accounts: Create an account and Sign in with email (6-digit
 code), Apple, Google or Microsoft. See docs/adr/0016-accounts-on-supabase.md. Supabase holds
@@ -29,4 +29,22 @@ Nothing is deployed yet. Steps:
      `TAKADE_MICROSOFT_SIGN_IN = NO` in `Config/TakaDe.xcconfig`; flip it if Azure is set up later.
    - Turn on **Allow manual linking**, so people can link more sign-ins from the Account tab.
 4. **Functions:** `supabase functions deploy delete-account`.
-5. Tell the coding thread, which then checks every flow on a phone.
+5. **Block throwaway emails** (see docs/adr/0018-block-disposable-emails.md):
+   - In the SQL Editor, run `migrations/20261111000000_block_disposable_emails.sql`, then
+     `seed/disposable_email_domains.sql` (about 10,000 domains). Both are safe to run again.
+   - Authentication > Hooks > **Before User Created**: add a Postgres hook, schema `public`,
+     function `hook_before_user_created`, and turn it on.
+   - Check: creating an account with a `@mailinator.com` address fails; a Gmail one works.
+   - To refresh the list: `python3 scripts/update-disposable-domains.py`, commit both
+     generated files, and run the seed SQL again.
+6. Tell the coding thread, which then checks every flow on a phone.
+
+## Shared groups (ADR 0019)
+
+Only groups someone invites others to are stored here, encrypted on the phone. Steps:
+
+1. **SQL editor:** run `migrations/20261112000000_shared_groups.sql` once. It creates the
+   relay tables with row-level security, the join function, and a nightly cleanup job.
+2. **Authentication > Sign In / Providers:** turn on **Allow anonymous sign-ins**, so friends
+   can join a group without making an account. Before launch, also turn on CAPTCHA.
+3. Check space used at any time: `select * from public.sync_storage();`
