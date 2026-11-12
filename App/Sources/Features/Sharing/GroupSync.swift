@@ -44,6 +44,9 @@ final class GroupSync {
     @ObservationIgnored private let relay: RelayClient?
     @ObservationIgnored private var running: [GroupID: Task<Void, Error>] = [:]
     @ObservationIgnored private var scheduled: Set<GroupID> = []
+    /// Expenses and payments other phones changed, after they're applied here. Not called
+    /// for the first download of a group just joined or shared. Used for notifications.
+    @ObservationIgnored var onChangesFromOthers: ((GroupID, [AppliedChange]) async -> Void)?
 
     var isAvailable: Bool { relay != nil }
 
@@ -171,6 +174,9 @@ final class GroupSync {
 
         // Down: everything after this phone's place in the group's order.
         var applied = 0
+        var fromOthers: [AppliedChange] = []
+        // Cursor 0 means the whole group is arriving for the first time: nothing to announce.
+        let startedAt = try await store.sharedState(of: group)?.cursor ?? 0
         let pageSize = 200
         while true {
             let cursor = try await store.sharedState(of: group)?.cursor ?? 0
@@ -183,12 +189,14 @@ final class GroupSync {
             }
             let result = try await store.apply(received, through: last.seq, in: group, syncedAt: Date())
             applied += result.applied
+            fromOthers += result.fromOthers
             if rows.count < pageSize { break }
         }
         try await store.markSynced(group, at: Date())
         if applied > 0 { await app.reload() }
         await loadStates()
         status[group] = .upToDate
+        if startedAt > 0, !fromOthers.isEmpty { await onChangesFromOthers?(group, fromOthers) }
     }
 
     // MARK: Receipt photos

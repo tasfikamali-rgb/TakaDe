@@ -8,6 +8,7 @@ struct RootView: View {
     @Environment(AccountModel.self) private var account
     @Environment(GroupSync.self) private var sync
     @Environment(Friends.self) private var friends
+    @Environment(GroupNotifications.self) private var notifications
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     // Scene storage, so a language switch (which rebuilds the tabs) or a new window
@@ -85,6 +86,13 @@ struct RootView: View {
             }
             .rebuildsOnDynamicType()
         }
+        // A tapped group notification opens that group.
+        .onChange(of: notifications.tappedGroup, initial: true) { _, id in
+            guard let id else { return }
+            tab = .home
+            model.requestedGroup = id
+            notifications.tappedGroup = nil
+        }
         .overlay(alignment: .top) {
             if let error = model.loadError {
                 ErrorBanner(message: error)
@@ -97,5 +105,6 @@ struct RootView: View {
     let app = AppModel.preview()
     return RootView().environment(app).environment(AccountModel(store: app.profiles, google: nil))
         .environment(GroupSync(app: app, config: nil))
+        .environment(GroupNotifications())
         .environment(Friends(account: AccountModel(store: app.profiles, google: nil), sync: GroupSync(app: app, config: nil)))
 }

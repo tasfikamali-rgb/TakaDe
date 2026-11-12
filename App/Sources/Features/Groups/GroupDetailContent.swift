@@ -7,6 +7,7 @@ struct GroupDetailContent: View {
     @Environment(AppModel.self) private var app
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverOn
     @Environment(GroupSync.self) private var sync
+    @Environment(GroupNotifications.self) private var notifications
     let group: ExpenseGroup
 
     @State private var model = GroupDetailModel()
@@ -104,6 +105,8 @@ struct GroupDetailContent: View {
         }
         .refreshable { await sync.sync(group.id) }
         // While a shared group is open, others' changes show up within about 20 seconds.
+        .onAppear { notifications.visibleGroup = group.id }
+        .onDisappear { if notifications.visibleGroup == group.id { notifications.visibleGroup = nil } }
         .task(id: group.id) {
             await sync.loadStates()
             while !Task.isCancelled {

@@ -9148,6 +9148,380 @@
         }
       }
     },
+    "%@ added “%@”.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ “%2$@” যোগ করেছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ added “%@”."
+          }
+        }
+      }
+    },
+    "%@ added “%@”. Your share is %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ “%2$@” যোগ করেছেন। আপনার ভাগ %3$@।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ added “%@”. Your share is %@."
+          }
+        }
+      }
+    },
+    "%@ brought back “%@”.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ “%2$@” ফিরিয়ে এনেছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ brought back “%@”."
+          }
+        }
+      }
+    },
+    "%@ changed a payment of %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ %2$@-এর একটি পেমেন্ট বদলেছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ changed a payment of %@."
+          }
+        }
+      }
+    },
+    "%@ changed “%@”.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ “%2$@” বদলেছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ changed “%@”."
+          }
+        }
+      }
+    },
+    "%@ changed “%@”. Your share is now %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ “%2$@” বদলেছেন। আপনার ভাগ এখন %3$@।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ changed “%@”. Your share is now %@."
+          }
+        }
+      }
+    },
+    "%@ deleted “%@”.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ “%2$@” মুছে ফেলেছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ deleted “%@”."
+          }
+        }
+      }
+    },
+    "%@ marked your %@ payment as received.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ আপনার %2$@ পেমেন্ট পেয়েছেন বলে লিখেছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ marked your %@ payment as received."
+          }
+        }
+      }
+    },
+    "%@ says they paid you %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ বলছেন তিনি আপনাকে %2$@ দিয়েছেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ says they paid you %@."
+          }
+        }
+      }
+    },
+    "+ %@ more": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "+ আরও %@টি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+ %@ more"
+          }
+        }
+      }
+    },
+    "Changes in shared groups": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শেয়ার করা গ্রুপের পরিবর্তন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes in shared groups"
+          }
+        }
+      }
+    },
+    "Get a notification when someone adds an expense you're in or pays you. Only your phone sees the names and amounts.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কেউ আপনার আছে এমন খরচ যোগ করলে বা আপনাকে টাকা দিলে নোটিফিকেশন পাবেন। নাম ও পরিমাণ শুধু আপনার ফোনই দেখে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get a notification when someone adds an expense you're in or pays you. Only your phone sees the names and amounts."
+          }
+        }
+      }
+    },
+    "In this group you owe %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে আপনার %@ দেওয়া বাকি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In this group you owe %@."
+          }
+        }
+      }
+    },
+    "In this group you're owed %@.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে আপনি %@ পাবেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In this group you're owed %@."
+          }
+        }
+      }
+    },
+    "Know when this group changes": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে কিছু বদলালে জানুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Know when this group changes"
+          }
+        }
+      }
+    },
+    "Not now": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখন না"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not now"
+          }
+        }
+      }
+    },
+    "Notifications": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "নোটিফিকেশন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
+          }
+        }
+      }
+    },
+    "Something changed in a shared group. Open TakaDe to see it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "একটি শেয়ার করা গ্রুপে কিছু বদলেছে। দেখতে TakaDe খুলুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something changed in a shared group. Open TakaDe to see it."
+          }
+        }
+      }
+    },
+    "Turn on": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "চালু করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on"
+          }
+        }
+      }
+    },
+    "Turn on in iPhone Settings": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইফোনের সেটিংসে চালু করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on in iPhone Settings"
+          }
+        }
+      }
+    },
+    "When someone adds or changes an expense you're in, or pays you. Your phone writes these itself, so names and amounts aren't sent to any server for them.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কেউ আপনার আছে এমন খরচ যোগ করলে বা বদলালে, কিংবা আপনাকে টাকা দিলে। আপনার ফোন নিজেই এগুলো লেখে, তাই এর জন্য নাম ও পরিমাণ কোনো সার্ভারে পাঠানো হয় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When someone adds or changes an expense you're in, or pays you. Your phone writes these itself, so names and amounts aren't sent to any server for them."
+          }
+        }
+      }
+    },
+    "You're settled up in this group.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই গ্রুপে আপনার হিসাব মেটানো।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're settled up in this group."
+          }
+        }
+      }
+    },
     "Signed in with %@": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {

@@ -30,6 +30,7 @@ struct SettingsView: View {
                 Text("Appearance")
                     .foregroundStyle(Color.inkMuted)
             }
+            NotificationsSection()
             AppLockSection()
             Section {
                 NavigationLink {
@@ -66,4 +67,5 @@ struct DataAndExportView: View {
         .environment(app)
         .environment(AccountModel(store: app.profiles, google: nil))
         .environment(AppLock())
+        .environment(GroupNotifications())
 }
