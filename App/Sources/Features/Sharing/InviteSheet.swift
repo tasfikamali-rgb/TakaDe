@@ -108,8 +108,10 @@ enum SharingError {
         switch error {
         case RelayClient.Failure.offline:
             return String(localized: "You're offline. Connect to the internet and try again.", bundle: .appLanguage)
-        case RelayClient.Failure.inviteNotValid, GroupSync.Failure.wrongGroup:
+        case RelayClient.Failure.inviteNotValid:
             return String(localized: "This link has expired or was stopped. Ask for a new one.", bundle: .appLanguage)
+        case GroupSync.Failure.wrongGroup:
+            return String(localized: "This invite link was changed after it was sent, so it can't be used. Ask for a new one.", bundle: .appLanguage)
         case GroupSync.Failure.unavailable, RelayClient.Failure.guestSignInOff:
             return String(localized: "Sharing groups isn't available in this version of TakaDe yet.", bundle: .appLanguage)
         default:

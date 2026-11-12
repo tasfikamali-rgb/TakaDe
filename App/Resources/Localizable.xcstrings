@@ -6819,40 +6819,6 @@
         }
       }
     },
-    "Ask someone in the group to tap the invite button in the group and send you the link.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "গ্রুপের কাউকে গ্রুপের আমন্ত্রণ বোতাম চেপে আপনাকে লিংক পাঠাতে বলুন।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ask someone in the group to tap the invite button in the group and send you the link."
-          }
-        }
-      }
-    },
-    "That doesn't look like a TakaDe group link. Copy the whole message and try again.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "এটি TakaDe গ্রুপের লিংক মনে হচ্ছে না। পুরো মেসেজটি কপি করে আবার চেষ্টা করুন।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "That doesn't look like a TakaDe group link. Copy the whole message and try again."
-          }
-        }
-      }
-    },
     "Which one are you in %@?": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -7155,6 +7121,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "In a shared group, everyone in it can see this photo. It's encrypted on the phone before it's sent."
+          }
+        }
+      }
+    },
+    "Only invite links from TakaDe work here. Ask someone in the group to tap the invite button in the group and send you the link.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এখানে শুধু TakaDe-এর ইনভাইট লিংক কাজ করে। গ্রুপের কাউকে গ্রুপের ইনভাইট বোতামে চাপ দিয়ে আপনাকে লিংকটি পাঠাতে বলুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only invite links from TakaDe work here. Ask someone in the group to tap the invite button in the group and send you the link."
+          }
+        }
+      }
+    },
+    "This invite link is incomplete. Copy the whole message again and paste it here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ইনভাইট লিংকটি অসম্পূর্ণ। পুরো মেসেজটি আবার কপি করে এখানে পেস্ট করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This invite link is incomplete. Copy the whole message again and paste it here."
+          }
+        }
+      }
+    },
+    "That's not a TakaDe invite link. Only links sent from a group's invite button work here.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি TakaDe-এর ইনভাইট লিংক নয়। শুধু গ্রুপের ইনভাইট বোতাম থেকে পাঠানো লিংক এখানে কাজ করে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's not a TakaDe invite link. Only links sent from a group's invite button work here."
+          }
+        }
+      }
+    },
+    "This invite link was changed after it was sent, so it can't be used. Ask for a new one.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পাঠানোর পর এই ইনভাইট লিংকটি বদলে গেছে, তাই এটি ব্যবহার করা যাবে না। নতুন লিংক চেয়ে নিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This invite link was changed after it was sent, so it can't be used. Ask for a new one."
           }
         }
       }
