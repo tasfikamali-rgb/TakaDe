@@ -22,6 +22,7 @@ struct GroupDetailContent: View {
     @State private var removingMember: Member?
     @State private var recentlyDeleted: Expense?
     @State private var editing: Expense?
+    @State private var editingPayment: Settlement?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -36,6 +37,7 @@ struct GroupDetailContent: View {
                     errorMessage: errorMessage,
                     onOpen: open,
                     onDelete: delete,
+                    onEditPayment: openPayment,
                     onAddMember: askForMember,
                     onAddFromContacts: { pickingContacts = true },
                     onOpenMember: openMember,
@@ -114,6 +116,9 @@ struct GroupDetailContent: View {
         .sheet(item: $editing) { expense in
             AddExpenseView(editing: expense, in: group, onDelete: delete)
         }
+        .sheet(item: $editingPayment) { settlement in
+            EditPaymentView(group: group, settlement: settlement, settlements: model.settlements)
+        }
         .sheet(isPresented: $showingSettle) {
             if let balances = model.balances {
                 SettleUpView(group: group, balances: balances, settlements: model.settlements)
@@ -169,6 +174,11 @@ struct GroupDetailContent: View {
     private func open(_ expense: Expense) {
         recentlyDeleted = nil
         editing = expense
+    }
+
+    private func openPayment(_ settlement: Settlement) {
+        recentlyDeleted = nil
+        editingPayment = settlement
     }
 
     private func askForMember() { showingAddMember = true }

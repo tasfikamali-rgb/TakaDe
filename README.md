@@ -14,7 +14,8 @@ This is the **local-only MVP** foundation. Everything is stored on one iPhone or
 | Area | Status |
 |---|---|
 | Groups with members (names kept exactly as typed) | Implemented |
-| Expenses with equal, exact, percentage and share splits | Implemented |
+| Expenses split equally, by amounts or by shares (older percent and extras splits still count) | Implemented |
+| Edit expenses and payments; Activity and History show who changed what, e.g. Amount ৳500 → ৳650 | Implemented |
 | Balances and suggested "who pays whom" | Implemented |
 | Recording a payment: *recorded by you, not verified*, or *marked received* by the person paid | Implemented |
 | Split keypad that does sums (`1200 ÷ 4`) | Implemented |

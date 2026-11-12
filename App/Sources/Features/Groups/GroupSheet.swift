@@ -8,6 +8,7 @@ struct GroupSheet: View {
     let errorMessage: String?
     let onOpen: (Expense) -> Void
     let onDelete: (Expense) -> Void
+    let onEditPayment: (Settlement) -> Void
     let onAddMember: () -> Void
     let onAddFromContacts: () -> Void
     let onOpenMember: (Member) -> Void
@@ -31,7 +32,7 @@ struct GroupSheet: View {
             }
             ExpensesCard(group: group, expenses: model.expenses, onOpen: onOpen, onDelete: onDelete)
             if !model.settlements.isEmpty {
-                PaymentsCard(group: group, settlements: model.settlements)
+                PaymentsCard(group: group, settlements: model.settlements, onEdit: onEditPayment)
             }
             VStack(spacing: 0) {
                 NavigationLink { HistoryView(group: group) } label: {

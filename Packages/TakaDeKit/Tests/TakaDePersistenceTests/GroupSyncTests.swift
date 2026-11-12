@@ -125,6 +125,73 @@ final class GroupSyncTests: XCTestCase {
         XCTAssertEqual(state?.cursor, 3)
     }
 
+    func testEditsFromAnotherPhoneSayWhoMadeThem() async throws {
+        let (phone, group, expense) = try await makeShared()
+        try await phone.startSharing(group.id)
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        _ = try await friend.apply(relay(try await phone.pendingChanges(in: group.id, limit: 100)), in: group.id, syncedAt: Date())
+        let rafi = group.members[1].id
+
+        // Rafi changes the amount and records a payment on their phone.
+        var edited = expense
+        edited.total = Money(minorUnits: 360_000)
+        edited.paidBy = [group.members[0].id: Money(minorUnits: 360_000)]
+        edited.allocation = try SplitCalculator.allocate(edited.total, by: edited.splitRule)
+        edited.version += 1
+        try await friend.save(edited, actor: rafi)
+        var payment = try Settlement(groupID: group.id, from: rafi, to: group.members[0].id, amount: Money(minorUnits: 150_000), method: .cash)
+        try payment.transition(to: .reportedUnverified)
+        try await friend.save(payment, actor: rafi)
+        try payment.edit(amount: Money(minorUnits: 180_000), method: .bkash, userReference: "8N7A", by: rafi)
+        try await friend.save(payment, actor: rafi)
+
+        let fromFriend = try await friend.pendingChanges(in: group.id, limit: 100)
+        XCTAssertEqual(fromFriend.count, 3)
+        let result = try await phone.apply(relay(fromFriend, from: 2), in: group.id, syncedAt: Date())
+        XCTAssertEqual(result.rejected, 0)
+
+        let history = try await phone.history(of: group.id).filter { $0.source == .sync }
+        XCTAssertEqual(history.count, 3)
+        XCTAssertTrue(history.allSatisfy { $0.actor == rafi })
+        let settlements = try await phone.settlements(in: group.id)
+        XCTAssertEqual(settlements.first?.amount, Money(minorUnits: 180_000))
+        XCTAssertEqual(settlements.first?.method, .bkash)
+        let expenses = try await phone.expenses(in: group.id, includeDeleted: false)
+        XCTAssertEqual(expenses.first?.total, Money(minorUnits: 360_000))
+    }
+
+    func testPayerCannotChangeAnAmountTheRecipientMarkedReceived() async throws {
+        let (phone, group, _) = try await makeShared()
+        try await phone.startSharing(group.id)
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        _ = try await friend.apply(relay(try await phone.pendingChanges(in: group.id, limit: 100)), in: group.id, syncedAt: Date())
+        let me = group.members[0].id, rafi = group.members[1].id
+
+        // Rafi paid; this phone (the recipient) marked it received.
+        var payment = try Settlement(groupID: group.id, from: rafi, to: me, amount: Money(minorUnits: 150_000), method: .cash)
+        try payment.acknowledge(by: me)
+        try await phone.save(payment, actor: me)
+        _ = try await friend.apply(relay(Array(try await phone.pendingChanges(in: group.id, limit: 100).suffix(1)), from: 2),
+                                   in: group.id, syncedAt: Date())
+
+        // A changed copy claiming to be from Rafi is refused on both phones.
+        var forged = payment
+        forged.changedBy = rafi
+        let raw = try JSONSerialization.jsonObject(with: JSONEncoder.iso.encode(forged)) as! [String: Any]
+        var changed = raw
+        changed["amount"] = try JSONSerialization.jsonObject(with: JSONEncoder.iso.encode(Money(minorUnits: 1_000)))
+        let body = try JSONSerialization.data(withJSONObject: changed)
+        let result = try await phone.apply([ReceivedChange(sequence: 10, change: SyncChange(groupID: group.id, entity: .settlement, body: body))],
+                                           in: group.id, syncedAt: Date())
+        XCTAssertEqual(result.rejected, 1)
+        var local = try await friend.settlements(in: group.id).first!
+        XCTAssertThrowsError(try local.edit(amount: Money(minorUnits: 1_000), method: .cash, userReference: nil, by: rafi))
+        let kept = try await phone.settlements(in: group.id)
+        XCTAssertEqual(kept.first?.amount, Money(minorUnits: 150_000))
+    }
+
     func testExpenseForSomeoneOutsideTheGroupIsRejected() async throws {
         let (phone, group, _) = try await makeShared()
         try await phone.startSharing(group.id)

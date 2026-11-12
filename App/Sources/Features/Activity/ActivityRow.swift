@@ -1,43 +1,41 @@
 import SwiftUI
 import TakaDeCore
 
+/// Who did what, in which group and when; for an edit, each change on its own line.
 struct ActivityRow: View {
     let item: ActivityItem
+    /// Activity mixes groups, so it names the group; a group's own History doesn't need to.
+    var showsGroup = true
 
     var body: some View {
-        HStack(spacing: Spacing.s) {
-            Avatar(name: item.group.name, size: 36)
+        HStack(alignment: .top, spacing: Spacing.s) {
+            if showsGroup {
+                Avatar(name: item.group.name, size: 36)
+            }
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(verbatim: item.expense.title).font(AppFont.bodyEmphasis)
+                Text(verbatim: item.headline).font(AppFont.bodyEmphasis)
+                ForEach(item.details, id: \.self) { line in
+                    Text(verbatim: line)
+                        .font(AppFont.label)
+                        .foregroundStyle(Color.ink)
+                }
                 HStack(spacing: Spacing.xxs) {
-                    Text(verbatim: item.group.name)
-                    Text(verbatim: "·")
-                    Text(item.expense.occurredAt, format: .dateTime.day().month())
+                    if showsGroup {
+                        Text(verbatim: item.group.name)
+                        Text(verbatim: "·")
+                    }
+                    Text(item.occurredAt, format: .dateTime.day().month().hour().minute())
                 }
                 .font(AppFont.caption)
                 .foregroundStyle(Color.inkMuted)
             }
-            Spacer()
-            VStack(alignment: .trailing, spacing: Spacing.xxs) {
-                if let share = myShare {
-                    AmountText(money: share, size: .headline)
-                    Text("your share")
-                        .font(AppFont.caption)
-                        .foregroundStyle(Color.inkMuted)
-                } else {
-                    AmountText(money: item.expense.total, size: .headline)
-                    Text("total")
-                        .font(AppFont.caption)
-                        .foregroundStyle(Color.inkMuted)
-                }
+            Spacer(minLength: Spacing.xs)
+            if let amount = item.amount {
+                AmountText(money: amount, size: .headline, color: item.isRemoved ? .inkMuted : .ink)
+                    .strikethrough(item.isRemoved)
             }
         }
         .padding(.vertical, Spacing.xxs)
         .accessibilityElement(children: .combine)
-    }
-
-    private var myShare: Money? {
-        guard let me = item.group.me else { return nil }
-        return item.expense.allocation.shares[me.id]
     }
 }
