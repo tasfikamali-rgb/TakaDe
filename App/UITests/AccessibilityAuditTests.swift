@@ -84,18 +84,6 @@ final class AccessibilityAuditTests: XCTestCase {
         try audit(app, for: [.textClipped, .sufficientElementDescription])
     }
 
-    /// Temporary diagnostic: the Bengali Home audit with the tab bar hidden, to confirm or
-    /// rule out the tab labels as the unnamed "Text clipped" issue. Remove once known.
-    @MainActor
-    func testBengaliLaunchesWithoutTabBar() throws {
-        let app = XCUIApplication()
-        app.launchArguments += ["-appLanguage", "bn", "-AppleLanguages", "(bn)", "-AppleLocale", "bn_BD",
-                                "-holdTexture", "YES", "-auditHideTabBar", "YES"]
-        app.launch()
-        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
-        try audit(app, for: [.textClipped])
-    }
-
     // MARK: Helpers
 
     @MainActor
