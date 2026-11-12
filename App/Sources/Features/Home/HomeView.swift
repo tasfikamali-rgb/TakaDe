@@ -10,8 +10,6 @@ struct HomeView: View {
     @Environment(AppModel.self) private var model
     @State private var selection: GroupID?
     @State private var path: [GroupID] = []
-    @State private var showingNewGroup = false
-    @State private var showingJoin = false
     /// The iPad sidebar. In portrait it floats over the group, so it hides once a group is
     /// picked or created; otherwise a new group and its expenses sit under it.
     @State private var columns: NavigationSplitViewVisibility = .automatic
@@ -70,8 +68,6 @@ struct HomeView: View {
             syncPath(selection)
             updateChrome()
         }
-        .sheet(isPresented: $showingNewGroup) { NewGroupView(onCreated: open).rebuildsOnDynamicType() }
-        .sheet(isPresented: $showingJoin) { JoinGroupSheet(invite: nil, onJoined: open).rebuildsOnDynamicType() }
         // Opened from elsewhere, like a group just joined from a link.
         .onChange(of: model.requestedGroup, initial: true) { _, id in
             guard let id else { return }
@@ -91,11 +87,11 @@ struct HomeView: View {
         columns = .detailOnly
     }
 
-    private func showNewGroup() { showingNewGroup = true }
+    // Presented by RootView (see AppChrome.showsNewGroup); a new group opens through
+    // model.requestedGroup.
+    private func showNewGroup() { chrome.showsNewGroup = true }
 
-    private func showJoin() { showingJoin = true }
-
-    private func open(_ id: GroupID) { selection = id }
+    private func showJoin() { chrome.showsJoin = true }
 
     private func syncPath(_ id: GroupID?) {
         guard horizontalSizeClass != .regular else { return }

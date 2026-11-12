@@ -28,10 +28,17 @@ tags:
 - tapOn:
     id: "newGroup.memberSearch"
 - inputText: "Kate"
-- tapOn: "Add Kate Bell"
+# The search box scrolls to the top so matches sit above the keyboard; contacts
+# load in the background, so wait for her row.
 - extendedWaitUntil:
-    visible: "From contacts"
-    timeout: 5000
+    visible: "Add Kate Bell"
+    timeout: 10000
+- tapOn: "Add Kate Bell"
+# Her row goes in "Who's in it", above the search: scroll up until it shows.
+- scrollUntilVisible:
+    element: "From contacts"
+    direction: UP
+    timeout: 10000
 - tapOn: "Create"
 - extendedWaitUntil:
     visible: "Add expense"
@@ -49,8 +56,21 @@ tags:
 - tapOn: "Done"
 - tapOn: "What was it for?"
 - inputText: "Dinner"
+# A tap on Save while the predictions bar updates was sometimes lost, so if the
+# sheet is still open, tap Save once more. "Dinner" is also in the open form, so
+# wait for Settle up, which only shows on the group page once the debt exists.
+# (hideKeyboard isn't used: iPad's keyboard can't always be hidden that way.)
 - tapOn: "Save"
 - extendedWaitUntil:
-    visible: "Dinner"
+    visible: "Settle up"
+    timeout: 8000
+    optional: true
+- runFlow:
+    when:
+      visible: "Paid by"
+    commands:
+      - tapOn: "Save"
+- extendedWaitUntil:
+    visible: "Settle up"
     timeout: 10000
 - tapOn: "Settle up"

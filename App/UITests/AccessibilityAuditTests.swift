@@ -47,6 +47,9 @@ final class AccessibilityAuditTests: XCTestCase {
         // The Groups screen shows above the sheet under the system dimming. The audit
         // measures that dimmed text too; only the sheet's own elements count here.
         try audit(app, ignoringContrastAbove: sheetBar.frame.minY)
+        // The audit changes the text size. The sheet used to close then, and the rest of
+        // the audit measured the Groups screen behind it.
+        XCTAssertTrue(sheetBar.exists, "The New group sheet closed during the audit")
     }
 
     @MainActor
