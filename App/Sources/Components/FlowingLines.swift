@@ -29,7 +29,9 @@ struct FlowingLines: View {
     }
 
     private func phase(at date: Date) -> Double {
-        guard !reduceMotion else { return 0 }
+        // Held lines sit at the same place every run, so the audit's contrast check, which
+        // samples the pixels behind muted text, gives the same result each time.
+        guard !reduceMotion, !Self.held else { return 0 }
         return date.timeIntervalSinceReferenceDate / period * 2 * Double.pi
     }
 
