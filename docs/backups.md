@@ -38,6 +38,13 @@ set `TAKADE_SERVER_SWITCH_URL` to its address without `https://`. To move everyo
 spare, change it to `{"use":"spare"}`: each phone switches the next time the app opens.
 Change it back the same way.
 
+Set up (2026-11-12): the file is `switch.json` in the public R2 bucket `takade-switch`
+(nothing else goes in that bucket). To change it, open the bucket in Cloudflare, delete
+`switch.json` and upload a new one with the other value. The spare already has main's
+sign-in settings (Apple, Google, guest sign-ins, redirect link, disposable-email hook and
+its domain list). Signing in again is needed after a switch: each project signs its own
+sessions.
+
 ## Restoring a copy
 
 Download the file from R2, then: `gpg -d takade-YYYY-MM-DD.tar.gz.gpg | tar xz`, then load
