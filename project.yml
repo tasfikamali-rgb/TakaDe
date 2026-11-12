@@ -56,7 +56,7 @@ targets:
         TakaDeSupabaseAnonKey: $(TAKADE_SUPABASE_ANON_KEY)
         TakaDeMicrosoftSignIn: $(TAKADE_MICROSOFT_SIGN_IN)
         TakaDeEmailSignIn: $(TAKADE_EMAIL_SIGN_IN)
-        UIAppFonts: [Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, InterDisplay-SemiBold.ttf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf]
+        UIAppFonts: [Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, InterDisplay-SemiBold.ttf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf, AnekBangla-Medium.ttf, AnekBangla-SemiBold.ttf]
     settings:
       base:
         TARGETED_DEVICE_FAMILY: "1,2"

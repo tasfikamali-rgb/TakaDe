@@ -9,7 +9,7 @@ struct KeypadDisplay: View {
         VStack(spacing: Spacing.xs) {
             if AmountExpression.hasOperator(expression) {
                 Text(verbatim: expression)
-                    .font(AppFont.headline)
+                    .font(AppFont.figures(20, .semibold, relativeTo: .headline))
                     .foregroundStyle(Color.inkMuted)
                     .monospacedDigit()
                     .lineLimit(1)

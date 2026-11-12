@@ -128,6 +128,8 @@ One modern family, the kind big fintech apps use (changed from Ranade and Author
 
 **Inter Display** SemiBold is the display face: balances, amounts on the keypad, screen titles, success messages. **Inter** (Regular, Medium, SemiBold) is the UI face: labels, buttons, list rows, body. Both have tabular figures, so amounts line up and don't jitter. Open licensed (SIL OFL), so the files are committed in `App/Resources/Fonts/Inter`.
 
+**Anek Bangla** (Medium, SemiBold; SIL OFL) draws Bengali digits (০–৯) and the ৳ beside them in amounts, the keypad and meal counts, because Hind Siliguri's digits didn't look right (Sabit, 2026-11-12, ADR 23). Bengali words stay in Hind Siliguri; Latin digits stay in Inter.
+
 **Hind Siliguri** (SIL OFL) covers Bengali: Bangla interface text, Bengali digits and the ৳ sign, at the same sizes and weights.
 
 Headline treatment follows the reference screenshot ("Trusted by teams that build world class apps."): medium to semibold weight, tight negative tracking, tight leading, sentence case, centered only for hero moments.

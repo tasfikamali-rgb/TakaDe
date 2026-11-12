@@ -29,10 +29,9 @@ enum AmountSize {
         }
     }
 
-    /// The figure. Bengali digits use Hind Siliguri, since Inter has no Bengali glyphs.
+    /// The figure: Inter for 0-9, Anek Bangla for Bengali digits (ADR 23).
     func main(bengaliDigits: Bool) -> Font {
-        isDisplay ? AppFont.display(points, relativeTo: style, bengali: bengaliDigits)
-            : AppFont.text(points, self == .body ? .regular : .medium, relativeTo: style, bengali: bengaliDigits)
+        AppFont.figures(points, isDisplay ? .semibold : (self == .body ? .regular : .medium), relativeTo: style, display: isDisplay, bengali: bengaliDigits)
     }
 
     /// The ৳ and the decimals. ৳ is a Bengali character, so it always comes from a face that has it.
@@ -40,8 +39,7 @@ enum AmountSize {
         // Below 16pt the minor part stays full size so it never drops under ~12pt.
         let ratio: CGFloat = isDisplay ? 0.45 : (points >= 16 ? 0.75 : 1)
         let size = (points * ratio).rounded()
-        return isDisplay ? AppFont.display(size, relativeTo: style, bengali: bengaliDigits)
-            : AppFont.text(size, .medium, relativeTo: style, bengali: bengaliDigits)
+        return AppFont.figures(size, isDisplay ? .semibold : .medium, relativeTo: style, display: isDisplay, bengali: bengaliDigits)
     }
 
     /// Tight negative tracking only on large display numbers, never on small text.
