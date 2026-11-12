@@ -14,6 +14,8 @@ final class GoogleSignInService {
         let userID: String
         let email: String?
         let name: String?
+        /// Google's profile photo address, when the profile was asked for.
+        let picture: URL?
         /// Google's ID token, for handing to TakaDe's sign-in service (ADR 0016).
         let idToken: String
     }
@@ -83,7 +85,8 @@ final class GoogleSignInService {
         if let refresh = tokens.refreshToken ?? tokens.accessToken {
             KeychainStore.set(refresh, for: Self.tokenKey)
         }
-        return Identity(userID: claims.sub, email: claims.email, name: claims.name, idToken: tokens.idToken)
+        return Identity(userID: claims.sub, email: claims.email, name: claims.name,
+                        picture: claims.picture.flatMap(URL.init(string:)), idToken: tokens.idToken)
     }
 
     /// Forgets the sign-in on this phone and asks Google to revoke TakaDe's access.
@@ -115,6 +118,7 @@ final class GoogleSignInService {
         let iss: String
         let email: String?
         let name: String?
+        let picture: String?
     }
 
     private func exchange(code: String, verifier: String) async throws -> TokenResponse {

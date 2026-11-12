@@ -26,12 +26,31 @@ Free plan only.
   `security definer` functions with an empty `search_path` and no dynamic SQL. Works the
   same whether `20261112030000_security_hardening.sql` runs before or after it.
 - **Latency:** the message appears in your chat at once and sends in the background.
-  Supabase Realtime pushes a "new row" event to the friend's open app (row-level security
-  applies), which then fetches straight away. No polling. With the app closed, messages wait
-  until it's opened: push notifications need an Apple Developer account and APNs, later.
+  A phone holds a Supabase Realtime connection only while a chat is on screen (Sabit,
+  2026-11-12, so the Free plan's 200 concurrent connections serve far more people). Then
+  Realtime pushes a "new row" event (row-level security applies) and the app fetches straight
+  away. Elsewhere, an open app checks for messages when it opens or comes back, when the
+  Social tab opens or is pulled down, and every 60 seconds while it stays in the foreground.
+  A message to someone not in that chat can therefore take up to a minute to show. With the
+  app closed, messages wait until it's opened: push notifications need an Apple Developer
+  account and APNs, later. Group sync and group notifications don't use Realtime at all.
 - **Typing:** while a chat is open, both phones join a Realtime broadcast channel named
   `typing-` + 16 bytes from HKDF over their shared X25519 secret. At most one signal every
   2.5 seconds while typing; the indicator hides after 6 seconds without one.
+
+## Names and photos (Sabit, 2026-11-12, after testing on iPhone and iPad)
+- Your QR code now carries your own name (`takade://friend?c=…&n=…`), so whoever scans it
+  sees your name at once. It goes camera to camera, never through the server; the typed or
+  shared ID still carries none.
+- A hello carries your name and a 128 px profile photo (16 KB JPEG at most), sealed like a
+  message. When someone accepts you, their phone sends its own name and photo back the same
+  way. Never to someone not accepted, never in answer to a profile, so it can't loop.
+- A name typed on this phone wins; otherwise the friend's own name is used, and their TakaDe
+  ID shows until one arrives. Photos from friends are checked (one JPEG, at most 512 px) and
+  kept on the phone only. Sealed messages may now be up to 40,000 characters.
+- A hello that couldn't be sent is tried again each time the app opens.
+- "Use my Google photo" asks Google in its own sheet and saves the photo on the phone; the
+  sign-in service still gets no name or photo (Sabit chose this over automatic at sign-in).
 
 ## What the server can see
 Who sends a message to whom and when, its size, and when a typing channel is used (not who

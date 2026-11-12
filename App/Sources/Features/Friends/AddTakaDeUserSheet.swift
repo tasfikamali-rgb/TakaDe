@@ -57,6 +57,11 @@ struct AddTakaDeUserSheet: View {
                 QRScannerSheet { text in
                     if let code = FriendCode(scanned: text) {
                         idText = code.description
+                        // Their QR code carries their own name: fill it in unless one is typed.
+                        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                           let shared = FriendCode.sharedName(inScanned: text) {
+                            name = shared
+                        }
                         error = nil
                     } else {
                         error = String(localized: "That QR code isn't a TakaDe ID.", bundle: .appLanguage)
@@ -145,7 +150,7 @@ struct AddTakaDeUserSheet: View {
                     memberID: member.id.rawValue)
                 try await friends.send(payload, to: code, key: key)
                 // People added to a group by ID also show up in the Social tab.
-                _ = try? await social.add(code: code, name: member.displayName, myName: payload.fromName, key: key)
+                _ = try? await social.add(code: code, name: member.displayName, key: key)
                 sentTo = member.displayName
                 AccessibilityNotification.Announcement(String(localized: "Invite sent", bundle: .appLanguage)).post()
             } catch {

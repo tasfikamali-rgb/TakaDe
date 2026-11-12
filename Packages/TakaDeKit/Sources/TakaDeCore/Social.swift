@@ -20,9 +20,11 @@ public struct Friend: Identifiable, Hashable, Sendable, Codable {
     public var code: FriendCode
     /// X25519 public key, base64url. Pinned when first seen; a change is noted in the chat.
     public var publicKey: String
-    /// The name typed on this phone, or the name they gave when they wrote first. Kept
-    /// exactly as entered.
+    /// The name typed on this phone, or the name they gave themselves. Kept exactly as
+    /// entered. Empty until one is known; `displayName` falls back to their TakaDe ID.
     public var name: String
+    /// True when the name was typed on this phone, so their own name doesn't replace it.
+    public var namedByMe: Bool
     public var status: Status
     public var addedAt: Date
     public var lastMessageAt: Date?
@@ -30,18 +32,24 @@ public struct Friend: Identifiable, Hashable, Sendable, Codable {
     public var unread: Int
 
     public init(id: UUID = UUID(), accountID: String, code: FriendCode, publicKey: String, name: String,
-                status: Status = .friend, addedAt: Date = Date(), lastMessageAt: Date? = nil,
+                namedByMe: Bool = true, status: Status = .friend, addedAt: Date = Date(), lastMessageAt: Date? = nil,
                 lastMessagePreview: String? = nil, unread: Int = 0) {
         self.id = id
         self.accountID = accountID
         self.code = code
         self.publicKey = publicKey
         self.name = name
+        self.namedByMe = namedByMe
         self.status = status
         self.addedAt = addedAt
         self.lastMessageAt = lastMessageAt
         self.lastMessagePreview = lastMessagePreview
         self.unread = unread
+    }
+
+    /// Their name, or their TakaDe ID while no name is known yet.
+    public var displayName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? code.description : name
     }
 }
 
@@ -109,8 +117,10 @@ public struct FriendMessage: Identifiable, Hashable, Sendable, Codable {
 /// What a message carries inside its sealed envelope. The server sees none of it.
 public struct FriendEnvelope: Codable, Sendable, Equatable {
     public enum Kind: String, Codable, Sendable {
-        /// "I added you": lets the other phone show a request with the sender's name.
+        /// "I added you": lets the other phone show a request with the sender's name and photo.
         case hello
+        /// The sender's own name and photo, sent back once they accept (never to a stranger).
+        case profile
         case text
     }
 
@@ -119,12 +129,18 @@ public struct FriendEnvelope: Codable, Sendable, Equatable {
     /// The sender's own name, so the other phone can show who it is. Never stored on the server.
     public var fromName: String
     public var text: String?
+    /// A small square JPEG of the sender's profile photo, base64. Hello and profile only.
+    public var photo: String?
 
-    public init(kind: Kind, id: UUID = UUID(), fromName: String, text: String? = nil) {
+    /// Largest photo accepted, in bytes before base64.
+    public static let maxPhotoBytes = 16_000
+
+    public init(kind: Kind, id: UUID = UUID(), fromName: String, text: String? = nil, photo: String? = nil) {
         self.kind = kind
         self.id = id
         self.fromName = fromName
         self.text = text
+        self.photo = photo
     }
 }
 
@@ -146,4 +162,27 @@ public protocol SocialRepository: Sendable {
     @discardableResult
     func save(_ message: FriendMessage) async throws -> Bool
     func markRead(_ friend: UUID) async throws
+}
+
+extension FriendCode {
+    /// The QR code with the owner's own name in it, so whoever scans it in person sees the
+    /// name straight away (Sabit, 2026-11-12). The name goes camera to camera, never through
+    /// the server. Typed or shared IDs carry no name.
+    public func url(name: String?) -> URL {
+        let trimmed = name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard !trimmed.isEmpty, PersonName.isValid(trimmed),
+              var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return url }
+        components.queryItems = (components.queryItems ?? []) + [URLQueryItem(name: "n", value: trimmed)]
+        return components.url ?? url
+    }
+
+    /// The name inside a scanned TakaDe QR code, when it has a valid one.
+    public static func sharedName(inScanned text: String) -> String? {
+        guard let components = URLComponents(string: text.trimmingCharacters(in: .whitespacesAndNewlines)),
+              components.scheme?.lowercased() == GroupInvite.scheme, components.host?.lowercased() == urlHost,
+              let name = components.queryItems?.first(where: { $0.name == "n" })?.value?
+                .trimmingCharacters(in: .whitespacesAndNewlines),
+              PersonName.isValid(name) else { return nil }
+        return name
+    }
 }

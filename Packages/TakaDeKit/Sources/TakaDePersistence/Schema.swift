@@ -202,8 +202,16 @@ enum Schema {
                     .check { ["sending", "sent", "failed", "received"].contains($0) }
             }
         }
+        // Friends' own names arrive over the encrypted channel (Sabit, 2026-11-12): a name
+        // typed on this phone is kept, otherwise theirs is used. Earlier rows weren't asked
+        // for a name they meant to keep, so they take the friend's own name when it comes.
+        migrator.registerMigration("v10_friend_named_by_me") { db in
+            try db.alter(table: "friend") { t in
+                t.add(column: "named_by_me", .boolean).notNull().defaults(to: false)
+            }
+        }
         // Who made each group, so only they can delete it (docs/adr/0027-delete-groups.md).
-        migrator.registerMigration("v10_group_creator") { db in
+        migrator.registerMigration("v11_group_creator") { db in
             try db.alter(table: "expense_group") { t in
                 t.add(column: "created_by", .text)
             }

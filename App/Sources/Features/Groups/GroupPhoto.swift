@@ -125,15 +125,18 @@ enum DominantColor {
 }
 
 /// A group's background colour. With an accent from its photo it's a soft version of that
-/// hue: light and pale in light mode, deep and muted in dark mode, so the usual ink text
-/// keeps strong contrast either way. Without one it's the standard lilac.
+/// hue: light and pale in light mode, deep and muted in dark mode. Pale enough that muted
+/// text (inkMuted) keeps 4.5:1 on it for every hue: at saturation 0.12 and brightness 0.96
+/// the darkest hue (blue) still gives inkMuted about 4.6:1, and in dark mode brightness 0.20
+/// keeps it at least 4.9:1 (yellow is the brightest hue). Checked for every hue. Without an
+/// accent it's the standard lilac.
 enum GroupTint {
     static func color(for group: ExpenseGroup) -> Color {
         guard let hex = group.accentHex, let hue = hue(of: hex) else { return .lilac }
         return Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hue: hue, saturation: 0.40, brightness: 0.30, alpha: 1)
-                : UIColor(hue: hue, saturation: 0.24, brightness: 0.93, alpha: 1)
+                ? UIColor(hue: hue, saturation: 0.35, brightness: 0.20, alpha: 1)
+                : UIColor(hue: hue, saturation: 0.12, brightness: 0.96, alpha: 1)
         })
     }
 

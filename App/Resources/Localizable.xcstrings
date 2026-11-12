@@ -10219,6 +10219,312 @@
         }
       }
     },
+    "Added you on TakaDe": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনাকে TakaDe-তে যোগ করেছেন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added you on TakaDe"
+          }
+        }
+      }
+    },
+    "No one has this TakaDe ID any more. They may have a new one.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই TakaDe আইডি এখন আর কারও নেই। তাদের হয়তো নতুন আইডি আছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one has this TakaDe ID any more. They may have a new one."
+          }
+        }
+      }
+    },
+    "TakaDe's server isn't ready for this yet. Try again later.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe-এর সার্ভার এখনো এর জন্য প্রস্তুত নয়। পরে আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TakaDe's server isn't ready for this yet. Try again later."
+          }
+        }
+      }
+    },
+    "Filled in from their QR code. Leave it empty to use the name they set, once they accept.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "তাদের QR কোড থেকে পূরণ হয়েছে। খালি রাখলে তারা গ্রহণ করার পর তাদের নিজের দেওয়া নাম দেখাবে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filled in from their QR code. Leave it empty to use the name they set, once they accept."
+          }
+        }
+      }
+    },
+    "Friends with TakaDe add you by scanning this code or typing your ID. The code includes your name, so whoever scans it sees it. Your ID alone shows no name, email or phone number.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe-তে থাকা বন্ধুরা এই কোড স্ক্যান করে বা আপনার আইডি লিখে আপনাকে যোগ করেন। কোডে আপনার নাম থাকে, তাই যিনি স্ক্যান করবেন তিনি তা দেখবেন। শুধু আইডিতে কোনো নাম, ইমেইল বা ফোন নম্বর থাকে না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends with TakaDe add you by scanning this code or typing your ID. The code includes your name, so whoever scans it sees it. Your ID alone shows no name, email or phone number."
+          }
+        }
+      }
+    },
+    "Choose a photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "একটি ছবি বেছে নিন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a photo"
+          }
+        }
+      }
+    },
+    "Use my Google photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আমার Google ছবি ব্যবহার করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use my Google photo"
+          }
+        }
+      }
+    },
+    "Show balance in": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ব্যালান্স দেখান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show balance in"
+          }
+        }
+      }
+    },
+    "Choose currency": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুদ্রা বাছুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose currency"
+          }
+        }
+      }
+    },
+    "Double-tap to choose another currency": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অন্য মুদ্রা বাছতে ডাবল-ট্যাপ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double-tap to choose another currency"
+          }
+        }
+      }
+    },
+    "Popular": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "জনপ্রিয়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Popular"
+          }
+        }
+      }
+    },
+    "All currencies": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "সব মুদ্রা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All currencies"
+          }
+        }
+      }
+    },
+    "Search currencies": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "মুদ্রা খুঁজুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search currencies"
+          }
+        }
+      }
+    },
+    "No currency matches that": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এমন কোনো মুদ্রা নেই"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No currency matches that"
+          }
+        }
+      }
+    },
+    "%@ · rate from %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@ তারিখের রেট"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · rate from %2$@"
+          }
+        }
+      }
+    },
+    "%@ · rate from %@ · offline": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@ তারিখের রেট · অফলাইন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · rate from %2$@ · offline"
+          }
+        }
+      }
+    },
+    "Connect to the internet to see %@. Showing taka for now.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ দেখতে ইন্টারনেটে যুক্ত হোন। আপাতত টাকায় দেখানো হচ্ছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect to the internet to see %@. Showing taka for now."
+          }
+        }
+      }
+    },
+    "No rate for %@ today. Showing taka.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আজ %@-এর রেট নেই। টাকায় দেখানো হচ্ছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No rate for %@ today. Showing taka."
+          }
+        }
+      }
+    },
     "Drag to move the photo. Pinch to zoom.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {

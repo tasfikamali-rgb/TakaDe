@@ -36,12 +36,10 @@ struct ChatView: View {
             await social.markRead(friendID)
         }
         .onAppear {
-            social.openChat = friendID
-            if let friend { social.openTyping(with: friend) }
+            if let friend { social.enterChat(friend) } else { social.openChat = friendID }
         }
         .onDisappear {
-            if social.openChat == friendID { social.openChat = nil }
-            if let friend { social.closeTyping(with: friend) }
+            if let friend { social.leaveChat(friend) } else if social.openChat == friendID { social.openChat = nil }
         }
     }
 
@@ -57,12 +55,12 @@ struct ChatView: View {
                                 .padding(.top, Spacing.m)
                                 .padding(.bottom, Spacing.xxs)
                         }
-                        MessageBubble(message: message, friendName: friend.name, showsTime: showsTime(at: index)) {
+                        MessageBubble(message: message, friendName: friend.displayName, showsTime: showsTime(at: index)) {
                             Task { await social.retry(message, to: friend, myName: myName) }
                         }
                     }
                     if social.typing.contains(friend.id) {
-                        TypingBubble(name: friend.name)
+                        TypingBubble(name: friend.displayName)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .transition(.opacity)
                     }
@@ -83,7 +81,7 @@ struct ChatView: View {
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 VStack(spacing: 0) {
                     if friend.status == .request { requestBar(for: friend) }
-                    if let error {
+                    if let error = error ?? (messages.last?.state == .failed ? social.sendProblem : nil) {
                         Text(verbatim: error)
                             .font(AppFont.label)
                             .foregroundStyle(Color.owe)
@@ -97,19 +95,22 @@ struct ChatView: View {
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
-                VStack(spacing: 0) {
-                    Text(verbatim: friend.name)
-                        .font(AppFont.bodyEmphasis)
-                        .lineLimit(1)
-                    Group {
-                        if social.typing.contains(friend.id) {
-                            Text("typing…")
-                        } else {
-                            Text(verbatim: friend.code.description).monospaced()
+                HStack(spacing: Spacing.xs) {
+                    Avatar(name: friend.name, size: 30, photo: FriendPhotos.image(for: friend.id))
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(verbatim: friend.displayName)
+                            .font(AppFont.bodyEmphasis)
+                            .lineLimit(1)
+                        Group {
+                            if social.typing.contains(friend.id) {
+                                Text("typing…")
+                            } else {
+                                Text(verbatim: friend.code.description).monospaced()
+                            }
                         }
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.inkMuted)
                     }
-                    .font(AppFont.caption)
-                    .foregroundStyle(Color.inkMuted)
                 }
                 .accessibilityElement(children: .combine)
             }
@@ -123,7 +124,7 @@ struct ChatView: View {
                 }
             }
         }
-        .confirmationDialog(Text("Block \(friend.name)?"), isPresented: $confirmingBlock, titleVisibility: .visible) {
+        .confirmationDialog(Text("Block \(friend.displayName)?"), isPresented: $confirmingBlock, titleVisibility: .visible) {
             Button("Block", role: .destructive) { block(friend) }
         } message: {
             Text("Their messages stop reaching you. They aren't told. You can unblock them in Social.")
@@ -136,13 +137,13 @@ struct ChatView: View {
                 }
             }
         } message: {
-            Text("\(friend.name) and your chat are removed from this phone. If they write again, it shows as a request.")
+            Text("\(friend.displayName) and your chat are removed from this phone. If they write again, it shows as a request.")
         }
     }
 
     private func requestBar(for friend: Friend) -> some View {
         HStack(spacing: Spacing.s) {
-            Text("\(friend.name) isn't in your friends yet.")
+            Text("\(friend.displayName) isn't in your friends yet.")
                 .font(AppFont.label)
                 .foregroundStyle(Color.inkMuted)
             Spacer(minLength: Spacing.xs)

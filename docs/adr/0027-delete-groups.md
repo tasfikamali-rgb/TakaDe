@@ -6,7 +6,7 @@ two phones.
 
 ## Decision
 - Groups record their maker (`ExpenseGroup.createdBy`, column `created_by`, migration
-  v10). It's set once and a synced snapshot can't change it. Older groups fall back to the
+  v11). It's set once and a synced snapshot can't change it. Older groups fall back to the
   first person listed, which the app has always made the group's maker.
 - **Group not shared:** it lives only on this phone, so the phone's owner can delete it.
 - **Shared group:** only the maker sees Delete group. The phone seals a `.groupDeleted`
