@@ -1,5 +1,6 @@
 import Foundation
 import TakaDeCore
+import UIKit
 
 /// The encrypted relay on Supabase (supabase/migrations/20261112000000_shared_groups.sql),
 /// over its REST API with URLSession, like SupabaseAuth: no Supabase SDK.
@@ -35,6 +36,9 @@ actor RelayClient {
     private let config: SupabaseConfig
     private var session: Session?
     private var signingIn: Task<Session, Error>?
+    /// Set when the old sharing sign-in couldn't be refreshed and a new guest sign-in took
+    /// its place. The phone then has to rejoin its groups with their rejoin secrets.
+    private var replacedSignIn = false
 
     init(config: SupabaseConfig) {
         self.config = config
@@ -85,6 +89,34 @@ actor RelayClient {
         let data = try await send("sync_group?id=eq.\(group)&select=id", method: "GET", body: nil)
         let rows = (try? JSONSerialization.jsonObject(with: data)) as? [Any] ?? []
         return !rows.isEmpty
+    }
+
+    /// Every shared group this sign-in is in, with the server time of its last change. One
+    /// request for all groups, so the once-a-minute check doesn't ask about each group.
+    func groupStamps() async throws -> [GroupID: String] {
+        struct Stamp: Decodable { let id: UUID; let last_change_at: String }
+        let data = try await send("sync_group?select=id,last_change_at", method: "GET", body: nil)
+        let rows = try JSONDecoder().decode([Stamp].self, from: data)
+        return Dictionary(rows.map { (GroupID($0.id), $0.last_change_at) }, uniquingKeysWith: { first, _ in first })
+    }
+
+    /// Stores the hash of this phone's rejoin secret on its member row
+    /// (supabase/migrations/20261112070000_ready_for_10k.sql). False when not in the group.
+    func setRejoin(_ group: GroupID, hash: String) async throws -> Bool {
+        let data = try await send("rpc/set_sync_rejoin", method: "POST", body: ["p_group": group.description, "p_hash": hash])
+        return (try? JSONDecoder().decode(Bool.self, from: data)) ?? false
+    }
+
+    /// Moves this phone's old member row to the current sign-in. False when nothing matches.
+    func rejoin(_ group: GroupID, secret: String) async throws -> Bool {
+        let data = try await send("rpc/rejoin_sync_group", method: "POST", body: ["p_group": group.description, "p_secret": secret])
+        return (try? JSONDecoder().decode(Bool.self, from: data)) ?? false
+    }
+
+    /// True once after the sharing sign-in was replaced by a new one.
+    func takeReplacedSignIn() -> Bool {
+        defer { replacedSignIn = false }
+        return replacedSignIn
     }
 
     func leave(_ group: GroupID) async throws {
@@ -204,11 +236,26 @@ actor RelayClient {
     }
 
     private func signIn(refreshing previous: Session?) async throws -> Session {
+        // The service retires a refresh token as soon as it answers, so finish the request
+        // (and the Keychain save after it) even if the app goes to the background meanwhile.
+        let background = await MainActor.run { UIApplication.shared.beginBackgroundTask(withName: "Sharing sign-in") }
+        defer {
+            if background != .invalid { Task { @MainActor in UIApplication.shared.endBackgroundTask(background) } }
+        }
         if let previous {
+            let body = ["refresh_token": previous.refreshToken]
             do {
-                return try await auth("token?grant_type=refresh_token", body: ["refresh_token": previous.refreshToken])
+                do {
+                    return try await auth("token?grant_type=refresh_token", body: body)
+                } catch Failure.offline {
+                    // The answer may have been lost after the service used the token up. A
+                    // quick repeat gets the same new tokens instead of a refusal.
+                    return try await auth("token?grant_type=refresh_token", body: body)
+                }
             } catch Failure.server(let status, _) where (400...401).contains(status) {
-                // Refresh token used up or the guest user was cleaned up: start a new one.
+                // Refresh token used up or the guest user was cleaned up: start a new one,
+                // and let GroupSync move this phone's memberships over to it.
+                replacedSignIn = true
             }
         }
         do {

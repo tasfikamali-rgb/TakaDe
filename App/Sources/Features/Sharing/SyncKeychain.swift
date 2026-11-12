@@ -17,7 +17,16 @@ enum SyncKeychain {
         set(key.withUnsafeBytes { Data($0) }.base64URLEncoded, for: "key.\(group)")
     }
 
-    static func removeKey(for group: GroupID) { delete("key.\(group)") }
+    static func removeKey(for group: GroupID) {
+        delete("key.\(group)")
+        delete("rejoin.\(group)")
+    }
+
+    /// This phone's secret for moving its membership to a new sharing sign-in. Saved only
+    /// after the relay stored its hash.
+    static func rejoinSecret(for group: GroupID) -> String? { get("rejoin.\(group)") }
+
+    static func setRejoinSecret(_ secret: String, for group: GroupID) { set(secret, for: "rejoin.\(group)") }
 
     static func get(_ account: String) -> String? {
         let query: [String: Any] = [

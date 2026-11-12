@@ -46,6 +46,11 @@ final class GroupSync {
     @ObservationIgnored private let relay: RelayClient?
     @ObservationIgnored private var running: [GroupID: Task<Void, Error>] = [:]
     @ObservationIgnored private var scheduled: Set<GroupID> = []
+    /// Each group's last change on the relay when this phone last synced it, so the
+    /// once-a-minute check only syncs groups that changed.
+    @ObservationIgnored private var stamps: [GroupID: String] = [:]
+    /// The relay doesn't have the rejoin functions yet (migration not run): don't ask again.
+    @ObservationIgnored private var rejoinUnavailable = false
     /// Expenses and payments other phones changed, after they're applied here. Not called
     /// for the first download of a group just joined or shared. Used for notifications.
     @ObservationIgnored var onChangesFromOthers: ((GroupID, [AppliedChange]) async -> Void)?
@@ -159,6 +164,33 @@ final class GroupSync {
         for id in states.keys { await sync(id) }
     }
 
+    /// The once-a-minute check, and the check when the app comes back: one request for all
+    /// groups, then a sync only for groups that changed on the relay, have changes waiting on
+    /// this phone, or failed last time. Falls back to syncing everything.
+    func syncChanged() async {
+        guard let relay else { return }
+        await loadStates()
+        await rejoinIfSignInReplaced()
+        let known = Array(states.keys)
+        guard !known.isEmpty else { return }
+        guard let current = try? await relay.groupStamps() else {
+            for id in known { await sync(id) }
+            return
+        }
+        for id in known {
+            guard let stamp = current[id] else {
+                // Not visible to this sign-in: rejoin, or the relay dropped the group.
+                await handleRemoved(id)
+                continue
+            }
+            let waiting = !((try? await app.syncStore.pendingChanges(in: id, limit: 1)) ?? []).isEmpty
+            if waiting || stamps[id] != stamp || status[id] != .upToDate {
+                await sync(id)
+                if status[id] == .upToDate, !waiting { stamps[id] = stamp }
+            }
+        }
+    }
+
     /// Syncs one group, recording the outcome for the group screen instead of throwing.
     func sync(_ group: GroupID) async {
         do {
@@ -197,6 +229,7 @@ final class GroupSync {
 
     private func pushAndPull(_ group: GroupID) async throws {
         guard let relay, (try await app.syncStore.sharedState(of: group)) != nil else { return }
+        await rejoinIfSignInReplaced()
         guard let key = SyncKeychain.key(for: group) else {
             status[group] = .failed
             return
@@ -247,6 +280,36 @@ final class GroupSync {
         await loadStates()
         status[group] = .upToDate
         if startedAt > 0, !fromOthers.isEmpty { await onChangesFromOthers?(group, fromOthers) }
+        await registerRejoinSecret(group)
+    }
+
+    // MARK: Rejoin (supabase/migrations/20261112070000_ready_for_10k.sql)
+
+    /// Gives this phone a rejoin secret for the group once, so a lost sharing sign-in
+    /// doesn't drop it out of the group.
+    private func registerRejoinSecret(_ group: GroupID) async {
+        guard let relay, !rejoinUnavailable, SyncKeychain.rejoinSecret(for: group) == nil else { return }
+        let secret = Self.randomToken()
+        let hash = SHA256.hash(data: Data(secret.utf8)).map { String(format: "%02x", $0) }.joined()
+        do {
+            if try await relay.setRejoin(group, hash: hash) { SyncKeychain.setRejoinSecret(secret, for: group) }
+        } catch RelayClient.Failure.server(_, let code) where code == "PGRST202" || code == "42883" {
+            rejoinUnavailable = true
+        } catch {
+            // Tried again after the next sync.
+        }
+    }
+
+    /// After the sharing sign-in was replaced, moves every membership this phone has a
+    /// secret for over to the new sign-in.
+    private func rejoinIfSignInReplaced() async {
+        guard let relay, await relay.takeReplacedSignIn() else { return }
+        for id in states.keys { _ = await rejoin(id) }
+    }
+
+    private func rejoin(_ group: GroupID) async -> Bool {
+        guard let relay, let secret = SyncKeychain.rejoinSecret(for: group) else { return false }
+        return (try? await relay.rejoin(group, secret: secret)) ?? false
     }
 
     // MARK: Receipt photos
@@ -302,6 +365,13 @@ final class GroupSync {
 
     /// The relay no longer has the group. Keep everything on the phone and say so.
     private func handleRemoved(_ group: GroupID) async {
+        // A new sharing sign-in, not a removed group: move the membership and sync again.
+        if await rejoin(group) {
+            status[group] = nil
+            stamps[group] = nil
+            scheduleSync(group)
+            return
+        }
         guard let relay, let member = try? await relay.isMember(of: group), !member else {
             status[group] = .failed
             return

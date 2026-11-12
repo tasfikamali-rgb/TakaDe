@@ -112,7 +112,7 @@ struct TakaDeApp: App {
                         friends.startWatching()
                         Task {
                             await model.addDueRepeats()
-                            await sync.syncAll()
+                            await sync.syncChanged()
                             await social.start()
                         }
                     }
@@ -131,7 +131,7 @@ struct TakaDeApp: App {
         // which is when group notifications can arrive without push. iOS picks the times.
         .backgroundTask(.appRefresh(Self.refreshTaskID)) {
             Self.scheduleRefresh()
-            await sync.syncAll()
+            await sync.syncChanged()
         }
     }
 
