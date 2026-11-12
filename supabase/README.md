@@ -43,3 +43,5 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
    can join a group without making an account. Before launch, also turn on CAPTCHA.
 3. **Receipt photos:** then run `migrations/20261112010000_receipt_photos.sql` (ADR 0020).
 4. Check space used at any time: `select * from public.sync_storage();`
+5. **TakaDe IDs:** run `migrations/20261112020000_friend_ids.sql` (ADR 0021), so friends with
+   accounts can add each other by ID or QR code. It stores an ID and a public key per account.

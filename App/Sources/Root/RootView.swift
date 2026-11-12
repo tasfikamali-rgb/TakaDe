@@ -7,6 +7,7 @@ struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(AccountModel.self) private var account
     @Environment(GroupSync.self) private var sync
+    @Environment(Friends.self) private var friends
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -73,8 +74,10 @@ struct RootView: View {
             OnboardingView()
         }
         // A tapped invite link. Waits until onboarding is done for someone new to TakaDe.
-        .sheet(item: Binding(get: { account.needsOnboarding ? nil : sync.pendingInvite }, set: { sync.pendingInvite = $0 })) { pending in
-            JoinGroupSheet(invite: pending.invite) { id in
+        // Next, any other invite friends sent by TakaDe ID.
+        .sheet(item: Binding(get: { account.needsOnboarding ? nil : sync.pendingInvite }, set: { sync.pendingInvite = $0 }),
+               onDismiss: { Task { await friends.checkInbox() } }) { pending in
+            JoinGroupSheet(invite: pending.invite, from: pending.from) { id in
                 tab = .home
                 model.requestedGroup = id
             }
@@ -91,4 +94,5 @@ struct RootView: View {
     let app = AppModel.preview()
     return RootView().environment(app).environment(AccountModel(store: app.profiles, google: nil))
         .environment(GroupSync(app: app, config: nil))
+        .environment(Friends(account: AccountModel(store: app.profiles, google: nil), sync: GroupSync(app: app, config: nil)))
 }

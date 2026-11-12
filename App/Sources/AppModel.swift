@@ -90,19 +90,23 @@ final class AppModel {
         return group
     }
 
-    func addMember(named name: String, to group: ExpenseGroup) async throws {
-        try await addMembers(named: [name], to: group)
+    @discardableResult
+    func addMember(named name: String, to group: ExpenseGroup) async throws -> Member? {
+        try await addMembers(named: [name], to: group).first
     }
 
     /// Adds several people in one save, starting from the latest copy of the group so an
     /// earlier add isn't overwritten.
-    func addMembers(named names: [String], to group: ExpenseGroup) async throws {
-        guard !names.isEmpty else { return }
+    @discardableResult
+    func addMembers(named names: [String], to group: ExpenseGroup) async throws -> [Member] {
+        guard !names.isEmpty else { return [] }
         var updated = self.group(group.id) ?? group
-        updated.members.append(contentsOf: names.map { Member(displayName: $0) })
+        let added = names.map { Member(displayName: $0) }
+        updated.members.append(contentsOf: added)
         try await repository.save(updated, actor: group.me?.id)
         await reload()
         changed(group.id)
+        return added
     }
 
     // MARK: Monthly repeats

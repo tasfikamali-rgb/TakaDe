@@ -6,6 +6,7 @@ struct TakaDeApp: App {
     @State private var model: AppModel
     @State private var account: AccountModel
     @State private var sync: GroupSync
+    @State private var friends: Friends
     @State private var lock = AppLock()
     /// Shown once per cold launch; see LaunchSplash.
     @State private var showsSplash = true
@@ -16,8 +17,11 @@ struct TakaDeApp: App {
     init() {
         let model = AppModel.live()
         _model = State(initialValue: model)
-        _account = State(initialValue: AccountModel(store: model.profiles))
-        _sync = State(initialValue: GroupSync(app: model))
+        let account = AccountModel(store: model.profiles)
+        let sync = GroupSync(app: model)
+        _account = State(initialValue: account)
+        _sync = State(initialValue: sync)
+        _friends = State(initialValue: Friends(account: account, sync: sync))
     }
 
     var body: some Scene {
@@ -29,12 +33,14 @@ struct TakaDeApp: App {
                 .environment(account)
                 .environment(lock)
                 .environment(sync)
+                .environment(friends)
                 .environment(\.locale, language.locale ?? .autoupdatingCurrent)
                 .task {
                     await account.load()
                     await model.reload()
                     await model.addDueRepeats()
                     await sync.syncAll()
+                    await friends.checkInbox()
                 }
                 // Invite links: takade://join?… now, https://takadeapp.com/join?… later.
                 .onOpenURL { url in
@@ -49,6 +55,7 @@ struct TakaDeApp: App {
                         Task {
                             await model.addDueRepeats()
                             await sync.syncAll()
+                            await friends.checkInbox()
                         }
                     }
                 }
