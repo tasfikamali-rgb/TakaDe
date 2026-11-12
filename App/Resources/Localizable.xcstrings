@@ -9521,6 +9521,57 @@
           }
         }
       }
+    },
+    "Signed in with %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ দিয়ে সাইন ইন করা আছে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signed in with %@"
+          }
+        }
+      }
+    },
+    "On this phone only": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শুধু এই ফোনে"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On this phone only"
+          }
+        }
+      }
+    },
+    "Friends scan it or type it to add you to a group.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "বন্ধুরা এটি স্ক্যান করে বা লিখে আপনাকে গ্রুপে যোগ করতে পারেন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends scan it or type it to add you to a group."
+          }
+        }
+      }
     }
   }
 }

@@ -204,7 +204,7 @@ extension SQLiteLedgerRepository: SyncRepository {
     /// "which one is me" stays as this phone set it.
     private static func applyGroup(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws {
         let remote = try syncDecoder.decode(ExpenseGroup.self, from: body)
-        guard remote.id == group,
+        guard remote.id == group, SyncLimits.accepts(remote),
               !remote.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !remote.members.isEmpty,
               (0...4).contains(remote.currency.minorUnitDigits), remote.currency.code.count == 3
@@ -242,7 +242,8 @@ extension SQLiteLedgerRepository: SyncRepository {
         let expense = try syncDecoder.decode(Expense.self, from: body)
         try expense.validate()
         let currency = try String.fetchOne(db, sql: "SELECT currency_code FROM expense_group WHERE id = ?", arguments: [group.description])
-        guard expense.groupID == group, expense.version >= 1, expense.total.currency.code == currency else { throw SyncApplyError.invalid }
+        guard expense.groupID == group, SyncLimits.accepts(expense), expense.version >= 1,
+              expense.total.currency.code == currency else { throw SyncApplyError.invalid }
         let members = try memberIDs(in: group, db: db)
         guard expense.paidBy.keys.allSatisfy(members.contains), expense.allocation.shares.keys.allSatisfy(members.contains) else {
             throw SyncApplyError.unknownMember
@@ -279,7 +280,7 @@ extension SQLiteLedgerRepository: SyncRepository {
     private static func applySettlement(_ body: Data, in group: GroupID, logs: Bool, db: Database) throws -> AppliedChange? {
         let settlement = try syncDecoder.decode(Settlement.self, from: body)
         let members = try memberIDs(in: group, db: db)
-        guard settlement.groupID == group, settlement.from != settlement.to, settlement.amount.minorUnits > 0,
+        guard settlement.groupID == group, SyncLimits.accepts(settlement), settlement.from != settlement.to, settlement.amount.minorUnits > 0,
               members.contains(settlement.from), members.contains(settlement.to)
         else { throw SyncApplyError.invalid }
         let previous = try Data.fetchOne(db, sql: "SELECT payload FROM settlement WHERE id = ?", arguments: [settlement.id.description])

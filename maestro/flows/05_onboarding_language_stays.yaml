@@ -1,0 +1,32 @@
+# Picking a language during onboarding switches the text in place: the language step
+# stays on screen, nothing behind it flashes, and the step doesn't jump elsewhere.
+appId: app.takade.ios
+name: Onboarding language switch stays on the step
+tags:
+  - smoke
+  - localization
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Get started"
+    timeout: 20000
+- tapOn: "Get started"
+- tapOn: "Continue"
+- extendedWaitUntil:
+    visible: "English"
+    timeout: 5000
+- tapOn: "বাংলা"
+- extendedWaitUntil:
+    visible: "আপনার ভাষা বেছে নিন"
+    timeout: 5000
+- assertNotVisible: "Where are you from?"
+- tapOn: "English"
+- extendedWaitUntil:
+    visible: "Choose your language"
+    timeout: 5000
+- tapOn: "বাংলা"
+- tapOn: "English"
+- assertVisible: "Choose your language"
+- assertNotVisible: "Search countries"
+- assertNotVisible: "Continue without account"

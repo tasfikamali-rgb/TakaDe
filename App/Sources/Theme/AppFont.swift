@@ -96,14 +96,23 @@ private extension Font.TextStyle {
     }
 }
 
-/// AppFont's Inter faces are scaled when they're made, so a view has to be rebuilt to pick
-/// up a new Dynamic Type size. RootView does that for the main screens; screens presented
-/// over it (sheets and full-screen covers) use this, since they aren't part of that rebuild.
+/// AppFont's Inter faces are scaled when they're made, and strings from `.appLanguage` and
+/// the Bengali font choice are read when a view is built, so a view has to be rebuilt to pick
+/// up a new Dynamic Type size or language. RootView does that for the main screens; screens
+/// presented over it (sheets and full-screen covers) use this too, since they aren't part of
+/// that rebuild. Only the content is rebuilt, never the view that presents it, so an open
+/// cover or sheet (onboarding, for one) stays open instead of closing and opening again.
 struct RebuildsOnDynamicType: ViewModifier {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
 
     func body(content: Content) -> some View {
-        content.id(dynamicTypeSize)
+        content.id(Key(size: dynamicTypeSize, language: language))
+    }
+
+    private struct Key: Hashable {
+        let size: DynamicTypeSize
+        let language: AppLanguage
     }
 }
 

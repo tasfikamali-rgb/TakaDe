@@ -45,9 +45,10 @@ struct TakaDeApp: App {
         // Captured once for the background refresh below, which runs without any window.
         let sync = sync
         WindowGroup {
+            // No .id(language) here: rebuilding the whole window closed and reopened the
+            // onboarding cover on every language tap, flashing the app behind it and losing
+            // the step. RootView rebuilds only its content on a language change instead.
             RootView()
-                // Rebuild the tree on a language change so every string re-resolves.
-                .id(language)
                 .environment(model)
                 .environment(account)
                 .environment(lock)

@@ -239,6 +239,28 @@ final class GroupSyncTests: XCTestCase {
         XCTAssertEqual(result.rejected, 1)
     }
 
+    func testOversizedTextFromAnotherPhoneIsRejected() async throws {
+        let (phone, group, _) = try await makeShared()
+        try await phone.startSharing(group.id)
+        let sent = try await phone.pendingChanges(in: group.id, limit: 100)
+        let friend = try SQLiteLedgerRepository()
+        try await friend.prepareToJoin(group.id)
+        _ = try await friend.apply(relay(sent), in: group.id, syncedAt: Date())
+
+        var renamed = group.forSharing
+        renamed.name = String(repeating: "ক", count: SyncLimits.maxGroupNameLength + 1)
+        let longName = SyncChange(groupID: group.id, entity: .group, body: try JSONEncoder.iso.encode(renamed))
+        let payer = group.members[0].id
+        let longTitle = try Expense(groupID: group.id, title: String(repeating: "x", count: SyncLimits.maxExpenseTitleLength + 1),
+                                    total: Money(minorUnits: 100), paidBy: [payer: Money(minorUnits: 100)], splitRule: .equal([payer]))
+        let titleChange = SyncChange(groupID: group.id, entity: .expense, body: try JSONEncoder.iso.encode(longTitle))
+        let result = try await friend.apply([ReceivedChange(sequence: 3, change: longName), ReceivedChange(sequence: 4, change: titleChange)],
+                                            in: group.id, syncedAt: Date())
+        XCTAssertEqual(result.rejected, 2)
+        let kept = try await friend.group(group.id)
+        XCTAssertEqual(kept?.name, group.name)
+    }
+
     func testEraseEverythingForgetsSharing() async throws {
         let (phone, group, _) = try await makeShared()
         try await phone.startSharing(group.id)
