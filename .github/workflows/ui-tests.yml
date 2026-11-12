@@ -142,9 +142,6 @@ jobs:
           wait $boot
           udid=$(cat udid.txt)
           xcrun simctl install "$udid" build/TakaDe.app
-          # The flows add "Kate Bell" from Contacts; import her so it doesn't depend on
-          # the simulator's sample contacts.
-          xcrun simctl addmedia "$udid" maestro/fixtures/kate-bell.vcf || true
           echo "udid=$udid" >> "$GITHUB_OUTPUT"
           echo "slug=$(echo '${{ matrix.device }}-${{ matrix.shard }}' | tr ' A-Z' '-a-z')" >> "$GITHUB_OUTPUT"
       - name: Flows in light mode
@@ -240,7 +237,6 @@ jobs:
         run: |
           tar -xzf build/TakaDe.app.tgz -C build
           xcrun simctl install "${{ steps.duo.outputs.udid }}" build/TakaDe.app
-          xcrun simctl addmedia "${{ steps.duo.outputs.udid }}" maestro/fixtures/kate-bell.vcf || true
           curl -fsSL https://get.maestro.mobile.dev | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
       - name: Flows on iPhone Duo (default pose), light and dark
