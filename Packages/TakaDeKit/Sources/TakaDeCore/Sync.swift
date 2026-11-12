@@ -1,6 +1,6 @@
 import Foundation
 
-/// Shared groups (docs/adr/0018-shared-groups.md). Each change to a shared group is one of
+/// Shared groups (docs/adr/0019-shared-groups.md). Each change to a shared group is one of
 /// these, encrypted on the phone with the group's key before it goes to the relay. The relay
 /// stores only ciphertext and keeps the order changes arrived in.
 public struct SyncChange: Hashable, Codable, Sendable, Identifiable {

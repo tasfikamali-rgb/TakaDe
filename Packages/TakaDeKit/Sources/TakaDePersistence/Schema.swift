@@ -136,7 +136,7 @@ enum Schema {
                 t.uniqueKey(["provider", "provider_user_id"])
             }
         }
-        // Shared groups (docs/adr/0018-shared-groups.md). Changes to a shared group are
+        // Shared groups (docs/adr/0019-shared-groups.md). Changes to a shared group are
         // queued in sync_outbox in the same transaction as the change itself, so nothing is
         // lost if the app quits before uploading. Group keys are in the Keychain, never here.
         migrator.registerMigration("v6_group_sync") { db in

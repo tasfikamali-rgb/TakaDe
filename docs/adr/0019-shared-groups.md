@@ -1,4 +1,4 @@
-# 18. Shared groups through the encrypted relay
+# 19. Shared groups through the encrypted relay
 
 Status: accepted (Sabit, 2026-11-11: "make sure the share button actually works... it takes
 you directly into the group", "not only for my phone, but also for all future users", and

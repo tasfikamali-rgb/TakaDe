@@ -17,7 +17,7 @@ Pick one, per CLAUDE.md:
 **Decided 2026-11-11:** accounts on Supabase Auth: email code, Apple, Google and Microsoft, with a separate Account tab (ADR 16). Supabase holds only the account; groups stay on the phone. The relay will use the same Supabase Postgres, ciphertext only.
 **Open, owner:** fill in the anon key in `Config/Supabase.local.xcconfig`, set up the providers and email templates, deploy `delete-account` (supabase/README.md). Until then builds use the on-device sign-in from ADR 11.
 **Open, owner:** a sender domain and SMTP provider for the sign-in codes before launch (Owner materials 5).
-**Decided 2026-11-11:** shared groups through the encrypted relay on Supabase, for every user; only shared groups leave the phone, idle ones are removed from the server after 90 days (ADR 18).
+**Decided 2026-11-11:** shared groups through the encrypted relay on Supabase, for every user; only shared groups leave the phone, idle ones are removed from the server after 90 days (ADR 19).
 **Open, owner:** run the shared-groups SQL and turn on anonymous sign-ins (supabase/README.md). Tappable https invite links wait on takadeapp.com and a paid Apple Developer account.
 
 ## 2. bKash, upay and bank settlement (blocks: any payment button)

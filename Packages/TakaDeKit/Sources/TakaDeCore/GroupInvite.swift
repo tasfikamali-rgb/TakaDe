@@ -1,6 +1,6 @@
 import Foundation
 
-/// An invite link to a shared group (docs/adr/0018-shared-groups.md).
+/// An invite link to a shared group (docs/adr/0019-shared-groups.md).
 ///
 ///     takade://join?g=<group id>&t=<invite token>#k=<group key>
 ///     https://takadeapp.com/join?g=…&t=…#k=…   (once the website exists)

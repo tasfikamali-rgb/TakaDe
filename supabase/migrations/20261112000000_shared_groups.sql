@@ -1,4 +1,4 @@
--- TakaDe shared groups: an encrypted relay (docs/adr/0018-shared-groups.md).
+-- TakaDe shared groups: an encrypted relay (docs/adr/0019-shared-groups.md).
 --
 -- Phones encrypt every change with the group's key before uploading it. The key is made on
 -- the phone that shares the group, travels only inside invite links (after the "#") and is
@@ -186,7 +186,7 @@ create policy "members add changes" on public.sync_change
   for insert to authenticated
   with check (public.is_sync_member(group_id) and author = (select auth.uid()));
 
--- Keeping the free plan's 500 MB in reach (docs/adr/0018-shared-groups.md, "Storage").
+-- Keeping the free plan's 500 MB in reach (docs/adr/0019-shared-groups.md, "Storage").
 -- Nightly: drop groups with no change for 90 days (the phones keep everything and can share
 -- again), invites that expired over a week ago, and guest sign-ins that belong to no group.
 create extension if not exists pg_cron;

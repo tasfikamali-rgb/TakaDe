@@ -9,7 +9,7 @@ struct PendingInvite: Identifiable {
     let invite: GroupInvite
 }
 
-/// Shared groups (docs/adr/0018-shared-groups.md). The phone stays the source of truth:
+/// Shared groups (docs/adr/0019-shared-groups.md). The phone stays the source of truth:
 /// every change is saved to SQLite first, then sealed with the group's key and sent to the
 /// relay. Changes from other phones are pulled, opened and applied in the relay's order.
 /// Without Supabase configured (or offline), groups keep working on the phone alone.
