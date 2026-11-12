@@ -3,13 +3,18 @@ import SwiftUI
 import TakaDeCore
 import UIKit
 
-/// A group's photo (Sabit, 2026-11-12). It's a file on this phone next to the ledger,
-/// one per group, picked with the system photo picker (no photo library permission).
-/// It isn't uploaded yet: shared groups get the photo's colour, not the photo, until the
-/// sync service carries encrypted photos.
+/// A group's cover photo (Sabit, 2026-11-12): a wide banner across the top of the group,
+/// like a cover photo on a profile. The group's round icon comes from its name instead
+/// (`GroupIcon`). It's a file on this phone next to the ledger, one per group, picked with
+/// the system photo picker (no photo library permission). It isn't uploaded yet: shared
+/// groups get the photo's colour, not the photo, until the sync service carries encrypted
+/// photos.
 enum GroupPhotoFile {
-    /// Square and small, so cards and headers load it instantly.
-    static let side: CGFloat = 640
+    /// Width over height. Wide like a cover photo; a photo saved before covers existed is
+    /// square and is simply cropped to fit.
+    static let aspect: CGFloat = 2
+    /// Wide enough for an iPad header, small enough to load instantly (about 100 KB).
+    static let width: CGFloat = 1200
 
     static var directory: URL? {
         guard let dir = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -28,16 +33,17 @@ enum GroupPhotoFile {
         return UIImage(data: data)
     }
 
-    /// Crops to a centred square, shrinks it, saves it as JPEG and returns the photo's
+    /// Crops to a centred 2:1 banner, shrinks it, saves it as JPEG and returns the photo's
     /// main colour. Runs off the main thread; photos can be large.
     static func save(_ data: Data, for group: GroupID) async throws -> (image: UIImage, accentHex: String?) {
         try await Task.detached(priority: .userInitiated) {
             guard let image = UIImage(data: data), image.size.width > 0, image.size.height > 0 else {
                 throw CocoaError(.fileReadCorruptFile)
             }
-            let shortest = min(image.size.width, image.size.height)
-            let scale = min(1, Self.side / shortest)
-            let target = CGSize(width: shortest * scale, height: shortest * scale)
+            // The largest 2:1 rectangle inside the photo, then shrunk to at most `width`.
+            let cropWidth = min(image.size.width, image.size.height * Self.aspect)
+            let scale = min(1, Self.width / cropWidth)
+            let target = CGSize(width: (cropWidth * scale).rounded(), height: (cropWidth / Self.aspect * scale).rounded())
             let format = UIGraphicsImageRendererFormat()
             format.scale = 1
             let square = UIGraphicsImageRenderer(size: target, format: format).image { _ in
@@ -142,29 +148,58 @@ enum GroupTint {
     }
 }
 
-/// The group's photo in a circle, or its people's avatars when it has none.
-struct GroupPhotoBadge: View {
-    let group: ExpenseGroup
-    let photo: UIImage?
+/// The group's round icon: an emoji picked from its name ("Car" shows 🚗), or the TakaDe
+/// mark when nothing matches. Nobody chooses it; renaming the group changes it.
+struct GroupIconBadge: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let name: String
     var size: CGFloat = 32
+    var fill: Color = .surface
     var ring: Color = .surface
 
     var body: some View {
-        if let photo {
-            Image(uiImage: photo)
-                .resizable()
-                .scaledToFill()
-                .frame(width: size, height: size)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(ring, lineWidth: 2))
-                .accessibilityLabel(Text("Group photo"))
-        } else {
-            AvatarStack(names: group.members.map(\.shownName), size: size, ring: ring, fill: .surface)
+        let emoji = GroupIcon.emoji(for: name)
+        ZStack {
+            Circle().fill(fill)
+            if let emoji {
+                Text(verbatim: emoji)
+                    .font(.system(size: size * 0.5))
+                    // Pops in as the name is typed; a plain fade with Reduce Motion.
+                    .transition(reduceMotion ? .opacity : .scale(scale: 0.6).combined(with: .opacity))
+                    .id(emoji)
+            } else {
+                TakaMark(split: 1)
+                    .foregroundStyle(Color("launchMark"))
+                    .frame(width: size * 0.58, height: size * 0.58)
+                    .transition(.opacity)
+            }
         }
+        .frame(width: size, height: size)
+        .overlay(Circle().stroke(ring, lineWidth: 2))
+        .animation(Motion.momentum(reduceMotion: reduceMotion), value: emoji)
+        // The group's name always sits next to it, so VoiceOver skips the picture.
+        .accessibilityHidden(true)
     }
 }
 
-/// Add, change or remove a group's photo.
+/// The cover photo as a full-width banner.
+struct GroupCoverImage: View {
+    let photo: UIImage
+    var height: CGFloat = 150
+
+    var body: some View {
+        Color.clear
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .overlay { Image(uiImage: photo).resizable().scaledToFill() }
+            .clipped()
+            .accessibilityElement()
+            .accessibilityLabel(Text("Cover photo"))
+            .accessibilityAddTraits(.isImage)
+    }
+}
+
+/// Add, change or remove a group's cover photo.
 struct GroupPhotoPicker<Label: View>: View {
     let hasPhoto: Bool
     let onPick: (Data) -> Void
@@ -178,8 +213,8 @@ struct GroupPhotoPicker<Label: View>: View {
         Group {
             if hasPhoto {
                 Menu {
-                    Button("Change photo", systemImage: "photo") { choosing = true }
-                    Button("Remove photo", systemImage: "trash", role: .destructive, action: onRemove)
+                    Button("Change cover photo", systemImage: "photo") { choosing = true }
+                    Button("Remove cover photo", systemImage: "trash", role: .destructive, action: onRemove)
                 } label: { label() }
             } else {
                 Button { choosing = true } label: { label() }

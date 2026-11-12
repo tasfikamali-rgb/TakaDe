@@ -7669,91 +7669,6 @@
         }
       }
     },
-    "Add photo": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ছবি যোগ করুন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add photo"
-          }
-        }
-      }
-    },
-    "Add a group photo": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "গ্রুপের ছবি যোগ করুন"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add a group photo"
-          }
-        }
-      }
-    },
-    "Group photo": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "গ্রুপের ছবি"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Group photo"
-          }
-        }
-      }
-    },
-    "Change photo": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ছবি বদলান"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Change photo"
-          }
-        }
-      }
-    },
-    "Optional. The group takes its colour from the photo.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ঐচ্ছিক। ছবি থেকে গ্রুপের রং নেওয়া হয়।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Optional. The group takes its colour from the photo."
-          }
-        }
-      }
-    },
     "Sign in to use TakaDe on a new phone later. New here or coming back, it's the same button. Your groups and expenses stay on this phone either way.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -10198,6 +10113,108 @@
           "stringUnit": {
             "state": "translated",
             "value": "Friends scan it or type it to add you to a group."
+          }
+        }
+      }
+    },
+    "Add cover photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কভার ছবি যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add cover photo"
+          }
+        }
+      }
+    },
+    "Cover photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কভার ছবি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cover photo"
+          }
+        }
+      }
+    },
+    "Change cover photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কভার ছবি বদলান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change cover photo"
+          }
+        }
+      }
+    },
+    "Remove cover photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কভার ছবি সরান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove cover photo"
+          }
+        }
+      }
+    },
+    "Change or remove the cover photo": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "কভার ছবি বদলান বা সরান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change or remove the cover photo"
+          }
+        }
+      }
+    },
+    "The icon comes from the group's name. The cover photo is optional; the group takes its colour from it.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আইকনটি গ্রুপের নাম থেকে আসে। কভার ছবি ঐচ্ছিক; ছবি থেকে গ্রুপের রং নেওয়া হয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The icon comes from the group's name. The cover photo is optional; the group takes its colour from it."
           }
         }
       }
