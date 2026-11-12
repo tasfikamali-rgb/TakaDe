@@ -158,7 +158,9 @@ jobs:
         if: failure()
         run: |
           cp -R "$HOME/.maestro/tests" maestro-results/debug 2>/dev/null || true
-          # What was on screen when it stopped: visible texts and labels.
+          # Each step of the failed flows, with its status and time taken.
+          python3 scripts/ci/maestro_steps.py || true
+          # What was on screen at the end of the last flow: visible texts and labels.
           maestro --device "${{ steps.sim.outputs.udid }}" hierarchy 2>/dev/null \
             | python3 -c 'import json,sys
           def walk(n):
