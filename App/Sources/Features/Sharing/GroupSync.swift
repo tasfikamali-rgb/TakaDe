@@ -24,7 +24,7 @@ final class GroupSync {
         case upToDate
         /// Changes are saved here and go up when the phone is back online.
         case offline
-        /// The relay removed the group after 90 days with no changes. It stays on this phone.
+        /// The relay removed the group after a year with no changes. It stays on this phone.
         case ended
         case failed
     }
@@ -207,21 +207,47 @@ final class GroupSync {
         decoder.dateDecodingStrategy = .iso8601
         let ids = Set(changes.filter { $0.entity == .expense }.compactMap { try? decoder.decode(Expense.self, from: $0.body).receiptID })
         for id in ids {
-            guard let jpeg = ReceiptPhotos.data(for: id), !(try await relay.hasReceipt(id)) else { continue }
-            try await relay.uploadReceipt(id, ciphertext: try SyncCipher.sealReceipt(jpeg, id: id, groupID: group, with: key), to: group)
+            // Only the text goes up, compressed and sealed: under 1 KB instead of a 100-240 KB
+            // photo (ADR 27). The photo never leaves this phone.
+            guard let packed = await packedReceiptText(id), !(try await relay.hasReceipt(id)) else { continue }
+            try await relay.uploadReceipt(id, ciphertext: try SyncCipher.sealReceiptText(packed, id: id, groupID: group, with: key), to: group)
         }
     }
 
-    /// The photo from this phone, or downloaded once from the relay for a shared group and
-    /// kept on the phone after that. Nil if it can't be found.
-    func receiptImage(_ id: UUID, in group: GroupID) async -> CGImage? {
-        if let image = ReceiptPhotos.image(for: id) { return image }
+    /// The receipt's text, read once on this phone from its photo and kept next to it.
+    private func packedReceiptText(_ id: UUID) async -> Data? {
+        if let packed = ReceiptPhotos.packedText(for: id) { return packed }
+        guard let image = ReceiptPhotos.image(for: id),
+              let lines = try? await ReceiptTextRecognizer.lines(in: [image]),
+              let packed = try? ReceiptText.pack(lines) else { return nil }
+        try? ReceiptPhotos.storeText(packed, for: id)
+        return packed
+    }
+
+    enum ReceiptContent {
+        case photo(CGImage)
+        case text([String])
+    }
+
+    /// The photo when it was taken on this phone; otherwise the receipt's text, downloaded
+    /// once from the relay and kept on the phone after that. Nil if it can't be found.
+    func receipt(_ id: UUID, in group: GroupID) async -> ReceiptContent? {
+        if let image = ReceiptPhotos.image(for: id) { return .photo(image) }
+        if let packed = ReceiptPhotos.packedText(for: id), let lines = try? ReceiptText.unpack(packed) { return .text(lines) }
         guard let relay, let key = SyncKeychain.key(for: group),
               let sealed = try? await relay.downloadReceipt(id, in: group),
-              let jpeg = try? SyncCipher.openReceipt(sealed, id: id, groupID: group, with: key),
-              ReceiptPhotos.isAcceptable(jpeg) else { return nil }
-        try? ReceiptPhotos.store(jpeg, for: id)
-        return ReceiptPhotos.image(for: id)
+              let opened = try? SyncCipher.openReceipt(sealed, id: id, groupID: group, with: key) else { return nil }
+        switch opened {
+        case .text(let packed):
+            guard let lines = try? ReceiptText.unpack(packed) else { return nil }
+            try? ReceiptPhotos.storeText(packed, for: id)
+            return .text(lines)
+        case .photo(let jpeg):
+            // Sent by an older version of the app.
+            guard ReceiptPhotos.isAcceptable(jpeg) else { return nil }
+            try? ReceiptPhotos.store(jpeg, for: id)
+            return ReceiptPhotos.image(for: id).map(ReceiptContent.photo)
+        }
     }
 
     /// The relay no longer has the group. Keep everything on the phone and say so.

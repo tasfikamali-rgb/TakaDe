@@ -1430,19 +1430,19 @@
         }
       }
     },
-    "Read on this phone. The photo isn't saved or uploaded.": {
+    "Read on this phone. In a shared group, the others get this text, encrypted, not the photo.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "এই ফোনেই পড়া হয়েছে। ছবিটি সংরক্ষণ বা আপলোড হয় না।"
+            "value": "এই ফোনেই পড়া হয়েছে। শেয়ার করা গ্রুপে অন্যরা ছবি নয়, এনক্রিপ্ট করা এই লেখাটি পান।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Read on this phone. The photo isn't saved or uploaded."
+            "value": "Read on this phone. In a shared group, the others get this text, encrypted, not the photo."
           }
         }
       }
@@ -7499,19 +7499,19 @@
         }
       }
     },
-    "No longer shared after 90 days without changes. Invite people again to share it.": {
+    "No longer shared after a year without changes. Invite people again to share it.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
         "bn": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "৯০ দিন কোনো পরিবর্তন না হওয়ায় আর শেয়ার করা নেই। আবার শেয়ার করতে সবাইকে আবার আমন্ত্রণ জানান।"
+            "value": "এক বছর কোনো পরিবর্তন না হওয়ায় আর শেয়ার করা নেই। আবার শেয়ার করতে সবাইকে আবার আমন্ত্রণ জানান।"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No longer shared after 90 days without changes. Invite people again to share it."
+            "value": "No longer shared after a year without changes. Invite people again to share it."
           }
         }
       }
@@ -8077,23 +8077,6 @@
         }
       }
     },
-    "Shows the photo full size": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ছবিটি পুরো আকারে দেখায়"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shows the photo full size"
-          }
-        }
-      }
-    },
     "This invite link was changed after it was sent, so it can't be used. Ask for a new one.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -8400,23 +8383,6 @@
         }
       }
     },
-    "The photo isn't on this phone yet. Check your connection.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ছবিটি এখনো এই ফোনে আসেনি। সংযোগ দেখে নিন।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The photo isn't on this phone yet. Check your connection."
-          }
-        }
-      }
-    },
     "That's your own TakaDe ID.": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {
@@ -8430,23 +8396,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "That's your own TakaDe ID."
-          }
-        }
-      }
-    },
-    "In a shared group, everyone in it can see this photo. It's encrypted on the phone before it's sent.": {
-      "comment": "Bengali drafted by Claude; needs native review before release.",
-      "localizations": {
-        "bn": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "শেয়ার করা গ্রুপে সবাই এই ছবি দেখতে পারবেন। পাঠানোর আগে ছবিটি ফোনেই এনক্রিপ্ট করা হয়।"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In a shared group, everyone in it can see this photo. It's encrypted on the phone before it's sent."
           }
         }
       }
@@ -10334,6 +10283,108 @@
           "stringUnit": {
             "state": "translated",
             "value": "Use my Google photo"
+          }
+        }
+      }
+    },
+    "Receipt text": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদের লেখা"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receipt text"
+          }
+        }
+      }
+    },
+    "The receipt isn't on this phone yet. Check your connection.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদটি এখনো এই ফোনে আসেনি। সংযোগ দেখে নিন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The receipt isn't on this phone yet. Check your connection."
+          }
+        }
+      }
+    },
+    "Shows the receipt full size": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদটি বড় করে দেখায়"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows the receipt full size"
+          }
+        }
+      }
+    },
+    "Remove receipt": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "রসিদ সরান"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove receipt"
+          }
+        }
+      }
+    },
+    "In a shared group, the others see the text read from this receipt, not the photo. The photo stays on this phone. The text is encrypted before it's sent.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শেয়ার করা গ্রুপে অন্যরা ছবিটি নয়, রসিদ থেকে পড়া লেখা দেখবেন। ছবিটি এই ফোনেই থাকে। পাঠানোর আগে লেখাটি এনক্রিপ্ট করা হয়।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In a shared group, the others see the text read from this receipt, not the photo. The photo stays on this phone. The text is encrypted before it's sent."
+          }
+        }
+      }
+    },
+    "No text could be read from this receipt.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই রসিদ থেকে কোনো লেখা পড়া যায়নি।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No text could be read from this receipt."
           }
         }
       }

@@ -46,7 +46,7 @@ Needs the Apple Developer Program (US$99/year). Design, so the relay still learn
 1. Apple Developer: an APNs auth key (.p8). Sabit puts it straight into Supabase as an Edge
    Function secret. It never goes in the repo or a chat.
 2. Supabase table `push_device` (sharing user id, APNs token, sandbox or production, updated
-   time), row-level security so a phone sees only its own rows; removed with the 90-day cleanup.
+   time), row-level security so a phone sees only its own rows; removed with the idle-group cleanup (a year since ADR 27).
 3. On each insert into `sync_change`, an Edge Function sends a push to the group's other
    members' tokens. The push carries only the group id and the change's sequence number,
    with `mutable-content` and a generic, localized fallback ("Something changed in a shared

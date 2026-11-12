@@ -54,6 +54,9 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
 6. **Security review:** run `migrations/20261112030000_security_hardening.sql` (ADR 0024). It
    tightens what the app's sign-ins may write, adds upload limits per sign-in, and makes the
    access rules faster. Safe to re-run.
+7. **Keep quiet groups a year:** run `migrations/20261112050000_keep_groups_one_year.sql`
+   (ADR 0027). The nightly cleanup then removes a shared group only after 365 days with no
+   change, instead of 90. Safe to re-run.
 
 ## Social tab messages (ADR 0025)
 
