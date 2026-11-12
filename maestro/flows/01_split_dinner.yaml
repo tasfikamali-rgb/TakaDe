@@ -67,7 +67,7 @@ tags:
     optional: true
 - runFlow:
     when:
-      visible: "What was it for?"
+      visible: "Paid by"
     commands:
       - tapOn: "Save"
 - extendedWaitUntil:
