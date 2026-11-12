@@ -14,6 +14,7 @@ struct GroupDetailContent: View {
     @State private var showingSettle = false
     @State private var showingAddMember = false
     @State private var showingInvite = false
+    @State private var addingTakaDeUser = false
     @State private var pickingContacts = false
     @State private var newMemberName = ""
     @State private var duplicateMember: String?
@@ -38,7 +39,8 @@ struct GroupDetailContent: View {
                     onAddMember: askForMember,
                     onAddFromContacts: { pickingContacts = true },
                     onOpenMember: openMember,
-                    onRemoveMember: { removingMember = $0 })
+                    onRemoveMember: { removingMember = $0 },
+                    onAddTakaDeUser: sync.isAvailable ? { addingTakaDeUser = true } : nil)
             }
             .frame(maxWidth: .infinity)
         }
@@ -93,6 +95,9 @@ struct GroupDetailContent: View {
         }
         .sheet(isPresented: $showingInvite) {
             InviteSheet(group: group)
+        }
+        .sheet(isPresented: $addingTakaDeUser) {
+            AddTakaDeUserSheet(group: group)
         }
         .refreshable { await sync.sync(group.id) }
         // While a shared group is open, others' changes show up within about 20 seconds.

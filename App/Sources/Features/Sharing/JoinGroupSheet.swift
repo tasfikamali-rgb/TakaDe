@@ -6,12 +6,16 @@ import TakaDeCore
 struct JoinGroupSheet: View {
     @Environment(GroupSync.self) private var sync
     @Environment(AppModel.self) private var app
+    @Environment(Friends.self) private var friends
     @Environment(\.dismiss) private var dismiss
     let invite: GroupInvite?
+    /// Set when a friend sent the invite to this account by TakaDe ID.
+    var from: Friends.Received? = nil
     let onJoined: (GroupID) -> Void
 
     private enum Stage: Equatable {
         case paste
+        case confirm
         case joining
         case choose(GroupID)
         case failed(String)
@@ -19,6 +23,8 @@ struct JoinGroupSheet: View {
 
     @State private var stage: Stage = .paste
     @State private var pasted = ""
+    /// Why the text in the field can't be used, until the text changes.
+    @State private var linkError: (text: String, message: String)?
     @State private var newName = ""
 
     var body: some View {
@@ -26,6 +32,7 @@ struct JoinGroupSheet: View {
             Form {
                 switch stage {
                 case .paste: pasteSection
+                case .confirm: confirmSection
                 case .joining:
                     Section {
                         HStack(spacing: Spacing.s) {
@@ -58,13 +65,35 @@ struct JoinGroupSheet: View {
                 }
             }
             .interactiveDismissDisabled(isChoosing)
-            .task { if let invite, stage == .paste { start(invite) } }
+            .task {
+                guard let invite, stage == .paste else { return }
+                // An invite from a person waits for a yes; a tapped link is the person's own yes.
+                if from != nil { stage = .confirm } else { start(invite) }
+            }
         }
     }
 
     private var isChoosing: Bool {
         if case .choose = stage { return true }
         return false
+    }
+
+    // MARK: From a friend
+
+    @ViewBuilder private var confirmSection: some View {
+        if let from, let invite {
+            Section {
+                Button("Join", action: { start(invite) })
+                Button("Decline", role: .destructive) {
+                    Task { await friends.remove(from.id) }
+                    dismiss()
+                }
+            } header: {
+                Text("\(from.payload.fromName) invited you to \(from.payload.groupName)")
+            } footer: {
+                Text("You'll see this group's expenses and payments and can add your own.")
+            }
+        }
     }
 
     // MARK: Paste
@@ -75,22 +104,47 @@ struct JoinGroupSheet: View {
                 .lineLimit(3...6)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+            if let linkError, linkError.text == pasted {
+                Label {
+                    Text(verbatim: linkError.message)
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                }
+                .foregroundStyle(Color.owe)
+                .accessibilityElement(children: .combine)
+            }
             PasteButton(payloadType: String.self) { strings in
-                if let text = strings.first { pasted = text }
+                guard let text = strings.first else { return }
+                pasted = text
+                // A link from the Paste button joins straight away; anything else says why not.
+                joinPasted()
             }
             Button("Join", action: joinPasted)
                 .disabled(pasted.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         } footer: {
-            Text("Ask someone in the group to tap the invite button in the group and send you the link.")
+            Text("Only invite links from TakaDe work here. Ask someone in the group to tap the invite button in the group and send you the link.")
         }
     }
 
+    /// Joins only with a real TakaDe invite link. Anything else stays on this screen with a reason.
     private func joinPasted() {
-        guard let found = GroupInvite(text: pasted) else {
-            stage = .failed(String(localized: "That doesn't look like a TakaDe group link. Copy the whole message and try again.", bundle: .appLanguage))
-            return
+        if let found = GroupInvite(text: pasted) {
+            linkError = nil
+            start(found)
+        } else {
+            let message = Self.reason(notJoining: pasted)
+            linkError = (pasted, message)
+            AccessibilityNotification.Announcement(message).post()
         }
-        start(found)
+    }
+
+    /// A TakaDe link with a part missing (often cut off when copied) gets its own message.
+    static func reason(notJoining text: String) -> String {
+        let lowered = text.lowercased()
+        if lowered.contains("takade://join") || lowered.contains("takadeapp.com/join") {
+            return String(localized: "This invite link is incomplete. Copy the whole message again and paste it here.", bundle: .appLanguage)
+        }
+        return String(localized: "That's not a TakaDe invite link. Only links sent from a group's invite button work here.", bundle: .appLanguage)
     }
 
     private func start(_ invite: GroupInvite) {
@@ -98,6 +152,14 @@ struct JoinGroupSheet: View {
         Task {
             do {
                 let id = try await sync.join(invite)
+                if let from {
+                    await friends.remove(from.id)
+                    // The friend already added this person to the group.
+                    if let memberID = from.payload.memberID.map({ MemberID($0) }), app.group(id)?.members.contains(where: { $0.id == memberID }) == true,
+                       app.group(id)?.me == nil {
+                        try await sync.choose(memberID, in: id)
+                    }
+                }
                 if app.group(id)?.me != nil {
                     finish(id)
                 } else {

@@ -1,3 +1,4 @@
+import CoreGraphics
 import CryptoKit
 import Foundation
 import Observation
@@ -7,6 +8,8 @@ import TakaDeCore
 struct PendingInvite: Identifiable {
     let id = UUID()
     let invite: GroupInvite
+    /// Set when a friend sent it to this account by TakaDe ID, not as a link.
+    var from: Friends.Received?
 }
 
 /// Shared groups (docs/adr/0019-shared-groups.md). The phone stays the source of truth:
@@ -153,10 +156,12 @@ final class GroupSync {
         status[group] = .syncing
         let store = app.syncStore
 
-        // Up: this phone's changes, oldest first.
+        // Up: this phone's changes, oldest first. A receipt photo goes up before the expense
+        // that points to it, so nobody sees an expense whose photo isn't there yet.
         while true {
             let pending = try await store.pendingChanges(in: group, limit: 100)
             guard !pending.isEmpty else { break }
+            try await uploadReceipts(for: pending, in: group, key: key)
             let sealed = try pending.map { (id: $0.id, ciphertext: try SyncCipher.seal($0, with: key)) }
             try await relay.push(sealed, to: group)
             try await store.markUploaded(pending.map(\.id))
@@ -182,6 +187,30 @@ final class GroupSync {
         if applied > 0 { await app.reload() }
         await loadStates()
         status[group] = .upToDate
+    }
+
+    // MARK: Receipt photos
+
+    private func uploadReceipts(for changes: [SyncChange], in group: GroupID, key: SymmetricKey) async throws {
+        guard let relay else { return }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let ids = Set(changes.filter { $0.entity == .expense }.compactMap { try? decoder.decode(Expense.self, from: $0.body).receiptID })
+        for id in ids {
+            guard let jpeg = ReceiptPhotos.data(for: id), !(try await relay.hasReceipt(id)) else { continue }
+            try await relay.uploadReceipt(id, ciphertext: try SyncCipher.sealReceipt(jpeg, id: id, groupID: group, with: key), to: group)
+        }
+    }
+
+    /// The photo from this phone, or downloaded once from the relay for a shared group and
+    /// kept on the phone after that. Nil if it can't be found.
+    func receiptImage(_ id: UUID, in group: GroupID) async -> CGImage? {
+        if let image = ReceiptPhotos.image(for: id) { return image }
+        guard let relay, let key = SyncKeychain.key(for: group),
+              let sealed = try? await relay.downloadReceipt(id, in: group),
+              let jpeg = try? SyncCipher.openReceipt(sealed, id: id, groupID: group, with: key) else { return nil }
+        try? ReceiptPhotos.store(jpeg, for: id)
+        return ReceiptPhotos.image(for: id)
     }
 
     /// The relay no longer has the group. Keep everything on the phone and say so.

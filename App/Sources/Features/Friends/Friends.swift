@@ -1,0 +1,257 @@
+import CryptoKit
+import Foundation
+import Observation
+import TakaDeCore
+
+/// What a friend invite carries, sealed so only the friend's phone can read it.
+struct FriendInvitePayload: Codable, Sendable {
+    /// The group's invite link, with its key after the "#".
+    var link: String
+    var groupName: String
+    var fromName: String
+    /// The person the sender added for them, so their phone knows who they are in the group.
+    var memberID: UUID?
+}
+
+/// TakaDe IDs (docs/adr/0021-takade-ids.md). Each account gets a random ID and a key pair.
+/// The server keeps the ID and the public key only. Someone who knows the ID can leave a
+/// group invite for it, sealed with HPKE (CryptoKit, X25519 + ChaCha20-Poly1305) on their
+/// phone, so the server can't read the invite. The private key stays in this phone's
+/// Keychain. Signing in on a new phone makes a new key; invites sealed to the old one can't
+/// be opened there and are dropped.
+@MainActor
+@Observable
+final class Friends {
+    enum Failure: Error, Equatable {
+        case notSignedIn
+        case notFound
+        case tooMany
+        case offline
+        case server
+    }
+
+    struct Received: Identifiable, Sendable {
+        let id: UUID
+        let payload: FriendInvitePayload
+    }
+
+    private(set) var myCode: FriendCode?
+    @ObservationIgnored private var myCodeOwner: String?
+    @ObservationIgnored private let account: AccountModel
+    @ObservationIgnored private let sync: GroupSync
+    @ObservationIgnored private var checking = false
+
+    private static let suite = HPKE.Ciphersuite.Curve25519_SHA256_ChachaPoly
+    private static let info = Data("takade.friend-invite.v1".utf8)
+
+    init(account: AccountModel, sync: GroupSync) {
+        self.account = account
+        self.sync = sync
+    }
+
+    /// True when this phone is signed in to a TakaDe account on the service.
+    var isAvailable: Bool { userID != nil }
+
+    private var userID: String? {
+        guard let supabase = account.supabase, let session = supabase.session,
+              account.profile?.accountID == session.user.id else { return nil }
+        return session.user.id
+    }
+
+    // MARK: Your ID
+
+    /// Makes this account's ID the first time, and puts this phone's key on it.
+    func ensureID() async throws {
+        guard let supabase = account.supabase, let user = userID else { throw Failure.notSignedIn }
+        if myCodeOwner != user { myCode = nil }
+        let key = privateKey(for: user, creating: true)!
+        let publicKey = key.publicKey.rawRepresentation.base64URLEncoded
+        struct Row: Decodable { let code: String; let public_key: String }
+        let data = try await call { try await supabase.rest("friend_id?select=code,public_key", method: "GET") }
+        if let row = try JSONDecoder().decode([Row].self, from: data).first, let code = FriendCode(raw: row.code) {
+            if row.public_key != publicKey {
+                _ = try await call {
+                    try await supabase.rest("friend_id?user_id=eq.\(user)", method: "PATCH",
+                                            body: ["public_key": publicKey, "updated_at": Self.now()], prefer: "return=minimal")
+                }
+            }
+            setCode(code, for: user)
+            return
+        }
+        for _ in 0..<5 {
+            let code = Self.randomCode()
+            do {
+                _ = try await call {
+                    try await supabase.rest("friend_id", method: "POST",
+                                            body: ["user_id": user, "code": code.raw, "public_key": publicKey], prefer: "return=minimal")
+                }
+                setCode(code, for: user)
+                return
+            } catch SupabaseAuth.Failure.server(_, let code) where code == "23505" {
+                // Someone already has that ID (rare at 40 bits): pick another.
+            }
+        }
+        throw Failure.server
+    }
+
+    /// A new ID. The old one stops working at once; invites already waiting still arrive.
+    func replaceID() async throws {
+        guard let supabase = account.supabase, let user = userID else { throw Failure.notSignedIn }
+        for _ in 0..<5 {
+            let code = Self.randomCode()
+            do {
+                _ = try await call {
+                    try await supabase.rest("friend_id?user_id=eq.\(user)", method: "PATCH",
+                                            body: ["code": code.raw, "updated_at": Self.now()], prefer: "return=minimal")
+                }
+                setCode(code, for: user)
+                return
+            } catch SupabaseAuth.Failure.server(_, let code) where code == "23505" {
+                continue
+            }
+        }
+        throw Failure.server
+    }
+
+    private func setCode(_ code: FriendCode, for user: String) {
+        myCode = code
+        myCodeOwner = user
+    }
+
+    // MARK: Sending
+
+    /// The friend's public key, or `notFound`. Each lookup counts toward an hourly limit.
+    func lookUp(_ code: FriendCode) async throws -> Curve25519.KeyAgreement.PublicKey {
+        guard let supabase = account.supabase, userID != nil else { throw Failure.notSignedIn }
+        struct Row: Decodable { let public_key: String }
+        let data = try await call { try await supabase.rest("rpc/find_friend", method: "POST", body: ["p_code": code.raw]) }
+        guard let text = try JSONDecoder().decode([Row].self, from: data).first?.public_key,
+              let raw = Data(base64URLEncoded: text),
+              let key = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: raw) else { throw Failure.notFound }
+        return key
+    }
+
+    func send(_ payload: FriendInvitePayload, to code: FriendCode, key: Curve25519.KeyAgreement.PublicKey) async throws {
+        guard let supabase = account.supabase, userID != nil else { throw Failure.notSignedIn }
+        let sealed = try Self.seal(JSONEncoder().encode(payload), to: key)
+        _ = try await call {
+            try await supabase.rest("rpc/send_friend_invite", method: "POST", body: ["p_code": code.raw, "p_sealed": sealed])
+        }
+    }
+
+    // MARK: Receiving
+
+    /// Looks for invites left for this account and offers the first new one in the join
+    /// sheet. Runs at launch and when the app comes back.
+    func checkInbox() async {
+        guard !checking, sync.pendingInvite == nil, let supabase = account.supabase, let user = userID,
+              let key = privateKey(for: user, creating: false) else { return }
+        checking = true
+        defer { checking = false }
+        struct Row: Decodable { let id: UUID; let sealed: String }
+        guard let data = try? await supabase.rest("friend_invite?select=id,sealed&order=created_at.asc&limit=20", method: "GET"),
+              let rows = try? JSONDecoder().decode([Row].self, from: data) else { return }
+        for row in rows {
+            guard let plain = try? Self.open(row.sealed, with: key),
+                  let payload = try? JSONDecoder().decode(FriendInvitePayload.self, from: plain),
+                  let url = URL(string: payload.link), let invite = GroupInvite(url: url) else {
+                // Sealed to a key this phone doesn't have, or damaged: it can never be opened here.
+                await remove(row.id)
+                continue
+            }
+            if sync.isShared(invite.groupID) {
+                // Already in the group on this phone.
+                await remove(row.id)
+                continue
+            }
+            sync.pendingInvite = PendingInvite(invite: invite, from: Received(id: row.id, payload: payload))
+            return
+        }
+    }
+
+    /// Joined or declined: the invite is no longer needed on the server.
+    func remove(_ id: UUID) async {
+        _ = try? await account.supabase?.rest("friend_invite?id=eq.\(id.uuidString)", method: "DELETE", prefer: "return=minimal")
+    }
+
+    // MARK: Keys and sealing
+
+    private func privateKey(for user: String, creating: Bool) -> Curve25519.KeyAgreement.PrivateKey? {
+        let name = "friend.key.\(user)"
+        if let text = KeychainStore.get(name), let raw = Data(base64URLEncoded: text),
+           let key = try? Curve25519.KeyAgreement.PrivateKey(rawRepresentation: raw) {
+            return key
+        }
+        guard creating else { return nil }
+        let key = Curve25519.KeyAgreement.PrivateKey()
+        KeychainStore.set(key.rawRepresentation.base64URLEncoded, for: name)
+        return key
+    }
+
+    /// "v1." + encapsulated key + "." + ciphertext, both base64url.
+    static func seal(_ plain: Data, to key: Curve25519.KeyAgreement.PublicKey) throws -> String {
+        var sender = try HPKE.Sender(recipientKey: key, ciphersuite: suite, info: info)
+        let ciphertext = try sender.seal(plain)
+        return "v1." + sender.encapsulatedKey.base64URLEncoded + "." + ciphertext.base64URLEncoded
+    }
+
+    static func open(_ sealed: String, with key: Curve25519.KeyAgreement.PrivateKey) throws -> Data {
+        let parts = sealed.split(separator: ".", omittingEmptySubsequences: false)
+        guard parts.count == 3, parts[0] == "v1", let encapsulated = Data(base64URLEncoded: String(parts[1])),
+              let ciphertext = Data(base64URLEncoded: String(parts[2])) else { throw Failure.server }
+        var recipient = try HPKE.Recipient(privateKey: key, ciphersuite: suite, info: info, encapsulatedKey: encapsulated)
+        return try recipient.open(ciphertext)
+    }
+
+    private static func randomCode() -> FriendCode {
+        var bytes = [UInt8](repeating: 0, count: 5)
+        _ = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        return FriendCode(randomBytes: bytes)
+    }
+
+    private static func now() -> String { ISO8601DateFormatter().string(from: Date()) }
+
+    /// Turns service and network errors into the few cases the screens explain.
+    private func call(_ body: () async throws -> Data) async throws -> Data {
+        do {
+            return try await body()
+        } catch SupabaseAuth.Failure.notSignedIn {
+            throw Failure.notSignedIn
+        } catch SupabaseAuth.Failure.server(let status, let code) {
+            if code == "TK429" { throw Failure.tooMany }
+            if code == "P0002" { throw Failure.notFound }
+            if code == "28000" || status == 401 { throw Failure.notSignedIn }
+            if code == "23505" { throw SupabaseAuth.Failure.server(status: status, code: code) }
+            throw Failure.server
+        } catch let error as URLError {
+            switch error.code {
+            case .notConnectedToInternet, .networkConnectionLost, .timedOut, .cannotFindHost, .cannotConnectToHost, .dataNotAllowed:
+                throw Failure.offline
+            default:
+                throw Failure.server
+            }
+        }
+    }
+}
+
+extension Friends.Failure {
+    var message: String {
+        switch self {
+        case .notSignedIn:
+            String(localized: "Sign in to your TakaDe account to use TakaDe IDs.", bundle: .appLanguage)
+        case .notFound:
+            String(localized: "No one has this TakaDe ID. Check it and try again.", bundle: .appLanguage)
+        case .tooMany:
+            String(localized: "Too many tries for now. Wait a while and try again.", bundle: .appLanguage)
+        case .offline:
+            String(localized: "You're offline. Connect to the internet and try again.", bundle: .appLanguage)
+        case .server:
+            String(localized: "Something went wrong. Try again in a moment.", bundle: .appLanguage)
+        }
+    }
+
+    static func message(for error: Error) -> String {
+        if let failure = error as? Friends.Failure { return failure.message }
+        return SharingError.message(for: error)
+    }
+}

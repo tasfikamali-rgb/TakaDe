@@ -25,7 +25,7 @@ tags:
 - extendedWaitUntil:
     visible: "Add expense"
     timeout: 10000
-# The tab bar hides inside a group on iPhone, so go back to the list first.
+# On iPhone the tab bar hides inside a group; go back to reach the tabs.
 - runFlow:
     when:
       visible: "Back"
@@ -35,7 +35,6 @@ tags:
 - scrollUntilVisible:
     element: "Delete all my data"
     direction: DOWN
-- takeScreenshot: ${OUT}/11-your-data
 - tapOn: "Delete all my data"
 - tapOn: "Delete everything"
 # Back to first launch, and the group is gone.

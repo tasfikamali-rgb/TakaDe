@@ -44,3 +44,23 @@ final class GroupInviteTests: XCTestCase {
         XCTAssertNil(Data(base64URLEncoded: "abc+/"))
     }
 }
+
+final class ExpenseReceiptTests: XCTestCase {
+    func testReceiptIDRoundTripsAndOldExpensesHaveNone() throws {
+        let a = MemberID(), b = MemberID()
+        let receipt = UUID()
+        let expense = try Expense(groupID: GroupID(), title: "Bazar", total: Money(minorUnits: 50_000),
+                                  paidBy: [a: Money(minorUnits: 50_000)], splitRule: .equal([a, b]), receiptID: receipt)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let data = try encoder.encode(expense)
+        XCTAssertEqual(try decoder.decode(Expense.self, from: data).receiptID, receipt)
+
+        var old = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        old.removeValue(forKey: "receiptID")
+        let oldData = try JSONSerialization.data(withJSONObject: old)
+        XCTAssertNil(try decoder.decode(Expense.self, from: oldData).receiptID)
+    }
+}

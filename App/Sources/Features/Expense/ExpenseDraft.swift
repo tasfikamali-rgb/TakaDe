@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 import Observation
 import TakaDeCore
@@ -21,6 +22,10 @@ final class ExpenseDraft {
     var severalPayers = false
     /// Adds a copy every month on the same day, like rent.
     var repeatsMonthly = false
+    /// The saved receipt photo, if any.
+    var receiptID: UUID?
+    /// A photo scanned in this form, saved to the phone when the expense is saved.
+    var newReceipt: CGImage?
     private var paidText: [MemberID: String] = [:]
     var method: SplitMethod = .equal
     var included: Set<MemberID>
@@ -45,6 +50,7 @@ final class ExpenseDraft {
         occurredAt = expense.occurredAt
         chosenCategory = .some(expense.category)
         repeatsMonthly = expense.repeatsMonthly
+        receiptID = expense.receiptID
         payer = expense.paidBy.keys.sorted().first ?? group.me?.id ?? group.members[0].id
         if expense.paidBy.count > 1 {
             severalPayers = true
@@ -223,10 +229,11 @@ final class ExpenseDraft {
             // Same id and a new version, so history shows an edit rather than a new expense.
             return try Expense(id: original.id, groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy,
                                splitRule: rule, occurredAt: occurredAt, note: original.note, category: category,
-                               version: original.version + 1, repeatsMonthly: repeatsMonthly, repeatOf: original.repeatOf)
+                               version: original.version + 1, repeatsMonthly: repeatsMonthly, repeatOf: original.repeatOf,
+                               receiptID: receiptID)
         }
         return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy, splitRule: rule,
-                           occurredAt: occurredAt, category: category, repeatsMonthly: repeatsMonthly)
+                           occurredAt: occurredAt, category: category, repeatsMonthly: repeatsMonthly, receiptID: receiptID)
     }
 
     /// Fills in fields from a reviewed receipt suggestion.
@@ -234,6 +241,19 @@ final class ExpenseDraft {
         if let merchant, trimmedTitle.isEmpty { title = merchant }
         if let total { amountExpression = KeypadText.plain(total) }
         if let date { occurredAt = date }
+    }
+
+    /// Keeps the scanned photo with the expense, replacing any earlier one.
+    func attach(_ image: CGImage?) {
+        guard let image else { return }
+        newReceipt = image
+    }
+
+    var hasReceipt: Bool { newReceipt != nil || receiptID != nil }
+
+    func removeReceipt() {
+        newReceipt = nil
+        receiptID = nil
     }
 
     private var trimmedTitle: String { title.trimmingCharacters(in: .whitespacesAndNewlines) }

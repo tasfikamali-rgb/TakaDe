@@ -9,12 +9,17 @@ struct MemberBalancesCard: View {
     /// Opens the person's bKash, Nagad, Rocket, upay or bank numbers.
     let onOpenMember: (Member) -> Void
     let onRemoveMember: (Member) -> Void
+    /// Adds someone by their TakaDe ID or QR code; nil hides it (no sharing service).
+    var onAddTakaDeUser: (() -> Void)? = nil
 
     var body: some View {
         SectionCard(title: "Balances") {
             Menu {
                 Button("Type a name", systemImage: "character.cursor.ibeam", action: onAddMember)
                 Button("From contacts", systemImage: "person.crop.circle", action: onAddFromContacts)
+                if let onAddTakaDeUser {
+                    Button("TakaDe ID or QR code", systemImage: "qrcode", action: onAddTakaDeUser)
+                }
             } label: {
                 Label("Add a person", systemImage: "person.badge.plus")
             }

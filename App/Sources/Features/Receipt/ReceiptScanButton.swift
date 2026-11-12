@@ -11,6 +11,8 @@ import TakaDeCore
 struct ReceiptScanButton: View {
     let onReviewed: (_ merchant: String?, _ total: Money?, _ date: Date?) -> Void
     var onEnterAmount: (() -> Void)?
+    /// The photo, kept with the expense so others can see what was paid.
+    var onPhoto: ((CGImage) -> Void)? = nil
 
     @State private var showingCamera = false
     @State private var photo: PhotosPickerItem?
@@ -43,7 +45,10 @@ struct ReceiptScanButton: View {
             DocumentScanner(onFinish: scanned, onCancel: closeCamera).ignoresSafeArea()
         }
         .sheet(item: $suggestion) { s in
-            ReceiptReviewView(suggestion: s, image: image, onUse: onReviewed)
+            ReceiptReviewView(suggestion: s, image: image) { merchant, total, date in
+                onReviewed(merchant, total, date)
+                if let image { onPhoto?(image) }
+            }
         }
         .onChange(of: photo) { _, item in
             guard let item else { return }

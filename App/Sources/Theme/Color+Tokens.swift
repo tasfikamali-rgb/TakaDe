@@ -20,3 +20,12 @@ extension Color {
     static let sheet = Color("sheet")
     static let lilac = Color("lilac")
 }
+
+/// Tab bar roles. The bar reads only these, so a new palette is a change here (or a new
+/// colorset), not in the bar's code.
+extension Color {
+    static let tabBarBackground = Color.header
+    static let tabBarIndicator = Color.lime
+    static let tabBarSelected = Color.onLime
+    static let tabBarUnselected = Color.onHeader.opacity(0.62)
+}

@@ -112,6 +112,29 @@ actor RelayClient {
         return try JSONDecoder().decode([Row].self, from: data)
     }
 
+    // MARK: Receipt photos
+
+    func hasReceipt(_ id: UUID) async throws -> Bool {
+        let data = try await send("sync_receipt?id=eq.\(id.uuidString)&select=id", method: "GET", body: nil)
+        return !(((try? JSONSerialization.jsonObject(with: data)) as? [Any]) ?? []).isEmpty
+    }
+
+    func uploadReceipt(_ id: UUID, ciphertext: String, to group: GroupID) async throws {
+        let body: [String: Any] = ["id": id.uuidString, "group_id": group.description, "ciphertext": ciphertext]
+        do {
+            _ = try await send("sync_receipt?on_conflict=id", method: "POST", body: body, prefer: "resolution=ignore-duplicates,return=minimal")
+        } catch Failure.server(let status, let code) where status == 403 || code == "42501" || code == "23503" {
+            throw Failure.notInGroup
+        }
+    }
+
+    /// Nil when the relay doesn't have it (not uploaded yet, or the group was cleaned up).
+    func downloadReceipt(_ id: UUID, in group: GroupID) async throws -> String? {
+        struct Row: Decodable { let ciphertext: String }
+        let data = try await send("sync_receipt?id=eq.\(id.uuidString)&group_id=eq.\(group)&select=ciphertext", method: "GET", body: nil)
+        return try JSONDecoder().decode([Row].self, from: data).first?.ciphertext
+    }
+
     /// For "Delete all my data": leaves nothing to sign in with.
     func forget() {
         session = nil

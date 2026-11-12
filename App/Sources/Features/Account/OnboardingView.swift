@@ -50,7 +50,7 @@ struct OnboardingView: View {
             VStack(spacing: Spacing.l) {
                 Spacer()
                 TakaLogo(width: min(300, proxy.size.width - Spacing.screenMargin * 2))
-                Text("Split bills with friends. Settle up in taka.")
+                Text("Split bills with friends & family, settle up in taka")
                     .font(AppFont.title)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Color("launchWord"))
