@@ -56,7 +56,7 @@ final class GroupSyncTests: XCTestCase {
 
         let joined = try await friend.group(group.id)
         XCTAssertEqual(joined?.members.map(\.displayName), ["সাবিত", "Rafi"])
-        XCTAssertNil(joined?.me)
+        XCTAssertEqual(joined?.members.contains(where: \.isMe), false)
         let expenses = try await friend.expenses(in: group.id, includeDeleted: false)
         XCTAssertEqual(expenses.count, 1)
 
