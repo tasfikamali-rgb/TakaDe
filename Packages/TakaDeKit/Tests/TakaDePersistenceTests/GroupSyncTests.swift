@@ -404,8 +404,9 @@ final class GroupSyncTests: XCTestCase {
         let bundle = try await phone.bundleChanges(of: group.id)
 
         let result = try await friend.applyBundle(bundle, through: 9, in: group.id, syncedAt: Date())
-        // Only the edited expense was written and announced; the group was already here.
-        XCTAssertEqual(result.applied, 1)
+        // The group's settings are merged again (quietly) and the edited expense is written;
+        // only the expense is announced and logged. The unchanged parts are skipped.
+        XCTAssertEqual(result.applied, 2)
         XCTAssertEqual(result.fromOthers.count, 1)
         let kept = try await friend.expenses(in: group.id, includeDeleted: false).first
         XCTAssertEqual(kept?.title, "Hotel (2 nights)")
