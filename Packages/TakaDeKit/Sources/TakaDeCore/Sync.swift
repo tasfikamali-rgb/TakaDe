@@ -124,6 +124,22 @@ public protocol SyncRepository: Sendable {
     func apply(_ changes: [ReceivedChange], through lastSequence: Int64?, in group: GroupID, syncedAt: Date) async throws -> ApplyResult
     func markSynced(_ group: GroupID, at date: Date) async throws
 
+    /// The group as it is on this phone, as changes in an order any phone can apply: the
+    /// group and its people, then expenses, payments and meal counts. Deleted expenses are
+    /// included, so phones that still have them learn they're deleted. Used to pack a group's
+    /// older changes into one bundle (docs/adr/0034-packed-changes-and-backups.md).
+    func bundleChanges(of group: GroupID) async throws -> [SyncChange]
+    /// Applies a bundle that holds the group as it was after relay change `sequence`, and
+    /// moves the cursor there, in one transaction. Only what is new or newer here is written,
+    /// logged and returned in `fromOthers`. Does nothing when the cursor is already there.
+    func applyBundle(_ changes: [SyncChange], through sequence: Int64, in group: GroupID, syncedAt: Date) async throws -> ApplyResult
+    /// Moves the cursor back, so the next download reads from there again. Used when the
+    /// group was packed while this phone was downloading it.
+    func rewind(_ group: GroupID, to sequence: Int64) async throws
+    /// Queues the whole group for upload again, as when it was first shared. Used after the
+    /// app moved to the spare project, which may be missing the last day's changes.
+    func requeueEverything(_ group: GroupID) async throws
+
     /// Which person in the group uses this phone. Kept on this phone only.
     func setMe(_ member: MemberID, in group: GroupID) async throws
 }

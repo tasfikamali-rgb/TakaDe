@@ -11,7 +11,8 @@ with expected(what, kind, name, file) as (values
   ('Security limits',         'table',    'public.sync_usage',                      '20261112030000_security_hardening.sql'),
   ('Social messages',         'table',    'public.friend_message',                  '20261112040000_friend_messages.sql'),
   ('Shop name counts',        'table',    'public.store_name_count',                '20261112060000_store_name_counts.sql'),
-  ('Rejoin + log cleanup',    'function', 'public.rejoin_sync_group(uuid,text)',    '20261112070000_ready_for_10k.sql')
+  ('Rejoin + log cleanup',    'function', 'public.rejoin_sync_group(uuid,text)',    '20261112070000_ready_for_10k.sql'),
+  ('Packed old changes',      'table',    'public.sync_bundle',                     '20261112080000_pack_old_changes.sql')
 )
 select 'migration' as area, what as check_name,
        case when (kind = 'table' and to_regclass(name) is not null)

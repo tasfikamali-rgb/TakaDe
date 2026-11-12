@@ -1,0 +1,96 @@
+name: Nightly backup
+
+# Every night: copy the main Supabase database, lock it with the backup passphrase, keep it
+# in Cloudflare R2 for 30 days, and refill the spare Supabase project from it.
+# docs/adr/0034-packed-changes-and-backups.md. The repository is public, so nothing from the
+# database is ever printed, cached or kept as a GitHub artifact.
+#
+# Repository secrets (Settings > Secrets and variables > Actions). Until the first four are
+# set, the job only prints a notice.
+#   SUPABASE_DB_URL       main project, Session pooler connection string, with the database password
+#   BACKUP_PASSPHRASE     long random passphrase; also keep a copy in your password manager
+#   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET   Cloudflare R2
+#   SPARE_DB_URL          spare project, Session pooler connection string (optional)
+
+on:
+  schedule:
+    - cron: "0 21 * * *" # 03:00 in Dhaka
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      SPARE_DB_URL: ${{ secrets.SPARE_DB_URL }}
+    steps:
+      - name: Check setup
+        id: setup
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_PASSPHRASE" ] || [ -z "$R2_ACCOUNT_ID" ] || [ -z "$R2_BUCKET" ] || [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+            echo "::notice::Backup secrets aren't set yet, so nothing was backed up. See docs/backups.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.setup.outputs.ready == 'true'
+
+      - uses: supabase/setup-cli@v1
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          version: latest
+
+      - name: Copy the main database
+        if: steps.setup.outputs.ready == 'true'
+        run: |
+          umask 077
+          mkdir -p "$RUNNER_TEMP/backup"
+          cd "$RUNNER_TEMP/backup"
+          supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f roles.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f schema.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f data.sql
+          tar czf backup.tar.gz roles.sql schema.sql data.sql
+          gpg --batch --yes --quiet --pinentry-mode loopback --symmetric --cipher-algo AES256 \
+            --passphrase-fd 3 -o backup.tar.gz.gpg backup.tar.gz 3<<<"$BACKUP_PASSPHRASE"
+          rm -f backup.tar.gz roles.sql schema.sql
+          echo "Locked copy: $(du -h backup.tar.gz.gpg | cut -f1)"
+
+      - name: Store it in Cloudflare R2
+        if: steps.setup.outputs.ready == 'true'
+        run: |
+          endpoint="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+          name="takade-$(date -u +%Y-%m-%d).tar.gz.gpg"
+          aws s3 cp "$RUNNER_TEMP/backup/backup.tar.gz.gpg" "s3://$R2_BUCKET/$name" --endpoint-url "$endpoint" --only-show-errors
+          echo "Saved $name"
+          # Keep 30 days of copies.
+          cutoff=$(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          aws s3api list-objects-v2 --bucket "$R2_BUCKET" --endpoint-url "$endpoint" \
+            --query "Contents[?LastModified<'$cutoff'].Key" --output text | tr '\t' '\n' | grep -E '^takade-.*\.gpg$' |
+            while read -r old; do
+              aws s3 rm "s3://$R2_BUCKET/$old" --endpoint-url "$endpoint" --only-show-errors
+              echo "Removed $old"
+            done || true
+
+      - name: Refill the spare project
+        if: steps.setup.outputs.ready == 'true' && env.SPARE_DB_URL != ''
+        run: scripts/backup/refill-spare.sh "$RUNNER_TEMP/backup/data.sql"
+
+      - name: Remove the unlocked copy
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/backup"

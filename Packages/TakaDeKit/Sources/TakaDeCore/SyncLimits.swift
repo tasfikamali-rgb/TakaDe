@@ -12,6 +12,10 @@ import Compression
 public enum SyncLimits {
     /// One change, once decompressed. A group snapshot with hundreds of people is ~100 KB.
     public static let maxChangeBytes = 2 * 1024 * 1024
+    /// A packed bundle of a whole group (docs/adr/0034-packed-changes-and-backups.md), once
+    /// decompressed. A group with 10,000 expenses is about 5 MB.
+    public static let maxBundleBytes = 32 * 1024 * 1024
+    public static let maxBundleChanges = 100_000
     public static let maxGroupNameLength = 200
     public static let maxPersonNameLength = 200
     public static let maxMembers = 500
