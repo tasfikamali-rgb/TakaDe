@@ -88,7 +88,13 @@ final class SocialModel {
         if let liveChat { goLive(with: liveChat) }
         await fetchInbox()
         await resendPendingHellos()
-        if UserDefaults.standard.bool(forKey: Self.profileChangedKey) { await shareProfile() }
+        // Also once after updating to this version, so a photo changed or removed before it
+        // reaches friends without changing it again.
+        if UserDefaults.standard.bool(forKey: Self.profileChangedKey)
+            || !UserDefaults.standard.bool(forKey: Self.profileSharedOnceKey) {
+            await shareProfile()
+            UserDefaults.standard.set(true, forKey: Self.profileSharedOnceKey)
+        }
         startPolling()
     }
 
@@ -229,6 +235,7 @@ final class SocialModel {
     }
 
     private static let profileChangedKey = "social.profileChanged"
+    private static let profileSharedOnceKey = "social.profileSharedOnce"
 
     /// Your photo changed (new, from Google, or removed): sends your name and current photo,
     /// sealed, to everyone in your chats, so their phones show it. Nothing about it is kept
