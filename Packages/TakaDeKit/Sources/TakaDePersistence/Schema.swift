@@ -216,6 +216,13 @@ enum Schema {
                 t.add(column: "created_by", .text)
             }
         }
+        // Payment and proof requests in chats (docs/adr/0031-payment-asks-in-chat.md): the
+        // request as JSON, next to its words in `body`. Nil for ordinary messages.
+        migrator.registerMigration("v12_friend_message_ask") { db in
+            try db.alter(table: "friend_message") { t in
+                t.add(column: "ask", .text)
+            }
+        }
         return migrator
     }
 }

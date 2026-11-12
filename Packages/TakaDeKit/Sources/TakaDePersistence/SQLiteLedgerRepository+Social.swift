@@ -80,9 +80,9 @@ extension SQLiteLedgerRepository: SocialRepository {
                 return false
             }
             try db.execute(sql: """
-                INSERT INTO friend_message (id, friend_id, direction, body, at, state) VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO friend_message (id, friend_id, direction, body, at, state, ask) VALUES (?, ?, ?, ?, ?, ?, ?)
                 """, arguments: [message.id.uuidString, message.friendID.uuidString, message.direction.rawValue,
-                                 message.text, message.at, message.state.rawValue])
+                                 message.text, message.at, message.state.rawValue, Self.askJSON(message.ask)])
             let unread = message.direction == .incoming ? 1 : 0
             try db.execute(sql: """
                 UPDATE friend SET last_message_at = MAX(COALESCE(last_message_at, ?), ?),
@@ -113,6 +113,13 @@ extension SQLiteLedgerRepository: SocialRepository {
         guard let id = UUID(uuidString: row["id"]), let friend = UUID(uuidString: row["friend_id"]),
               let direction = FriendMessage.Direction(rawValue: row["direction"]),
               let state = FriendMessage.State(rawValue: row["state"]) else { return nil }
-        return FriendMessage(id: id, friendID: friend, direction: direction, text: row["body"], at: row["at"], state: state)
+        let askText: String? = row["ask"]
+        let ask = askText.flatMap { try? JSONDecoder().decode(PaymentAsk.self, from: Data($0.utf8)) }
+        return FriendMessage(id: id, friendID: friend, direction: direction, text: row["body"], at: row["at"], state: state, ask: ask)
+    }
+
+    private static func askJSON(_ ask: PaymentAsk?) -> String? {
+        guard let ask, let data = try? JSONEncoder().encode(ask) else { return nil }
+        return String(decoding: data, as: UTF8.self)
     }
 }

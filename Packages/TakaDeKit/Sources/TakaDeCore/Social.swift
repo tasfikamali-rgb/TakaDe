@@ -93,14 +93,19 @@ public struct FriendMessage: Identifiable, Hashable, Sendable, Codable {
     public var text: String
     public var at: Date
     public var state: State
+    /// A payment request or proof request this message carries. `text` still holds the
+    /// same thing in words, for the chat list preview and for older versions of the app.
+    public var ask: PaymentAsk?
 
-    public init(id: UUID = UUID(), friendID: UUID, direction: Direction, text: String, at: Date = Date(), state: State) {
+    public init(id: UUID = UUID(), friendID: UUID, direction: Direction, text: String, at: Date = Date(), state: State,
+                ask: PaymentAsk? = nil) {
         self.id = id
         self.friendID = friendID
         self.direction = direction
         self.text = text
         self.at = at
         self.state = state
+        self.ask = ask
     }
 
     /// Longest message, in characters. The server refuses larger sealed messages.
@@ -131,16 +136,33 @@ public struct FriendEnvelope: Codable, Sendable, Equatable {
     public var text: String?
     /// A small square JPEG of the sender's profile photo, base64. Hello and profile only.
     public var photo: String?
+    /// A payment or proof request, on a `.text` message whose text says the same in words.
+    /// Riding on `.text` means a phone with an older TakaDe still shows the words.
+    public var ask: PaymentAsk?
 
     /// Largest photo accepted, in bytes before base64.
     public static let maxPhotoBytes = 16_000
 
-    public init(kind: Kind, id: UUID = UUID(), fromName: String, text: String? = nil, photo: String? = nil) {
+    public init(kind: Kind, id: UUID = UUID(), fromName: String, text: String? = nil, photo: String? = nil, ask: PaymentAsk? = nil) {
         self.kind = kind
         self.id = id
         self.fromName = fromName
         self.text = text
         self.photo = photo
+        self.ask = ask
+    }
+
+    private enum CodingKeys: String, CodingKey { case kind, id, fromName, text, photo, ask }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try container.decode(Kind.self, forKey: .kind)
+        id = try container.decode(UUID.self, forKey: .id)
+        fromName = try container.decode(String.self, forKey: .fromName)
+        text = try container.decodeIfPresent(String.self, forKey: .text)
+        photo = try container.decodeIfPresent(String.self, forKey: .photo)
+        // An ask this version can't read (a newer kind, say) is dropped; the words still show.
+        ask = (try? container.decodeIfPresent(PaymentAsk.self, forKey: .ask))?.validated()
     }
 }
 

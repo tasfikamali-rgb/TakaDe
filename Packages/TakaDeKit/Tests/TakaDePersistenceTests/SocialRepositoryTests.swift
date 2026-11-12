@@ -106,6 +106,20 @@ final class SocialRepositoryTests: XCTestCase {
         XCTAssertNotNil(FriendMessage.cleaned(String(repeating: "ক", count: FriendMessage.maxLength)))
     }
 
+    func testPaymentAskIsStoredWithTheMessage() async throws {
+        let repo = try SQLiteLedgerRepository()
+        let rafi = try await makeFriend(repo)
+        let ask = PaymentAsk(kind: .pay, groupID: GroupID(), groupName: "Trip", from: MemberID(), to: MemberID(),
+                             amount: Money(minorUnits: 50_000), handles: [.init(rail: .bkash, handle: "01712345678")])
+        try await repo.save(FriendMessage(friendID: rafi.id, direction: .incoming, text: "Please pay me ৳500", state: .received, ask: ask))
+        try await repo.save(FriendMessage(friendID: rafi.id, direction: .incoming, text: "Thanks", state: .received))
+        let stored = try await repo.messages(with: rafi.id)
+        XCTAssertEqual(stored.first?.ask, ask)
+        XCTAssertNil(stored.last?.ask)
+        let friend = try await repo.friend(id: rafi.id)
+        XCTAssertEqual(friend?.lastMessagePreview, "Thanks")
+    }
+
     func testEnvelopeRoundTrips() throws {
         let envelope = FriendEnvelope(kind: .text, fromName: "সাবিত", text: "৳500 for dinner")
         let data = try JSONEncoder().encode(envelope)
