@@ -1,7 +1,7 @@
 import SwiftUI
 import TakaDeCore
 
-/// Modelled on the savings-goal cards in DESIGN.md 1b: avatars and title, then a nested
+/// Modelled on the savings-goal cards in DESIGN.md 1b: the group's icon and title, then a nested
 /// inner card with where you stand on the left and what the group spent on the right.
 /// The card wears the group's colour; the inner card is a light wash over it. The arrow sits in a bite out of the top-right
 /// corner (DESIGN.md 1b).
@@ -10,12 +10,11 @@ struct GroupCard: View {
     let group: ExpenseGroup
     var isSelected = false
     @State private var stats = GroupStats.empty
-    @State private var photo: UIImage?
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.s) {
             HStack(spacing: Spacing.s) {
-                GroupPhotoBadge(group: group, photo: photo, size: photo == nil ? 28 : 36, ring: cardFill)
+                GroupIconBadge(name: group.name, size: 36, ring: cardFill)
                 Text(verbatim: group.name)
                     .font(AppFont.bodyEmphasis)
                     .foregroundStyle(Color.ink)
@@ -58,12 +57,11 @@ struct GroupCard: View {
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .task(id: model.revision) {
-            photo = GroupPhotoFile.load(group.id)
             stats = await GroupStats.load(group, from: model)
         }
     }
 
-    /// The group's own colour (from its photo, or the standard lilac), the same one its
+    /// The group's own colour (from its cover photo, or the standard lilac), the same one its
     /// screen uses, so the card and the group read as one place (Sabit, 2026-11-12).
     private var cardFill: Color { GroupTint.color(for: group) }
 }

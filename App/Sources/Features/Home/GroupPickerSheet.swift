@@ -14,7 +14,7 @@ struct GroupPickerSheet: View {
                 List(groups) { group in
                     Button { chosen = group } label: {
                         HStack(spacing: Spacing.s) {
-                            AvatarStack(names: group.members.map(\.displayName), size: 24)
+                            GroupIconBadge(name: group.name, size: 32, fill: .surfaceRaised)
                             Text(verbatim: group.name).foregroundStyle(Color.ink)
                         }
                     }

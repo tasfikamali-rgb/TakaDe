@@ -10,7 +10,7 @@ struct ActivityRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.s) {
             if showsGroup {
-                Avatar(name: item.group.name, size: 36)
+                GroupIconBadge(name: item.group.name, size: 36, fill: .surfaceRaised)
             }
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(verbatim: item.headline).font(AppFont.bodyEmphasis)

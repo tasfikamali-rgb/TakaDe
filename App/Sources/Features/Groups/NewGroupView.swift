@@ -16,7 +16,7 @@ struct NewGroupView: View {
     @State private var note: String?
     @State private var error: String?
     @State private var pickingContacts = false
-    /// An optional group photo; its main colour becomes the group's colour.
+    /// An optional cover photo; its main colour becomes the group's colour.
     @State private var photoData: Data?
     @State private var photoPreview: UIImage?
     @FocusState private var focus: Field?
@@ -27,34 +27,35 @@ struct NewGroupView: View {
         NavigationStack {
             AppForm {
                 Section {
-                    GroupPhotoPicker(hasPhoto: photoPreview != nil, onPick: pickPhoto, onRemove: clearPhoto) {
-                        VStack(spacing: Spacing.xs) {
+                    // The icon follows the name as it's typed; the photo is an optional cover.
+                    VStack(alignment: .leading, spacing: 0) {
+                        GroupPhotoPicker(hasPhoto: photoPreview != nil, onPick: pickPhoto, onRemove: clearPhoto) {
                             Group {
                                 if let photoPreview {
-                                    Image(uiImage: photoPreview).resizable().scaledToFill()
+                                    GroupCoverImage(photo: photoPreview, height: 120)
                                 } else {
-                                    Image(systemName: "camera")
-                                        .font(.title2)
+                                    Label("Add cover photo", systemImage: "photo")
+                                        .font(AppFont.label)
                                         .foregroundStyle(Color.ink)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 120)
+                                        .background(Color.lilac)
                                 }
                             }
-                            .frame(width: 88, height: 88)
-                            .background(Circle().fill(Color.lilac))
-                            .clipShape(Circle())
-                            Text(photoPreview == nil ? LocalizedStringKey("Add a group photo") : LocalizedStringKey("Change photo"))
-                                .font(AppFont.label)
-                                .foregroundStyle(Color.ink)
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+                            .contentShape(Rectangle())
                         }
-                        .frame(maxWidth: .infinity)
-                        .contentShape(Rectangle())
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(photoPreview == nil ? Text("Add cover photo") : Text("Cover photo"))
+                        GroupIconBadge(name: name, size: 72, fill: .surface, ring: .canvas)
+                            .padding(.leading, Spacing.m)
+                            .padding(.top, -36)
                     }
-                    .buttonStyle(.plain)
                     .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
                 } footer: {
-                    Text("Optional. The group takes its colour from the photo.")
+                    Text("The icon comes from the group's name. The cover photo is optional; the group takes its colour from it.")
                         .foregroundStyle(Color.inkMuted)
-                        .frame(maxWidth: .infinity)
-                        .multilineTextAlignment(.center)
                 }
                 Section {
                     Picker("Kind of group", selection: $kind) {
