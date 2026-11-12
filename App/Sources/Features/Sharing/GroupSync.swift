@@ -32,6 +32,8 @@ final class GroupSync {
     enum Failure: Error {
         case unavailable
         case wrongGroup
+        /// Only the person who made a shared group can delete it for everyone.
+        case notOwner
     }
 
     static let inviteLifetime: TimeInterval = 7 * 24 * 3600
@@ -106,6 +108,47 @@ final class GroupSync {
         try await syncNow(id)
         await app.reload()
         return id
+    }
+
+    // MARK: Delete
+
+    /// Deletes a group. A shared group is deleted for everyone: a sealed "deleted" change goes
+    /// to the relay first, so the other phones delete it when they next sync, then this phone
+    /// leaves the relay group (the relay drops it once the last phone has left). Needs the
+    /// internet for a shared group; nothing is deleted if the change can't be sent.
+    func deleteGroup(_ group: ExpenseGroup) async throws {
+        if (try await app.syncStore.sharedState(of: group.id)) != nil {
+            guard let relay, let key = SyncKeychain.key(for: group.id) else { throw Failure.unavailable }
+            guard let me = group.me?.id, me == group.ownerID else { throw Failure.notOwner }
+            // Let a sync already running finish, so nothing is half applied.
+            if let current = running[group.id] { _ = try? await current.value }
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.sortedKeys]
+            encoder.dateEncodingStrategy = .iso8601
+            let change = SyncChange(groupID: group.id, entity: .groupDeleted,
+                                    body: try encoder.encode(GroupDeletion(groupID: group.id, deletedBy: me)))
+            do {
+                try await relay.push([(id: change.id, ciphertext: try SyncCipher.seal(change, with: key))], to: group.id)
+                try? await relay.leave(group.id)
+            } catch RelayClient.Failure.notInGroup {
+                // The relay already dropped the group (90 days idle): nobody else to tell.
+            }
+            SyncKeychain.removeKey(for: group.id)
+        }
+        try await app.deleteGroup(group.id)
+        status[group.id] = nil
+        await loadStates()
+    }
+
+    /// The group's maker deleted it on their phone and it's now gone from this one too.
+    private func finishRemoteDeletion(_ group: GroupID, files: AppModel.GroupFiles?) async {
+        try? await relay?.leave(group)
+        SyncKeychain.removeKey(for: group)
+        if let files { app.removeFiles(files) }
+        GroupPhotoFile.remove(group)
+        status[group] = nil
+        await app.reload()
+        await loadStates()
     }
 
     // MARK: Syncing
@@ -187,7 +230,14 @@ final class GroupSync {
                 (try? SyncCipher.open(row.ciphertext, changeID: row.change_id, groupID: group, with: key))
                     .map { ReceivedChange(sequence: row.seq, change: $0) }
             }
+            // If the maker deleted the group, note its photos first: the ledger rows that point
+            // to them are deleted along with the group.
+            let files = received.contains { $0.change.entity == .groupDeleted } ? await app.files(of: group) : nil
             let result = try await store.apply(received, through: last.seq, in: group, syncedAt: Date())
+            if result.groupDeleted {
+                await finishRemoteDeletion(group, files: files)
+                return
+            }
             applied += result.applied
             fromOthers += result.fromOthers
             if rows.count < pageSize { break }

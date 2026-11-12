@@ -14,6 +14,8 @@ struct GroupSheet: View {
     let onOpenMember: (Member) -> Void
     let onRemoveMember: (Member) -> Void
     var onAddTakaDeUser: (() -> Void)? = nil
+    /// Shown only to the person who made the group (or for a group that isn't shared).
+    var onDeleteGroup: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xl) {
@@ -47,6 +49,21 @@ struct GroupSheet: View {
                 .accessibilityHint(Text("Shares a CSV file of every expense and payment in this group"))
             }
             .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+            if let onDeleteGroup {
+                Button(action: onDeleteGroup) {
+                    HStack {
+                        Label("Delete group", systemImage: "trash")
+                        Spacer()
+                    }
+                    .font(AppFont.bodyEmphasis)
+                    .foregroundStyle(Color.owe)
+                    .padding(Spacing.m)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Color.surface))
+                .accessibilityHint(Text("Asks first. Deletes the group and everything in it."))
+            }
         }
         .padding(.horizontal, Spacing.screenMargin)
         .padding(.top, Spacing.s)

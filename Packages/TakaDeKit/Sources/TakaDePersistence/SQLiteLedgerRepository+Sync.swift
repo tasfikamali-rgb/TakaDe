@@ -139,6 +139,24 @@ extension SQLiteLedgerRepository: SyncRepository {
             }
             var result = ApplyResult()
             for item in changes.sorted(by: { $0.sequence < $1.sequence }) where item.sequence > cursor {
+                // The maker deleted the group for everyone: delete it here and stop. Nothing
+                // after it in the order matters any more.
+                if item.change.entity == .groupDeleted {
+                    // In a savepoint, so a deletion that fails halfway leaves everything as it was.
+                    var deleted = false
+                    try? db.inSavepoint {
+                        deleted = try Self.applyDeletion(item.change, in: group, db: db)
+                        return deleted ? .commit : .rollback
+                    }
+                    if deleted {
+                        result.applied += 1
+                        result.groupDeleted = true
+                        return result
+                    }
+                    result.rejected += 1
+                    cursor = item.sequence
+                    continue
+                }
                 do {
                     // This phone's own change, back from the relay. It's applied again so every
                     // phone ends up with the same result in the same order, but not logged twice.
@@ -181,7 +199,24 @@ extension SQLiteLedgerRepository: SyncRepository {
         case .meal:
             try applyMeal(change.body, in: group, logs: logs, db: db)
             return nil
+        case .groupDeleted:
+            // Handled in `apply`, before anything else.
+            throw SyncApplyError.invalid
         }
+    }
+
+    /// Deletes the group if the change really comes from its maker, as far as this phone
+    /// knows: the person recorded as the maker, or for older groups the first person listed.
+    /// Anyone else's deletion is ignored. Returns whether the group was deleted.
+    private static func applyDeletion(_ change: SyncChange, in group: GroupID, db: Database) throws -> Bool {
+        let deletion = try syncDecoder.decode(GroupDeletion.self, from: change.body)
+        guard change.groupID == group, deletion.groupID == group else { return false }
+        let createdBy = try String?.fetchOne(db, sql: "SELECT created_by FROM expense_group WHERE id = ?", arguments: [group.description]) ?? nil
+        let firstMember = try String.fetchOne(db, sql: "SELECT id FROM member WHERE group_id = ? ORDER BY position LIMIT 1",
+                                              arguments: [group.description])
+        guard let owner = createdBy ?? firstMember, owner.lowercased() == deletion.deletedBy.description.lowercased() else { return false }
+        try deleteGroup(group, db: db)
+        return true
     }
 
     private static func memberIDs(in group: GroupID, db: Database) throws -> Set<MemberID> {
@@ -212,12 +247,14 @@ extension SQLiteLedgerRepository: SyncRepository {
         let exists = try Bool.fetchOne(db, sql: "SELECT EXISTS(SELECT 1 FROM expense_group WHERE id = ?)", arguments: [group.description]) ?? false
         // Currency and creation date are fixed once the group exists.
         try db.execute(sql: """
-            INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id, accent)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO expense_group (id, name, currency_code, currency_digits, created_at, archived_at, simplify_debts, kind, manager_id, accent, created_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET name = excluded.name, archived_at = excluded.archived_at,
-                simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id, accent = excluded.accent
+                simplify_debts = excluded.simplify_debts, kind = excluded.kind, manager_id = excluded.manager_id, accent = excluded.accent,
+                created_by = COALESCE(expense_group.created_by, excluded.created_by)
             """, arguments: [group.description, remote.name, remote.currency.code, remote.currency.minorUnitDigits, remote.createdAt,
-                             remote.archivedAt, remote.simplifiesDebts, remote.kind.rawValue, remote.managerID?.description, remote.accentHex])
+                             remote.archivedAt, remote.simplifiesDebts, remote.kind.rawValue, remote.managerID?.description, remote.accentHex,
+                             remote.createdBy?.description])
         let remoteIDs = Set(remote.members.map(\.id))
         for (position, member) in remote.members.enumerated() {
             // A member id that belongs to another group is never moved; the update is skipped.

@@ -26,6 +26,8 @@ struct TakaDeApp: App {
     @AppStorage(CurrencyCatalog.showsForeignKey) private var showsForeignCurrency = false
 
     init() {
+        // The group-icon word list (about 275 KB) loads in the background, not on first draw.
+        Task.detached(priority: .utility) { GroupIcon.warmUp() }
         let model = AppModel.live()
         _model = State(initialValue: model)
         let account = AccountModel(store: model.profiles)

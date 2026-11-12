@@ -26,6 +26,8 @@ struct GroupDetailContent: View {
     @State private var editingPayment: Settlement?
     @State private var errorMessage: String?
     @State private var refresh = LogoRefreshState()
+    @State private var confirmingDelete = false
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
@@ -45,7 +47,8 @@ struct GroupDetailContent: View {
                     onAddFromContacts: { pickingContacts = true },
                     onOpenMember: openMember,
                     onRemoveMember: { removingMember = $0 },
-                    onAddTakaDeUser: sync.isAvailable ? { addingTakaDeUser = true } : nil)
+                    onAddTakaDeUser: sync.isAvailable ? { addingTakaDeUser = true } : nil,
+                    onDeleteGroup: canDelete ? { confirmingDelete = true } : nil)
             }
             .frame(maxWidth: .infinity)
         }
@@ -142,6 +145,19 @@ struct GroupDetailContent: View {
         ) { member in
             Button("Remove", role: .destructive) { remove(member) }
         }
+        .confirmationDialog(
+            Text("Delete \(group.name)?"),
+            isPresented: $confirmingDelete,
+            titleVisibility: .visible
+        ) {
+            Button("Delete group", role: .destructive, action: deleteGroup)
+        } message: {
+            if sync.isShared(group.id) {
+                Text("The group, its expenses, payments and history are deleted for everyone in it. This can't be undone.")
+            } else {
+                Text("The group, its expenses, payments and history are deleted from this phone. This can't be undone.")
+            }
+        }
         .alert("Add a person", isPresented: $showingAddMember) {
             TextField("Name", text: $newMemberName)
             Button("Add", action: checkNewMember)
@@ -188,6 +204,28 @@ struct GroupDetailContent: View {
     }
 
     private func askForMember() { showingAddMember = true }
+
+    /// Only the group's maker can delete a shared group. A group that isn't shared lives only
+    /// on this phone, so it's always this person's to delete.
+    private var canDelete: Bool {
+        guard sync.isShared(group.id) else { return true }
+        return group.me.map { $0.id == group.ownerID } ?? false
+    }
+
+    private func deleteGroup() {
+        Task {
+            do {
+                try await sync.deleteGroup(group)
+                dismiss()
+            } catch RelayClient.Failure.offline {
+                errorMessage = String(localized: "You're offline. Connect to the internet to delete this group for everyone.", bundle: .appLanguage)
+            } catch GroupSync.Failure.notOwner {
+                errorMessage = String(localized: "Only the person who made this group can delete it.", bundle: .appLanguage)
+            } catch {
+                errorMessage = String(localized: "The group wasn't deleted. Try again.", bundle: .appLanguage)
+            }
+        }
+    }
 
     /// Removes someone who isn't in any expense, payment or meal count. Otherwise says why
     /// they stay, so balances and history never change behind anyone's back.
