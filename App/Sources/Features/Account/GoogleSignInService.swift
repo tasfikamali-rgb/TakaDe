@@ -115,8 +115,6 @@ final class GoogleSignInService {
         let iss: String
         let email: String?
         let name: String?
-        /// Google's ID token, for handing to TakaDe's sign-in service (ADR 0016).
-        let idToken: String
     }
 
     private func exchange(code: String, verifier: String) async throws -> TokenResponse {
