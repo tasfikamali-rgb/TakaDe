@@ -210,7 +210,8 @@ final class GroupSync {
         if let image = ReceiptPhotos.image(for: id) { return image }
         guard let relay, let key = SyncKeychain.key(for: group),
               let sealed = try? await relay.downloadReceipt(id, in: group),
-              let jpeg = try? SyncCipher.openReceipt(sealed, id: id, groupID: group, with: key) else { return nil }
+              let jpeg = try? SyncCipher.openReceipt(sealed, id: id, groupID: group, with: key),
+              ReceiptPhotos.isAcceptable(jpeg) else { return nil }
         try? ReceiptPhotos.store(jpeg, for: id)
         return ReceiptPhotos.image(for: id)
     }
