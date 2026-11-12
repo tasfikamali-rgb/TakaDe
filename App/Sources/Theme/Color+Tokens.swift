@@ -19,6 +19,8 @@ extension Color {
     static let bkash = Color("bkash")
     static let sheet = Color("sheet")
     static let lilac = Color("lilac")
+    /// The slow light behind the Home header: pale periwinkle in light mode, deep blue in dark.
+    static let glow = Color("glow")
 }
 
 /// Tab bar roles. The bar reads only these, so a new palette is a change here (or a new

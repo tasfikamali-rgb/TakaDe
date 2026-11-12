@@ -41,6 +41,6 @@ struct HomeHeader: View {
         .padding(.horizontal, Spacing.screenMargin)
         .padding(.top, Spacing.xs)
         .padding(.bottom, Spacing.huge + Radius.sheet)
-        .background(Color.header)
+        // HomeOverview paints the header color (with its moving glow) behind this.
     }
 }
