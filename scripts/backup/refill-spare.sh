@@ -25,8 +25,22 @@ if [ -n "$main_ref" ] && [ "$spare_ref" = "$main_ref" ]; then
   exit 1
 fi
 
-# The tables the dump fills, e.g. "public"."sync_change" and "auth"."users".
-tables=$(grep -E '^COPY ' "$data" | sed -E 's/^COPY ([^ (]+).*/\1/' | sort -u | paste -sd, - || true)
+# Only TakaDe's own tables and its accounts are copied. Supabase's internal schemas
+# (storage, realtime, vault, ...) belong to other roles, can't be emptied from here, and
+# the spare already has its own.
+schemas_re='^"?(public|auth)"?\.'
+filtered="$(dirname "$data")/spare-data.sql"
+trap 'rm -f "$filtered"' EXIT
+SCHEMAS_RE="$schemas_re" awk '
+  BEGIN { re = ENVIRON["SCHEMAS_RE"]; q = sprintf("%c", 39) }
+  skip { if ($0 == "\\.") skip = 0; next }
+  /^COPY / { if ($2 !~ re) { skip = 1; next } }
+  /pg_catalog\.setval\(/ { split($0, part, q); if (part[2] !~ re) next }
+  { print }
+' "$data" > "$filtered"
+
+# The tables left to fill, e.g. "public"."sync_change" and "auth"."users".
+tables=$(grep -E '^COPY ' "$filtered" | sed -E 's/^COPY ([^ (]+).*/\1/' | sort -u | paste -sd, - || true)
 if [ -z "$tables" ]; then
   echo "The dump has no tables; leaving the spare as it is." >&2
   exit 1
@@ -35,7 +49,7 @@ fi
 psql "$SPARE_DB_URL" -X -q -v ON_ERROR_STOP=1 --single-transaction >/dev/null <<SQL
 set session_replication_role = replica;
 truncate $tables cascade;
-\i $data
+\i $filtered
 -- Shared-group positions on the spare start far past the main project's, so phones whose
 -- place is already past the copy still receive everything uploaded to the spare.
 select setval(pg_get_serial_sequence('public.sync_change', 'seq'),
