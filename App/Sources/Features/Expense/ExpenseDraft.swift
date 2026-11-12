@@ -189,12 +189,12 @@ final class ExpenseDraft {
         if let original {
             // Same id and a new version, so history shows an edit rather than a new expense.
             return try Expense(id: original.id, groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy,
-                               splitRule: rule, occurredAt: occurredAt, note: original.note, category: category,
+                               splitRule: rule, occurredAt: savedDate, note: original.note, category: category,
                                version: original.version + 1, repeatsMonthly: repeatsMonthly, repeatOf: original.repeatOf,
                                receiptID: receiptID)
         }
         return try Expense(groupID: group.id, title: trimmedTitle, total: total, paidBy: paidBy, splitRule: rule,
-                           occurredAt: occurredAt, category: category, repeatsMonthly: repeatsMonthly, receiptID: receiptID)
+                           occurredAt: savedDate, category: category, repeatsMonthly: repeatsMonthly, receiptID: receiptID)
     }
 
     /// Fills in fields from a reviewed receipt suggestion.
@@ -202,15 +202,40 @@ final class ExpenseDraft {
         if let merchant, trimmedTitle.isEmpty { title = merchant }
         if let total { amountExpression = KeypadText.plain(total) }
         if let date { occurredAt = date }
+        keepDateWithinToday()
     }
 
     /// Keeps the scanned photo with the expense, replacing any earlier one.
     func attach(_ image: CGImage?) {
         guard let image else { return }
         newReceipt = image
+        keepDateWithinToday()
     }
 
     var hasReceipt: Bool { newReceipt != nil || receiptID != nil }
+
+    /// A receipt shows something already paid, so an expense with one can't be dated after
+    /// today. Without one a later date is fine, like rent due next week or a planned trip
+    /// (Sabit, 2026-11-12). Nil means any date.
+    var latestDate: Date? {
+        guard hasReceipt else { return nil }
+        // The last moment of today, so any time today is allowed.
+        let calendar = Calendar.current
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date())) ?? Date()
+        return tomorrow.addingTimeInterval(-1)
+    }
+
+    /// Moves a future date back to today once a receipt is on the expense.
+    private func keepDateWithinToday() {
+        if let latestDate, occurredAt > latestDate { occurredAt = latestDate }
+    }
+
+    /// The date that's saved: never after today when there's a receipt, even if the form
+    /// was left open past midnight.
+    private var savedDate: Date {
+        if let latestDate, occurredAt > latestDate { return latestDate }
+        return occurredAt
+    }
 
     func removeReceipt() {
         newReceipt = nil

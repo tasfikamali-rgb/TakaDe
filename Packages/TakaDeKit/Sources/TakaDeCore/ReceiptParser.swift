@@ -205,10 +205,16 @@ public enum ReceiptParser {
     /// 5-11-26, 05.11.2026), year-first ISO dates (2026-11-05), and month names
     /// (5 Nov 2026, 05-Nov-26, Nov 5, 2026), in Latin or Bengali digits. Years outside
     /// 2000 to next year are ignored, so phone numbers and ids aren't read as dates.
-    static func date(in lines: [String]) -> Date? {
+    ///
+    /// A receipt is printed when you pay, so it can't be dated after today. A later date is
+    /// a misread or something else on the slip (a delivery or "valid until" date); it's
+    /// skipped and the search moves on to the next line (Sabit, 2026-11-12).
+    static func date(in lines: [String], now: Date = Date()) -> Date? {
+        let calendar = Calendar(identifier: .gregorian)
+        guard let endOfToday = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) else { return nil }
         for raw in lines {
             let line = Digits.toLatin(raw)
-            if let date = isoDate(line) ?? namedMonthDate(line) ?? dayFirstDate(line) { return date }
+            if let date = isoDate(line) ?? namedMonthDate(line) ?? dayFirstDate(line), date < endOfToday { return date }
         }
         return nil
     }
