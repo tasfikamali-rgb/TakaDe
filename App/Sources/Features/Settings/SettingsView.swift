@@ -5,7 +5,7 @@ struct SettingsView: View {
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
 
     var body: some View {
-        Form {
+        AppForm {
             Section {
                 Picker("Language", selection: $language.choice) {
                     ForEach(AppLanguage.choices) { option in
@@ -53,7 +53,7 @@ struct SettingsView: View {
 /// Settings > Data and export: what's stored where, export everything, delete everything.
 struct DataAndExportView: View {
     var body: some View {
-        Form { YourDataSection() }
+        AppForm { YourDataSection() }
             .readableWidth()
             .navigationTitle("Data and export")
             .navigationBarTitleDisplayMode(.inline)

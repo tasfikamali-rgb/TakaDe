@@ -20,7 +20,7 @@ struct InviteSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 switch stage {
                 case .making:
                     Section {

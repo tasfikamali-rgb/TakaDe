@@ -66,6 +66,7 @@ struct ContactSearchSheet: View {
             if filtered.isEmpty {
                 Text(query.isEmpty ? LocalizedStringKey("No contacts with a name") : LocalizedStringKey("No one matches that"))
                     .foregroundStyle(Color.inkMuted)
+                    .listRowBackground(Color.surface)
             }
             ForEach(filtered) { entry in
                 let isOn = selected.contains(entry)
@@ -85,8 +86,10 @@ struct ContactSearchSheet: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(isOn ? .isSelected : [])
+                .listRowBackground(Color.surface)
             }
         }
+        .texturedBackground()
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: Text("Search contacts"))
         .autocorrectionDisabled()
         // While searching, iOS hides the navigation bar's buttons, so Add also sits at the

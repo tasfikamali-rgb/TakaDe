@@ -90,12 +90,12 @@ struct OnboardingView: View {
             .scrollBounceBehavior(.basedOnSize)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(
-                UnevenRoundedRectangle(topLeadingRadius: Radius.sheet, topTrailingRadius: Radius.sheet, style: .continuous)
-                    .fill(Color.canvas)
+                TexturedBackground()
+                    .clipShape(UnevenRoundedRectangle(topLeadingRadius: Radius.sheet, topTrailingRadius: Radius.sheet, style: .continuous))
                     .ignoresSafeArea(edges: .bottom)
             )
         }
-        .background(Color.header.ignoresSafeArea())
+        .background(TexturedBackground(base: .header).ignoresSafeArea())
     }
 
     /// Suggests Bangla for Bangladesh, otherwise the phone's own language, so most people

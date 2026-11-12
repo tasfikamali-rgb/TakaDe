@@ -11,10 +11,12 @@ struct HistoryView: View {
     var body: some View {
         List(items) { item in
             ActivityRow(item: item, showsGroup: false)
+                .listRowBackground(Color.surface)
         }
         .overlay {
             if items.isEmpty { ContentUnavailableView("No changes yet", systemImage: "clock") }
         }
+        .texturedBackground()
         .readableWidth()
         .navigationTitle("History")
         .task(id: model.revision) {

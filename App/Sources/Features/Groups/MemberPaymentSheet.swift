@@ -22,7 +22,7 @@ struct MemberPaymentSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 Section {
                     TextField("Nickname", text: $nickname, prompt: Text("Nickname (optional)").foregroundStyle(Color.inkMuted))
                         .textInputAutocapitalization(.words)

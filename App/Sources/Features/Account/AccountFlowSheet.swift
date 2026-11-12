@@ -33,7 +33,7 @@ struct AccountFlowSheet: View {
                 .padding(Spacing.screenMargin)
                 .readableWidth()
             }
-            .background(Color.canvas)
+            .background(TexturedBackground())
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

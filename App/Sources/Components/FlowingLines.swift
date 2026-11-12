@@ -1,9 +1,10 @@
 import SwiftUI
 
-/// Fine contour lines that ripple slowly behind the Home header, like the ruled lines of a
-/// khata page lifting in a breeze. Crisp hairlines in one tint (`headerTexture`), no blur
-/// or glow, so it reads as texture, not decoration. Holds still with Reduce Motion, and
-/// stops drawing off screen and in the background.
+/// Fine contour lines that ripple slowly behind every screen, like the ruled lines of a
+/// khata page lifting in a breeze. Flat hairlines in one tint (`texture`), no blur, glow or
+/// gradient, so it reads as paper, not decoration. Transparent: put it over a flat color,
+/// usually through `TexturedBackground`. Holds still with Reduce Motion, and stops drawing
+/// off screen and in the background.
 struct FlowingLines: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
@@ -20,10 +21,7 @@ struct FlowingLines: View {
             Canvas { context, size in
                 draw(in: &context, size: size, phase: phase(at: timeline.date))
             }
-            // Fade the lines out towards the top so the screen edge stays clean.
-            .mask(LinearGradient(colors: [.black.opacity(0.25), .black], startPoint: .top, endPoint: .bottom))
         }
-        .background(Color.header)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
         .onAppear { isVisible = true }
@@ -39,7 +37,8 @@ struct FlowingLines: View {
         let count = Int(size.height / spacing) + 2
         let width = max(size.width, 1)
         let height = max(size.height, 1)
-        let lineWidth: CGFloat = 1.5 / displayScale
+        // A little over a hairline, so the lines stay visible on cream without getting heavy.
+        let lineWidth: CGFloat = max(2 / displayScale, 0.75)
         for row in 0..<count {
             let baseY = CGFloat(row) * spacing
             // Lines bend a little more towards the bottom, and the crest drifts sideways,
@@ -57,13 +56,49 @@ struct FlowingLines: View {
                 if x == 0 { path.move(to: point) } else { path.addLine(to: point) }
                 x += step
             }
-            context.stroke(path, with: .color(.headerTexture), lineWidth: lineWidth)
+            context.stroke(path, with: .color(.texture), lineWidth: lineWidth)
         }
     }
 
-    private var paused: Bool { reduceMotion || !isVisible || scenePhase != .active }
+    /// UI tests launch with `-holdTexture YES`: the accessibility audit waits for the screen
+    /// to stop moving, and these lines never do.
+    private static let held = UserDefaults.standard.bool(forKey: "holdTexture")
+
+    private var paused: Bool { reduceMotion || Self.held || !isVisible || scenePhase != .active }
+}
+
+/// A flat token color with the moving lines over it. The one background for screens,
+/// headers and sheets, so the texture is the same everywhere.
+struct TexturedBackground: View {
+    var base: Color = .canvas
+
+    var body: some View {
+        base.overlay { FlowingLines() }
+    }
+}
+
+extension View {
+    /// Hides a Form's or List's own background and puts the textured canvas behind it.
+    func texturedBackground(_ base: Color = .canvas) -> some View {
+        scrollContentBackground(.hidden)
+            .background { TexturedBackground(base: base).ignoresSafeArea() }
+    }
+}
+
+/// A Form on the textured canvas, with rows on `surface` so they match the app's cards.
+/// Rows that set their own `listRowBackground` keep it.
+struct AppForm<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        Form {
+            Group { content }
+                .listRowBackground(Color.surface)
+        }
+        .texturedBackground()
+    }
 }
 
 #Preview {
-    FlowingLines().frame(height: 480).ignoresSafeArea()
+    TexturedBackground(base: .header).ignoresSafeArea()
 }

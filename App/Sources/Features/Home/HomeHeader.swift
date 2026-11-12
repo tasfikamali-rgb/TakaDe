@@ -1,7 +1,7 @@
 import SwiftUI
 import TakaDeCore
 
-/// The dark wallet header (DESIGN.md section 4.2). One job: where you stand overall.
+/// The wallet header (DESIGN.md section 4.2). One job: where you stand overall.
 struct HomeHeader: View {
     let total: Money
     let hasGroups: Bool
@@ -31,16 +31,13 @@ struct HomeHeader: View {
             }
             .padding(.top, Spacing.xs)
             } else {
-                Text("Split costs with friends and see who pays whom")
-                    .font(AppFont.title)
-                    .foregroundStyle(Color.onHeader)
-                    .fixedSize(horizontal: false, vertical: true)
+                HomeGreeting()
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Spacing.screenMargin)
         .padding(.top, Spacing.xs)
         .padding(.bottom, Spacing.huge + Radius.sheet)
-        // HomeOverview paints the header color (with its moving glow) behind this.
+        // HomeOverview paints the header color (with its moving lines) behind this.
     }
 }

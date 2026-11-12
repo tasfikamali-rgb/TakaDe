@@ -73,7 +73,7 @@ final class AccessibilityAuditTests: XCTestCase {
     @MainActor
     func testBengaliLaunches() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-appLanguage", "bn", "-AppleLanguages", "(bn)", "-AppleLocale", "bn_BD"]
+        app.launchArguments += ["-appLanguage", "bn", "-AppleLanguages", "(bn)", "-AppleLocale", "bn_BD", "-holdTexture", "YES"]
         app.launch()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
         try audit(app, for: [.textClipped, .sufficientElementDescription])
@@ -85,7 +85,8 @@ final class AccessibilityAuditTests: XCTestCase {
     private func launch(contentSize: String? = nil) -> XCUIApplication {
         let app = XCUIApplication()
         // Start in English so the queries above match.
-        app.launchArguments += ["-appLanguage", "en", "-AppleLanguages", "(en)"]
+        // Hold the background lines still; the audit times out while anything animates.
+        app.launchArguments += ["-appLanguage", "en", "-AppleLanguages", "(en)", "-holdTexture", "YES"]
         if let contentSize {
             app.launchArguments += ["-UIPreferredContentSizeCategoryName", contentSize]
         }

@@ -25,7 +25,7 @@ struct NewGroupView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 Section {
                     GroupPhotoPicker(hasPhoto: photoPreview != nil, onPick: pickPhoto, onRemove: clearPhoto) {
                         VStack(spacing: Spacing.xs) {

@@ -22,7 +22,7 @@ struct AddTakaDeUserSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
+            AppForm {
                 if let sentTo {
                     Section {
                         Label {

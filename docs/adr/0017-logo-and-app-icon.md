@@ -17,3 +17,6 @@ The app icon slot was empty, which blocks App Store upload. The brand uses one a
 - The ৳ is a Bangla currency glyph, so the icon says "Bangladesh" and "money" at once. It is busier than a pure geometric shape at the 29 pt Settings size; checked at 60, 40 and 29 pt in the concept preview.
 - An Icon Composer (Liquid Glass) version and the Android splash are follow-ups.
 - The splash adds about 1.7 s before the app is seen (taps already go through) on a cold launch. It never blocks loading, which runs underneath.
+
+## Update 2026-11-12: new palette
+Sabit chose a five-color palette for the whole app: maroon `#780000`, red `#C1121F`, cream `#FDF0D5`, navy `#003049`, steel blue `#669BBC`. The mark keeps its shape and is recolored in flat fills: light icon cream on red, dark icon steel blue on navy, logo red ৳ with navy text (navy background: steel blue ৳ with cream text). Red on navy is only about 2.2:1, so the dark versions use steel blue instead. No gradients or gloss, per "dont use these glossy colourings, they look AI".

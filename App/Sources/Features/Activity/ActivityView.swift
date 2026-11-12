@@ -11,6 +11,7 @@ struct ActivityView: View {
     var body: some View {
         List(items) { item in
             ActivityRow(item: item)
+                .listRowBackground(Color.surface)
         }
         .overlay {
             if items.isEmpty {
@@ -18,8 +19,7 @@ struct ActivityView: View {
                                        description: Text("Expenses, payments and edits in any group show up here"))
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(Color.canvas)
+        .texturedBackground()
         .readableWidth()
         .navigationTitle("Activity")
         .task(id: TaskKey(revision: model.revision, locale: locale.identifier)) { items = await model.recentActivity(locale: locale) }

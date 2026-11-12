@@ -1,7 +1,7 @@
 import SwiftUI
 import TakaDeCore
 
-/// The balance header (white in light mode, near-black in dark) with the groups sheet sliding over it.
+/// The balance header (cream in light mode, navy in dark) with the groups sheet sliding over it.
 struct HomeOverview: View {
     @Environment(AppModel.self) private var model
     @Binding var selection: GroupID?
@@ -18,7 +18,7 @@ struct HomeOverview: View {
             }
         }
         .background(alignment: .top) {
-            FlowingLines().frame(height: 480).ignoresSafeArea()
+            TexturedBackground(base: .header).frame(height: 480).ignoresSafeArea()
         }
         .background(Color.canvas)
         .toolbar(.hidden, for: .navigationBar)

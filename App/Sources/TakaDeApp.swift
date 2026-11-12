@@ -28,7 +28,7 @@ struct TakaDeApp: App {
         _friends = State(initialValue: Friends(account: account, sync: sync))
         // Switches take the app tint (ink), which is near-white in dark mode: a white knob
         // on a white track, so on and off looked alike. Lime "on" reads in both modes.
-        UISwitch.appearance().onTintColor = UIColor(named: "lime")
+        UISwitch.appearance().onTintColor = UIColor(named: "toggleOn")
     }
 
     var body: some Scene {

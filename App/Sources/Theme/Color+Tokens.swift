@@ -19,6 +19,8 @@ extension Color {
     static let bkash = Color("bkash")
     static let sheet = Color("sheet")
     static let lilac = Color("lilac")
+    /// Switches when on: steel blue, so "on" never reads as the red accent or as a warning.
+    static let toggleOn = Color("toggleOn")
 }
 
 /// Tab bar roles. The bar reads only these, so a new palette is a change here (or a new
@@ -27,10 +29,11 @@ extension Color {
     static let tabBarBackground = Color.header
     static let tabBarIndicator = Color.lime
     static let tabBarSelected = Color.onLime
-    static let tabBarUnselected = Color.onHeader.opacity(0.62)
+    static let tabBarUnselected = Color.onHeader.opacity(0.78)
 }
 
-/// The moving line texture behind the Home header: hairlines in the header's own ink.
+/// The moving line texture behind every screen (`FlowingLines`): navy hairlines on cream in
+/// light mode, cream on navy in dark. Its opacity lives in the colorset.
 extension Color {
-    static let headerTexture = Color.onHeader.opacity(0.05)
+    static let texture = Color("texture")
 }

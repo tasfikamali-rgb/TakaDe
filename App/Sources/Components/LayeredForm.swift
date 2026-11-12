@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The two-layer screen from DESIGN.md 1b for forms: a lilac header holding the one big
+/// The two-layer screen from DESIGN.md 1b for forms: a tinted header holding the one big
 /// number, and a canvas sheet with rounded top corners holding the fields. The header
 /// stays put while the fields scroll, so the amount is always in view. In short windows
 /// (landscape phones) the header gets less padding so the fields keep their room.
@@ -18,10 +18,13 @@ struct LayeredForm<Header: View, Content: View>: View {
                 .padding(.top, isShort ? Spacing.xxs : Spacing.s)
                 .padding(.bottom, (isShort ? Spacing.s : Spacing.xl) + Radius.sheet)
                 .readableWidth()
-                .background(Color.lilac)
-            Form { content }
+                .background(TexturedBackground(base: .lilac))
+            Form {
+                Group { content }
+                    .listRowBackground(Color.surface)
+            }
                 .scrollContentBackground(.hidden)
-                .background(Color.canvas)
+                .background(TexturedBackground())
                 .clipShape(UnevenRoundedRectangle(topLeadingRadius: Radius.sheet, topTrailingRadius: Radius.sheet, style: .continuous))
                 .padding(.top, -Radius.sheet)
                 .readableWidth()

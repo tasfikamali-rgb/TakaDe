@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Compact floating pill with three tabs, each an icon over a short label. A lime capsule
+/// Compact floating pill with three tabs, each an icon over a short label. A red accent capsule
 /// sits behind the selected tab and springs across to the next one (DESIGN.md section 4.1).
 /// Colors come only from the `tabBar…` tokens, so the palette can change without touching this.
 struct PillTabBar: View {
@@ -44,7 +44,9 @@ struct PillTabBar: View {
         // Slide a finger along the bar to move between tabs; taps still go to the buttons.
         .simultaneousGesture(slide)
         .padding(Self.inset)
-        .frame(height: Self.barHeight)
+        .frame(minHeight: Self.barHeight)
+        // Its own height: grows with larger text instead of filling the space it's offered.
+        .fixedSize(horizontal: false, vertical: true)
         .background {
             Capsule(style: .continuous)
                 .fill(Color.tabBarBackground)
@@ -56,8 +58,6 @@ struct PillTabBar: View {
                         .strokeBorder(Color.onHeader.opacity(colorScheme == .dark ? 0.12 : 0.06), lineWidth: 1)
                 }
         }
-        // The bar has a fixed height; very large text sizes use the large content viewer instead.
-        .dynamicTypeSize(...DynamicTypeSize.xLarge)
         .sensoryFeedback(.selection, trigger: selection)
     }
 
@@ -92,6 +92,7 @@ struct PillTabBar: View {
 }
 
 private struct PillTabButton: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let tab: AppTab
     let isSelected: Bool
     let bounce: Int
@@ -104,19 +105,25 @@ private struct PillTabButton: View {
                     .font(.system(size: 17, weight: .semibold))
                     .symbolVariant(isSelected ? .fill : .none)
                     .symbolEffect(.bounce.down, value: bounce)
-                    .frame(height: 20)
+                    .frame(minHeight: 20)
                     .accessibilityHidden(true)
-                Text(tab.title)
-                    .font(AppFont.text(11, .semibold, relativeTo: .caption2))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                // At accessibility text sizes the bar shows icons only, like the system tab
+                // bar: touch and hold a tab for the large content viewer to read its name.
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Text(tab.title)
+                        .font(AppFont.text(11, .semibold, relativeTo: .caption2))
+                        .lineLimit(1)
+                        .fixedSize()
+                }
             }
             .foregroundStyle(isSelected ? Color.tabBarSelected : Color.tabBarUnselected)
             .padding(.horizontal, 6)
-            .frame(minWidth: 60, maxWidth: 76, maxHeight: .infinity)
+            .padding(.vertical, 4)
+            .frame(minWidth: 60, minHeight: 48)
             .contentShape(Capsule(style: .continuous))
         }
         .buttonStyle(PressScaleButtonStyle())
+        .accessibilityLabel(tab.title)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityShowsLargeContentViewer {
             Label(tab.title, systemImage: tab.systemImage)
