@@ -37,6 +37,7 @@ struct OnboardingView: View {
             if step == .welcome { welcomeScreen } else { stepScreen }
         }
         .animation(Motion.standard, value: stepRaw)
+        .googlePhotoOffer(when: account.needsOnboarding)
         .onAppear {
             if name.isEmpty { name = savedName }
             // A sign-in isn't kept across launches until the profile exists, so start over.
@@ -356,6 +357,7 @@ struct OnboardingView: View {
             notice = nil
         }
         go(to: .name)
+        account.offerGooglePhotoIfNeeded()
     }
 
     private func finish() {

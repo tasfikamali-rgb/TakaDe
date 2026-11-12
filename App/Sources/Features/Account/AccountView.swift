@@ -75,10 +75,11 @@ struct AccountView: View {
         // storage keeps Settings open through that, instead of dropping back to Account.
         .navigationDestination(isPresented: $showingSettings) { SettingsView() }
         .refreshable { await account.refreshAccount() }
-        .sheet(item: $flow) { mode in
+        // Signed in or linked Google in the sheet: ask about the Google photo once it closes.
+        .sheet(item: $flow, onDismiss: { account.offerGooglePhotoIfNeeded() }) { mode in
             AccountFlowSheet(mode: mode) { flow = nil }.rebuildsOnDynamicType()
         }
-        .sheet(isPresented: $addingMethod) {
+        .sheet(isPresented: $addingMethod, onDismiss: { account.offerGooglePhotoIfNeeded() }) {
             AccountFlowSheet(mode: .link) { addingMethod = false }.rebuildsOnDynamicType()
         }
         .confirmationDialog(Text("Remove this sign-in method?"), isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
