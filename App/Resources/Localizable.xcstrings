@@ -3793,6 +3793,23 @@
         }
       }
     },
+    "Opening sound": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "খোলার শব্দ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opening sound"
+          }
+        }
+      }
+    },
     "Light": {
       "comment": "Bengali drafted by Claude; needs native review before release.",
       "localizations": {

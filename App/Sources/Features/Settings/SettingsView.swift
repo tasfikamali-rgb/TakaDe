@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage(AppLanguage.storageKey) private var language: AppLanguage = .system
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .automatic
+    @AppStorage(OpeningSound.storageKey) private var openingSoundOn = true
     @State private var showingData = false
 
     var body: some View {
@@ -27,6 +28,7 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+                Toggle("Opening sound", isOn: $openingSoundOn)
             } header: {
                 Text("Appearance")
                     .formHeader()
