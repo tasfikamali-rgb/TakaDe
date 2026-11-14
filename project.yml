@@ -65,6 +65,7 @@ targets:
         TakaDeServerSwitchURL: $(TAKADE_SERVER_SWITCH_URL)
         TakaDeMicrosoftSignIn: $(TAKADE_MICROSOFT_SIGN_IN)
         TakaDeEmailSignIn: $(TAKADE_EMAIL_SIGN_IN)
+        TakaDePasskeyDomain: $(TAKADE_PASSKEY_DOMAIN)
         UIAppFonts: [Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, InterDisplay-SemiBold.ttf, HindSiliguri-Regular.ttf, HindSiliguri-Medium.ttf, HindSiliguri-SemiBold.ttf, AnekBangla-Medium.ttf, AnekBangla-SemiBold.ttf]
     settings:
       base:
@@ -72,8 +73,9 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_EMIT_LOC_STRINGS: YES
       configs:
-        # Sign in with Apple needs a paid developer team, so the entitlement is only on
-        # Release builds. Debug builds signed with a free Apple ID still install on a phone.
+        # Sign in with Apple and Associated Domains (passkeys, ADR 0035) need a paid developer
+        # team, so the entitlements are only on Release builds. Debug builds signed with a
+        # free Apple ID still install on a phone.
         Release:
           CODE_SIGN_ENTITLEMENTS: App/TakaDe.entitlements
   # UI tests: accessibility audit and launch checks. See docs/testing.md.

@@ -196,6 +196,45 @@ final class SupabaseAuth {
         AuthSession.clear()
     }
 
+    // MARK: Passkeys (docs/adr/0035-passkeys.md)
+
+    /// Step one of adding a passkey to the account that's signed in: the service's challenge.
+    func passkeyRegistrationOptions() async throws -> PasskeyWire.CreationOptions {
+        guard session != nil else { throw Failure.notSignedIn }
+        return try await PasskeyWire.creationOptions(from: post("passkeys/registration/options", body: [:], authorized: true))
+    }
+
+    /// Step two: hands the service the new passkey's public key. The private key stays in
+    /// the person's iCloud Keychain.
+    func verifyPasskeyRegistration(challengeID: String, credential: [String: Any]) async throws {
+        guard session != nil else { throw Failure.notSignedIn }
+        _ = try await post("passkeys/registration/verify", body: ["challenge_id": challengeID, "credential": credential], authorized: true)
+    }
+
+    /// A challenge for signing in with a passkey. Needs no account name: iOS offers the
+    /// passkeys saved for TakaDe and the service finds the account from the one picked.
+    func passkeySignInOptions() async throws -> PasskeyWire.RequestOptions {
+        try await PasskeyWire.requestOptions(from: post("passkeys/authentication/options", body: [:]))
+    }
+
+    func signInWithPasskey(challengeID: String, credential: [String: Any]) async throws -> AuthUser {
+        try await adopt(post("passkeys/authentication/verify", body: ["challenge_id": challengeID, "credential": credential]))
+    }
+
+    func passkeys() async throws -> [PasskeyWire.Item] {
+        guard session != nil else { throw Failure.notSignedIn }
+        let json = try await send(config.authURL.appendingPathComponent("passkeys"), method: "GET", body: nil, authorized: true)
+        return PasskeyWire.items(from: json)
+    }
+
+    /// Removes a passkey from the account. The copy in the person's Passwords app stays
+    /// until they delete it there, but it can no longer sign in.
+    func deletePasskey(id: String) async throws {
+        // The service's ids are UUIDs; anything else must not reach the URL path.
+        guard UUID(uuidString: id) != nil else { throw Failure.badResponse }
+        _ = try await send(config.authURL.appendingPathComponent("passkeys/\(id)"), method: "DELETE", body: nil, authorized: true)
+    }
+
     // MARK: Private
 
     private func authorizeItems(_ provider: Provider, challenge: String) -> [URLQueryItem] {
@@ -352,6 +391,11 @@ final class SupabaseAuth {
     }
 
     private func request(_ url: URL, method: String, body: [String: Any]?, authorized: Bool) async throws -> [String: Any] {
+        try await send(url, method: method, body: body, authorized: authorized) as? [String: Any] ?? [:]
+    }
+
+    /// One call to the service. Returns the JSON body, which may be a list; empty for none.
+    private func send(_ url: URL, method: String, body: [String: Any]?, authorized: Bool) async throws -> Any {
         if authorized { try await refreshIfNeeded() }
         var request = URLRequest(url: url, timeoutInterval: 20)
         request.httpMethod = method
@@ -363,13 +407,14 @@ final class SupabaseAuth {
         if let body { request.httpBody = try JSONSerialization.data(withJSONObject: body) }
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw Failure.badResponse }
-        let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
+        let body = (try? JSONSerialization.jsonObject(with: data)) ?? [String: Any]()
+        let json = body as? [String: Any] ?? [:]
         guard (200..<300).contains(http.statusCode) else {
             let message = [json["msg"], json["message"], json["error_description"]].compactMap { $0 as? String }.joined(separator: " ")
             if message.contains(Failure.disposableEmailMarker) { throw Failure.disposableEmail }
             throw Failure.server(status: http.statusCode, code: (json["error_code"] as? String) ?? (json["error"] as? String))
         }
-        return json
+        return body
     }
 
     nonisolated static func user(from json: [String: Any]) throws -> AuthUser {
