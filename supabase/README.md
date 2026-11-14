@@ -85,3 +85,23 @@ Only groups someone invites others to are stored here, encrypted on the phone. S
 
 Run `migrations/20261112080000_pack_old_changes.sql` in the SQL editor. Phones then pack busy
 groups' older changes into one bundle. Backups and the spare project: see docs/backups.md.
+
+## Passkeys (ADR 0035)
+
+Supabase Auth's passkeys are in beta and open on every plan, including Free. They need the
+website first, so do these in order once `takadeapp.com` is bought and the paid Apple
+Developer account exists:
+
+1. Put the website file up (`docs/passkeys/README.md`).
+2. **Authentication > Passkeys:** turn on **Enable Passkey authentication**, with
+   - Relying Party Display Name: `TakaDe`
+   - Relying Party ID: `takadeapp.com` (no `https://`). Never change it afterwards: every
+     passkey people made stops working.
+   - Relying Party Origins: `https://takadeapp.com`
+3. Do the same on the spare project, with the same values, so passkeys still work after
+   "switch to spare".
+4. Check: `curl https://yxsfbakrtmpsuuuuogbl.supabase.co/auth/v1/settings -H "apikey: <anon key>"`
+   shows `"passkeys_enabled": true` (people have reported the switch not sticking on Free
+   until another Auth setting was saved too).
+5. Set `TAKADE_PASSKEY_DOMAIN = takadeapp.com` in `Config/TakaDe.xcconfig`, and make sure the
+   phone build carries `App/TakaDe.entitlements` (Associated Domains).

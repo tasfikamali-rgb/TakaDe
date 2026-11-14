@@ -47,6 +47,7 @@ Product name spelling (TakaDe), logo and app icon.
 - **Owner action:** Google OAuth iOS client id in `Config/Google.local.xcconfig`; paid Apple Developer Program for Sign in with Apple.
 - **Decided 2026-11-11:** members can store an optional bKash, Nagad, Rocket, upay or bank number for others to copy when settling. Built: tap a person on the group screen to add numbers; Settle up shows them with Copy.
 - **Decided 2026-11-11:** optional Face ID or passcode lock in Profile, off by default (ADR 14). Built.
+- **Decided 2026-11-14:** passkeys (Face ID sign-in), offered after signing in and in Account (ADR 35). Built, switched off until takadeapp.com, the paid Apple team and Supabase's passkey settings exist.
 
 ## 7. Store accounts and release checks (blocks: testing on real phones, publishing)
 - **Apple Developer Program** (US$99/year) for TestFlight and the App Store, and

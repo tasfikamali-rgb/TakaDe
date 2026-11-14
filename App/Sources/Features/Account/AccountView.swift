@@ -10,6 +10,7 @@ struct AccountView: View {
     @State private var flow: SignInMode?
     @State private var addingMethod = false
     @State private var removing: AccountIdentity?
+    @State private var removingPasskey: PasskeyWire.Item?
     @State private var errorMessage: String?
     @State private var working = false
     @State private var newName = ""
@@ -48,6 +49,7 @@ struct AccountView: View {
                 if account.signInEnded { signInAgainSection }
                 if account.usesAccountService { friendIDSection }
                 signedInSections
+                if account.passkeysAvailable && !account.signInEnded { passkeySection }
             } else {
                 signedOutSection
             }
@@ -92,6 +94,35 @@ struct AccountView: View {
                presenting: removing) { identity in
             Button("Yes", role: .destructive) { unlink(identity) }
             Button("No", role: .cancel) {}
+        }
+        .alert(Text("Remove this passkey?"),
+               isPresented: Binding(get: { removingPasskey != nil }, set: { if !$0 { removingPasskey = nil } }),
+               presenting: removingPasskey) { item in
+            Button("Remove", role: .destructive) { removePasskey(item) }
+            Button("Cancel", role: .cancel) {}
+        } message: { _ in
+            Text("It won't sign in to TakaDe any more. To delete it from your phone too, open the Passwords app.")
+        }
+        .task(id: account.isSignedIn) { await account.loadPasskeys() }
+    }
+
+    /// Passkeys (ADR 0035): sign in with Face ID instead of a code or another account.
+    private var passkeySection: some View {
+        Section {
+            ForEach(account.passkeys) { item in
+                PasskeyRow(item: item)
+                    .swipeActions {
+                        Button("Remove", role: .destructive) { removingPasskey = item }
+                    }
+                    .accessibilityAction(named: Text("Remove")) { removingPasskey = item }
+            }
+            Button("Add a passkey", systemImage: "plus") { run { try await account.addPasskey() } }
+        } header: {
+            Text("Passkeys")
+                .formHeader()
+        } footer: {
+            Text("Sign in with \(PasskeyConfig.unlockName) on any phone with your iCloud Keychain. TakaDe's sign-in service keeps only a public key, which can't sign in by itself.")
+                .foregroundStyle(Color.inkMuted)
         }
     }
 
@@ -196,6 +227,11 @@ struct AccountView: View {
         run { try await account.signOut() }
     }
 
+    private func removePasskey(_ item: PasskeyWire.Item) {
+        removingPasskey = nil
+        run { try await account.removePasskey(item) }
+    }
+
     private func unlink(_ identity: AccountIdentity) {
         removing = nil
         run { try await account.unlink(identity) }
@@ -208,8 +244,10 @@ struct AccountView: View {
             do {
                 try await work()
                 errorMessage = nil
+            } catch is CancellationError {
+                // Closed iOS's passkey sheet.
             } catch {
-                errorMessage = SignInErrorText.text(for: error)
+                errorMessage = PasskeyErrorText.text(for: error)
             }
         }
     }
@@ -346,6 +384,35 @@ struct FriendIDView: View {
             .readableWidth()
             .navigationTitle("Your TakaDe ID")
             .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// One passkey: where it's kept and when it was made or last used.
+private struct PasskeyRow: View {
+    let item: PasskeyWire.Item
+
+    var body: some View {
+        HStack(spacing: Spacing.s) {
+            Image(systemName: "person.badge.key")
+                .foregroundStyle(Color.ink)
+                .frame(width: 28)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                if let name = item.friendlyName {
+                    Text(verbatim: name).font(AppFont.bodyEmphasis)
+                } else {
+                    Text("Passkey").font(AppFont.bodyEmphasis)
+                }
+                if let used = item.lastUsedAt {
+                    Text("Last used \(used.formatted(date: .abbreviated, time: .omitted))")
+                        .font(AppFont.caption).foregroundStyle(Color.inkMuted)
+                } else if let made = item.createdAt {
+                    Text("Added \(made.formatted(date: .abbreviated, time: .omitted))")
+                        .font(AppFont.caption).foregroundStyle(Color.inkMuted)
+                }
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

@@ -12445,6 +12445,278 @@
           }
         }
       }
+    },
+    "Sign in with a passkey": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পাসকি দিয়ে সাইন ইন করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with a passkey"
+          }
+        }
+      }
+    },
+    "Sign in with %@ next time": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পরের বার %@ দিয়ে সাইন ইন করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with %@ next time"
+          }
+        }
+      }
+    },
+    "Save a passkey for TakaDe. On a new phone, just look at it to sign in, with no codes to type. It's kept in your iCloud Keychain, and TakaDe never sees your face or fingerprint.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "TakaDe-এর জন্য একটি পাসকি সেভ করুন। নতুন ফোনে শুধু ফোনের দিকে তাকালেই সাইন ইন হবে, কোনো কোড টাইপ করতে হবে না। এটি আপনার iCloud কিচেইনে থাকে, আর TakaDe কখনো আপনার মুখ বা আঙুলের ছাপ দেখে না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save a passkey for TakaDe. On a new phone, just look at it to sign in, with no codes to type. It's kept in your iCloud Keychain, and TakaDe never sees your face or fingerprint."
+          }
+        }
+      }
+    },
+    "Add a passkey": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পাসকি যোগ করুন"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a passkey"
+          }
+        }
+      }
+    },
+    "Passkeys": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পাসকি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passkeys"
+          }
+        }
+      }
+    },
+    "Passkey": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "পাসকি"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passkey"
+          }
+        }
+      }
+    },
+    "Remove this passkey?": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই পাসকিটি সরাবেন?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove this passkey?"
+          }
+        }
+      }
+    },
+    "It won't sign in to TakaDe any more. To delete it from your phone too, open the Passwords app.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এটি দিয়ে আর TakaDe-তে সাইন ইন করা যাবে না। ফোন থেকেও মুছতে Passwords অ্যাপ খুলুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It won't sign in to TakaDe any more. To delete it from your phone too, open the Passwords app."
+          }
+        }
+      }
+    },
+    "Sign in with %@ on any phone with your iCloud Keychain. TakaDe's sign-in service keeps only a public key, which can't sign in by itself.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার iCloud কিচেইন আছে এমন যেকোনো ফোনে %@ দিয়ে সাইন ইন করুন। TakaDe-এর সাইন-ইন সার্ভিস শুধু একটি পাবলিক কী রাখে, যা দিয়ে নিজে থেকে সাইন ইন করা যায় না।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with %@ on any phone with your iCloud Keychain. TakaDe's sign-in service keeps only a public key, which can't sign in by itself."
+          }
+        }
+      }
+    },
+    "Last used %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "শেষ ব্যবহার %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last used %@"
+          }
+        }
+      }
+    },
+    "Added %@": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "যোগ করা হয়েছে %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added %@"
+          }
+        }
+      }
+    },
+    "This phone already has a passkey for your account.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ফোনে আপনার অ্যাকাউন্টের জন্য আগেই একটি পাসকি আছে।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This phone already has a passkey for your account."
+          }
+        }
+      }
+    },
+    "Your account has the most passkeys it can. Remove one in Account first.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "আপনার অ্যাকাউন্টে সর্বোচ্চ সংখ্যক পাসকি আছে। আগে Account থেকে একটি সরান।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your account has the most passkeys it can. Remove one in Account first."
+          }
+        }
+      }
+    },
+    "That passkey isn't on any TakaDe account any more. Sign in another way.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই পাসকিটি আর কোনো TakaDe অ্যাকাউন্টে নেই। অন্যভাবে সাইন ইন করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That passkey isn't on any TakaDe account any more. Sign in another way."
+          }
+        }
+      }
+    },
+    "That took too long. Try again.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "অনেক সময় লেগে গেছে। আবার চেষ্টা করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That took too long. Try again."
+          }
+        }
+      }
+    },
+    "Passkeys aren't working on this phone right now. Try another way to sign in.": {
+      "comment": "Bengali drafted by Claude; needs native review before release.",
+      "localizations": {
+        "bn": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "এই ফোনে এখন পাসকি কাজ করছে না। অন্যভাবে সাইন ইন করুন।"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passkeys aren't working on this phone right now. Try another way to sign in."
+          }
+        }
+      }
     }
   }
 }

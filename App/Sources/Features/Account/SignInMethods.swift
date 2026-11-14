@@ -35,6 +35,13 @@ struct SignInMethods: View {
                 ForEach(methods, id: \.self) { method in
                     button(for: method)
                 }
+                // Coming back with a passkey saved (ADR 0035). Not when linking: a passkey
+                // is added from Account > Passkeys instead.
+                if mode != .link && account.passkeysAvailable {
+                    MethodButton(title: "Sign in with a passkey", systemImage: "person.badge.key") {
+                        run { try await account.signInWithPasskey() }
+                    }
+                }
                 if let errorMessage {
                     Text(verbatim: errorMessage)
                         .font(AppFont.caption)
@@ -121,7 +128,7 @@ struct SignInMethods: View {
             } catch is CancellationError {
             } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
             } catch {
-                errorMessage = SignInErrorText.text(for: error)
+                errorMessage = PasskeyErrorText.text(for: error)
             }
         }
     }

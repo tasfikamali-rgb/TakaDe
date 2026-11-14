@@ -107,6 +107,7 @@ struct RootView: View {
         }
         .environment(chrome)
         .googlePhotoOffer(when: !account.needsOnboarding)
+        .passkeyOffer(when: !account.needsOnboarding)
         // A new or removed profile photo goes, sealed, to friends so their phones show it.
         .onChange(of: account.photoRevision) { Task { await social.shareProfile() } }
         // After "Delete all my data" the app starts over like a first launch: on Groups,

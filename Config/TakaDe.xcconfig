@@ -24,6 +24,14 @@ TAKADE_SUPABASE_ANON_KEY =
 TAKADE_MICROSOFT_SIGN_IN = NO
 TAKADE_EMAIL_SIGN_IN = NO
 
+// Passkeys (docs/adr/0035-passkeys.md): the website passkeys belong to, a bare host such as
+// takadeapp.com. Empty hides "Sign in with a passkey", the offer after signing in and
+// Account > Passkeys. Set it only once ALL of these are done: the domain is bought, its
+// /.well-known/apple-app-site-association lists the app (docs/passkeys/), the app is signed
+// by a paid team with Associated Domains (App/TakaDe.entitlements), and Supabase's passkey
+// settings use the same domain, on the main and the spare project.
+TAKADE_PASSKEY_DOMAIN =
+
 // The spare Supabase project, refilled every night from the main one's backup, and the
 // public switch file that says which one to use (docs/adr/0034-packed-changes-and-backups.md).
 // Host and file address without https:// (// starts a comment here). Empty: no spare, the

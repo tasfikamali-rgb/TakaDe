@@ -33,19 +33,31 @@ final class AccountModel {
     private(set) var photoRevision = 0
     /// True while the app should ask "Use your Google photo?" (GooglePhotoOffer).
     private(set) var offersGooglePhoto = false
+    /// The passkeys on the account (ADR 0035), for the Account tab.
+    private(set) var passkeys: [PasskeyWire.Item] = []
+    /// True while the app should offer "Sign in with Face ID next time" (PasskeyOffer).
+    private(set) var offersPasskey = false
     let store: ProfileRepository
     let google: GoogleSignInService?
     let supabase: SupabaseAuth?
+    /// The website passkeys belong to; nil hides passkeys (PasskeyConfig).
+    let passkeyDomain: String?
+    private let passkeyCeremony = PasskeyCeremony()
 
     /// A sign-in made during first launch, before there's a profile to put it on.
     private var pendingLinked: LinkedAccount?
     private var pendingUser: AuthUser?
 
-    init(store: ProfileRepository, google: GoogleOAuthConfig? = .current, supabase: SupabaseConfig? = .current) {
+    init(store: ProfileRepository, google: GoogleOAuthConfig? = .current, supabase: SupabaseConfig? = .current,
+         passkeyDomain: String? = PasskeyConfig.domain) {
         self.store = store
         self.google = google.map(GoogleSignInService.init(config:))
         self.supabase = supabase.map(SupabaseAuth.init(config:))
+        self.passkeyDomain = passkeyDomain
     }
+
+    /// Passkeys work only with the sign-in service and once the website is set up.
+    var passkeysAvailable: Bool { supabase != nil && passkeyDomain != nil }
 
     var needsOnboarding: Bool { isLoaded && profile == nil }
     var account: LinkedAccount? { profile?.account }
@@ -86,6 +98,8 @@ final class AccountModel {
         await refreshAccount()
         // Signed in with Google before this question existed: ask once.
         if profile != nil { offerGooglePhotoIfNeeded() }
+        // Signed in before passkeys existed: offer one once too.
+        await offerPasskeyIfNeeded()
     }
 
     // MARK: Sign-in service
@@ -104,6 +118,7 @@ final class AccountModel {
             .flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : $0 }
         let user = try await supabase.signInWithApple(idToken: token, rawNonce: rawNonce)
         var outcome = try await adopt(user)
+        Task { await offerPasskeyIfNeeded() }
         // Apple shares the name only the first time; it's used here, on the phone only.
         if outcome.name == nil { outcome.name = name }
         return outcome
@@ -117,10 +132,13 @@ final class AccountModel {
             let identity = try await google.signIn(nonce: nonce.hashed, includeProfile: false)
             let outcome = try await adopt(supabase.signInWithGoogle(idToken: identity.idToken, rawNonce: nonce.raw))
             usedGoogle()
+            Task { await offerPasskeyIfNeeded() }
             return outcome
         }
         if let supabase, let oauth = SupabaseAuth.Provider(provider) {
-            return try await adopt(supabase.signIn(with: oauth))
+            let outcome = try await adopt(supabase.signIn(with: oauth))
+            Task { await offerPasskeyIfNeeded() }
+            return outcome
         }
         guard provider == .google else { throw SupabaseAuth.Failure.couldNotStart }
         let identity = try await signInWithGoogle()
@@ -136,7 +154,75 @@ final class AccountModel {
 
     func verifyEmailCode(_ code: String, email: String) async throws -> SignInOutcome {
         guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
-        return try await adopt(supabase.verifyEmailCode(code, email: email))
+        let outcome = try await adopt(supabase.verifyEmailCode(code, email: email))
+        Task { await offerPasskeyIfNeeded() }
+        return outcome
+    }
+
+    // MARK: Passkeys (ADR 0035)
+
+    /// "Sign in with a passkey": iOS shows the passkeys saved for TakaDe, the person looks
+    /// at the phone, and the service opens the account that passkey belongs to.
+    func signInWithPasskey() async throws -> SignInOutcome {
+        guard let supabase, let passkeyDomain else { throw SupabaseAuth.Failure.couldNotStart }
+        let options = try await supabase.passkeySignInOptions()
+        let credential = try await passkeyCeremony.signIn(options, domain: passkeyDomain)
+        let outcome = try await adopt(supabase.signInWithPasskey(challengeID: options.challengeID, credential: credential))
+        // Already uses a passkey: no need to offer one.
+        markPasskeyAsked()
+        await loadPasskeys()
+        return outcome
+    }
+
+    /// "Add a passkey" for the account that's signed in.
+    func addPasskey() async throws {
+        guard let supabase, let passkeyDomain else { throw SupabaseAuth.Failure.couldNotStart }
+        let options = try await supabase.passkeyRegistrationOptions()
+        let credential = try await passkeyCeremony.register(options, domain: passkeyDomain)
+        try await supabase.verifyPasskeyRegistration(challengeID: options.challengeID, credential: credential)
+        markPasskeyAsked()
+        await loadPasskeys()
+    }
+
+    func removePasskey(_ item: PasskeyWire.Item) async throws {
+        guard let supabase else { throw SupabaseAuth.Failure.couldNotStart }
+        try await supabase.deletePasskey(id: item.id)
+        passkeys.removeAll { $0.id == item.id }
+        await loadPasskeys()
+    }
+
+    /// Reads the account's passkeys. Quietly keeps the last list offline.
+    func loadPasskeys() async {
+        guard passkeysAvailable, let supabase, supabase.session != nil else {
+            passkeys = []
+            return
+        }
+        if let list = try? await supabase.passkeys() { passkeys = list }
+    }
+
+    private static let passkeyAskedKey = "account.passkeyAskedAccounts"
+
+    /// After a sign-in, like Luma (Sabit, 2026-11-14): offer a passkey once per account on
+    /// this phone, when the account has none yet. "Not now" leaves "Add a passkey" in Account.
+    func offerPasskeyIfNeeded() async {
+        guard passkeysAvailable, let accountID = supabase?.session?.user.id,
+              !(UserDefaults.standard.stringArray(forKey: Self.passkeyAskedKey) ?? []).contains(accountID) else { return }
+        guard let list = try? await supabase?.passkeys() else { return }
+        passkeys = list
+        if list.isEmpty { offersPasskey = true } else { markPasskeyAsked() }
+    }
+
+    func answeredPasskeyOffer() {
+        markPasskeyAsked()
+        offersPasskey = false
+    }
+
+    private func markPasskeyAsked() {
+        offersPasskey = false
+        guard let accountID = supabase?.session?.user.id else { return }
+        var asked = UserDefaults.standard.stringArray(forKey: Self.passkeyAskedKey) ?? []
+        if !asked.contains(accountID) { asked.append(accountID) }
+        UserDefaults.standard.set(asked, forKey: Self.passkeyAskedKey)
     }
 
     /// Links another sign-in to the account that's signed in.
@@ -271,6 +357,8 @@ final class AccountModel {
             await supabase?.signOut()
             try? await store.replaceAccountIdentities([])
             identities = []
+            offersPasskey = false
+            passkeys = []
         }
     }
 
@@ -297,6 +385,8 @@ final class AccountModel {
         try await save(profile)
         try await store.replaceAccountIdentities([])
         identities = []
+        passkeys = []
+        offersPasskey = false
     }
 
     /// "Delete account": deletes the TakaDe account on the sign-in service (when there is
@@ -337,6 +427,9 @@ final class AccountModel {
         FriendPhotos.removeAll()
         photo = nil
         offersGooglePhoto = false
+        offersPasskey = false
+        passkeys = []
+        UserDefaults.standard.removeObject(forKey: Self.passkeyAskedKey)
         profile = nil
         identities = []
         await app.reload()
