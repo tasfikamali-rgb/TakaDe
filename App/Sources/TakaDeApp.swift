@@ -124,7 +124,8 @@ struct TakaDeApp: App {
                 }
                 .overlay {
                     if showsSplash {
-                        LaunchSplash { showsSplash = false }
+                        // Sound only on a cold launch (splashRun 0), not on every return.
+                        LaunchSplash(playsSound: splashRun == 0) { showsSplash = false }
                             .id(splashRun)
                     }
                 }
